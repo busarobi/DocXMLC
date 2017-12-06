@@ -1,0 +1,80 @@
+
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage[noend]{algpseudocode}
+%\usepackage{algpseudocode}
+\usepackage{multirow}
+\usepackage{amsmath}
+%\usepackage{amssymb} 
+%\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{booktabs} 
+\usepackage{color} 
+\usepackage{graphicx}
+\usepackage{xr}
+\usepackage{tikz}
+
+% Additional commands
+\newcommand{\loss}{L}
+\newcommand{\reg}{\mathrm{reg}}
+\newcommand{\reglog}{\mathrm{reg}_{\log}}
+\newcommand{\ZO}{\mathrm{0/1}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\bx}{\vec{x}}
+\newcommand{\by}{\vec{y}}
+\newcommand{\byprev}{\by^{i-1}}
+\newcommand{\byhat}{\vec{\hat{y}}}
+\newcommand{\bw}{\vec{w}}
+\newcommand{\bY}{\vec{Y}}
+\newcommand{\bX}{\vec{X}}
+\newcommand{\bh}{\vec{h}}
+\newcommand{\bn}{\vec{n}}
+\newcommand{\Fb}{F_{\beta}}
+\newcommand{\sy}{s_{\by}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calY}{\mathcal{Y}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\ells}{\tilde{\ell}}
+\renewcommand{\Pr}{P}
+\newcommand{\given}{\, | \,}
+\newcommand{\assert}[1]{\llbracket #1 \rrbracket}
+\newcommand{\rootT}{\mathrm{root}}
+\newcommand{\rightch}[1]{\mathrm{r}(#1)}
+\newcommand{\leftch}[1]{\mathrm{l}(#1)}
+\newcommand{\pa}[1]{\mathrm{pa}(#1)}
+\newcommand{\Path}[1]{\mathrm{Path}(#1)}
+\newcommand{\Children}[1]{\mathrm{Ch}(#1)}
+\newcommand{\BRT}{\mathrm{BRT}}
+\newcommand{\BR}{\mathrm{BR}}
+\newcommand{\PLT}{\mathrm{PLT}}
+\newcommand{\WFP}{\mathrm{WFP}}
+\newcommand{\WFN}{\mathrm{WFN}}
+\newcommand{\FP}{\mathrm{FP}}
+\newcommand{\FN}{\mathrm{FN}}
+\newcommand{\sgn}{\mathrm{sgn}}
+\newcommand{\hPr}{\hat{\Pr}}
+\newcommand{\hy}{\hat{y}}
+\newcommand{\hby}{\hat{\by}}
+\newcommand{\heta}{\hat{\eta}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\renewcommand{\Pr}{P}
+
+
+\DeclareMathOperator*{\argmax}{\arg \max}
+\DeclareMathOperator*{\argmin}{\arg \min}
+
+
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem*{theorem*}{Theorem}
+%\newtheorem{lemma}{Lemma}[section]
+%\newtheorem{corollary}{Corollary}[section]
+
+%\renewcommand{\theequation}{\Alph{section}.\arabic{equation}}
+
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen}
+\algnewcommand{\IElse}[1]{\State\algorithmicelse\ #1\ }
+\algnewcommand{\IElseIf}[1]{\State\algorithmicelse \algorithmicif\ #1\  \algorithmicthen}
+\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
+

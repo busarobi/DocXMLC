@@ -1,0 +1,329 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% ICML 2016 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use the following line _only_ if you're still using LaTeX 2.09.
+%\documentstyle[icml2016,epsf,natbib]{article}
+% If you rely on Latex2e packages, like most moden people use this:
+\documentclass{article}
+
+% use Times
+\usepackage{times}
+% For figures
+\usepackage{graphicx} % more modern
+%\usepackage{epsfig} % less modern
+\usepackage{subfigure} 
+
+% For citations
+\usepackage{natbib}
+
+
+\usepackage{amsthm} %proof and some other environments
+\usepackage{latexsym,amsmath,amsfonts,amssymb} 
+
+
+% For algorithms
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+
+% As of 2011, we use the hyperref package to produce hyperlinks in the
+% resulting PDF.  If this breaks your system, please commend out the
+% following usepackage line and replace \usepackage{icml2016} with
+% \usepackage[nohyperref]{icml2016} above.
+\usepackage{hyperref}
+%\usepackage{cleveref}
+
+% Packages hyperref and algorithmic misbehave sometimes.  We can fix
+% this with the following command.
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Employ the following version of the ``usepackage'' statement for
+% submitting the draft version of the paper for review.  This will set
+% the note in the first column to ``Under review.  Do not distribute.''
+%\usepackage{icml2016} 
+
+% Employ this version of the ``usepackage'' statement after the paper has
+% been accepted, when creating the final version.  This will set the
+% note in the first column to ``Proceedings of the...''
+\usepackage[accepted]{icml2016}
+
+
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage[subtle,mathspacing=normal, tracking=normal]{savetrees}
+\usepackage{microtype}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% For theo
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{Thm}{Theorem}%[section]
+\newtheorem{Def}[Thm]{Definition}
+\newtheorem{Rem}[Thm]{Remark}
+\newtheorem{Prop}[Thm]{Proposition}
+\newtheorem{Clm}[Thm]{Claim}
+\newtheorem{Lem}[Thm]{Lemma}
+\newtheorem{Cor}[Thm]{Corollary}
+\newtheorem{Exa}[Thm]{Example}
+
+\newenvironment{prfsk}[0]{{\noindent \it Proof sketch:}}{\hfill $\Box$\vskip10pt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mlc_ltc}
+
+\usepackage[noend]{algpseudocode}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb} 
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{booktabs} 
+\usepackage{graphicx}
+
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+
+\newcommand{\btau}{\boldsymbol{\tau}}
+\newcommand{\bkappa}{\boldsymbol{\kappa}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bT}{\mathbf{T}}
+\newcommand{\bW}{\mathbf{W}}
+
+
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bF}{\mathbf{F}}
+%\newcommand{\bY}{\mathbf{Y}}
+
+\newcommand{\ba}{\mathbf{a}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bd}{\mathbf{d}}
+\newcommand{\bc}{\mathbf{c}}
+
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\calW}{\mathcal{W}}
+%\newcommand{\bx}{\mathbf{x}}
+%\newcommand{\by}{\mathbf{y}}
+
+
+
+\newcommand*\BitAnd{\mathrel{\&}}
+\newcommand*\ShiftLeft{\ll}
+%\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+
+\newcommand{\bigO}{\mathcal{O}}
+
+
+\newcommand{\prob}{\mathbf{P}} 
+\newcommand{\exptd}{\mathbf{E}}
+\newcommand{\var}{\mathbf{V}} 
+
+\newcommand{\dd}{{\, \mathrm{d}}}
+
+\newcommand\etal{et al.}
+\newcommand{\Algo}[1]{\textsc{#1}}
+
+
+\newcommand\R{\mathbb{R}}   % for the real numbers
+\newcommand\N{\mathbb{N}}   % for the natural numbers
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% spaces
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\figureWidthTwo}{0.6\textwidth}
+
+\newcommand{\figureBetween}{0pt}
+\newcommand{\figureBetweenHorizontal}{0pt}
+
+\newcommand{\sectionBefore}{-0pt}
+\newcommand{\sectionAfter}{-0pt}
+
+\newcommand{\tableBefore}{-0pt}
+\newcommand{\tableAfter}{-0pt}
+
+\newcommand{\figureBefore}{-0pt}
+\newcommand{\figureAfter}{-0pt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\figures}{./Figs}
+
+
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Extreme}
+
+\begin{document} 
+
+\twocolumn[
+\icmltitle{Extreme}
+
+\vskip 0.3in
+]
+
+\vspace{\sectionBefore}
+\section{Formal setup of doc tagging}
+\label{sec:formal}
+\vspace{\sectionAfter}
+
+
+Input is given in form of document and set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\cD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
+
+Our approach consists of two modules: tagging and text representation modules. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n+1}$ is a (not necessarily) parametric function whose input is a document and its output is the vector presentation of both words and docs. The dimension of representation space is $d$. In the simplest case, this text representation module can be the bag-of-words presentation, in which case $d=N$, and the doc vector (n+1\/th column of the image space of function $f$) is an all zero vector. A more sophisticated text presentation module is the word2vec methodology which assign a vector to each word whose dimension is typically $\le300$, and the doc presentation is empty. 
+
+The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n+1} \rightarrow  \{ 0 , 1 \}^m$. 
+
+In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of the given document $\bd_i$ where $i_j$ is the index of $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
+
+
+DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of document. 
+
+
+
+\vspace{\sectionBefore}
+\subsection{Probabilistic Label Trees}
+\vspace{\sectionAfter}
+
+To introduce \Algo{PLT}s more formally, denote a tree by $T$ and the root of the tree $r(T)$. In general, $T$ can be of any form; here, we consider trees of height $k$ and degree $b$. 
+The leaves of $T$ correspond to labels. We denote a set of leaves of a (sub)tree rooted in node $t$ by $L(t)$. %, and the internal nodes of the subtree by $N(t)$. %If $n$ is the root of $T$ then we write $N$. 
+%The root is also an internal node, i.e., $t \in N(t)$. 
+The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to the $j$\/th leaf is denoted by $\Path{j}$. %and the internal nodes on this path by $\Path{i,N}$.
+
+\Algo{PLT}s use a path from a root to the $j$\/th leaf to estimate posteriors $\eta(\bx, j)$. %, similarly as in probabilistic classifier trees. 
+%In other words, we divide the process of estimating $\Pr(y_i \given \bx)$ to $k+1$ stages, each corresponding to a level of the tree $T$. 
+With each node $t$ and training instance $\bx$, we associate a label $z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1}$.
+%Recall that $L(t)$ is a set of all leaves of a subtree with the root in the $t$-th node. 
+In the leaf nodes, the labels $z_j$, $j \in L$, correspond to the original labels $y_j$.
+
+Consider the leaf node $j$ and the path from the root to this leaf node. Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
+%\begin{equation}
+%\Pr(y_i = 1 \given \bx) = \prod_{j \in \Path{i}} \Pr(z_j = 1 \given z_{\pa{j}} = 1, \bx)\,,
+%\label{eqn:probabilistic_tree}
+%\end{equation}
+%where for the root node $r(T)$ we have  $\Pr(z_{r(T)} = 1 \given z_{\pa{r(T)}} = 1, \bx) = \Pr(z_{r(T)} = 1 \given \bx)$.
+\begin{equation}
+\eta(\bx, j) = \prod_{t \in \Path{j}} \eta_T(\bx, t)\,,
+\label{eqn:probabilistic_tree}
+\end{equation}
+where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$ for all non-root nodes $t$, and $\eta_T(\bx, t) = \prob(z_t = 1 \given \bx)$ if $t$ is the root node. 
+The correctness of (\ref{eqn:probabilistic_tree}) follows from the observation that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. A detailed derivation of the chain rule in this setup is given in Appendix~\ref{app:plt}.
+
+
+The training algorithm for \Algo{PLT}s is given in Algorithm~\ref{alg:pt-learning}.
+Let $\cD_n = \{ (\bx_i, \by_{i}) \}_{i=1}^n$ be a training set of multi-label examples.
+To learn classifiers in all nodes of a tree $T$, we need to properly filter training examples to estimate $\eta_T(\bx,t)$ (line 5). Moreover, we need to use a learning algorithm $A$ that trains a class probability estimator $\heta_T(\bx,t)$ for each node $t$ in the tree. %a probability estimator trained by such an algorithm in node~$j$. 
+The training algorithm returns a set of probability estimation classifiers $\mathcal{Q}$.
+
+The learning time complexity of \Algo{PLT}s can be expressed in terms of the number of nodes in which an original training example $(\bx,\by)$ is used. Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$. Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent~\cite{Bottou_2010}.
+
+Interestingly, in the case of sparse features, the space complexity can be significantly reduced as well. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because only the sibling nodes need to share the same features, while no other features are needed to build corresponding classifiers. Therefore, only those (few) features needed to describe the sibling labels have to be used in the models. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
+
+%\vspace{-2pt}
+%
+\begin{algorithm}[t]
+\caption{\Algo{PLT.Train}$(T, A, \cD_n)$}%Learning of a Probabilistic Label Tree}
+\label{alg:pt-learning}
+\begin{algorithmic}[1]
+%\State \textbf{input:} a label tree $T$, a learning algorithm $A$, and a training set $\mathcal{S}$
+%\State \textbf{output:} a set of probability estimation classifiers $\mathcal{Q}$
+\State $\mathcal{Q} = \emptyset$
+\For{each node $t \in T$} 
+\State $\cD' = \emptyset$
+\For{$i=1 \to n$}    %each training instance $(\bx, \by) \in \mathcal{S}$}
+\If{$t$ is \textbf{root} or $z_{\pa{t}} = 1 $}
+\State $z_t = \assert{\sum_{j \in L(t)} y_{ij} \ge 1 }$
+\State $\cD' = \cD' \cup (\bx_i, z_t)$ 
+\EndIf
+\EndFor
+\State $\heta_T(\bx,t) = A(\cD')$, $\mathcal{Q} = \mathcal{Q} \cup \heta_T(\bx,t) $  
+\EndFor
+\State \textbf{return} a set of probability estimation classifiers $\mathcal{Q}$. 
+\end{algorithmic}
+\end{algorithm} 
+
+Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
+%With properly estimated probabilities, the algorithm will not explore a large part of the tree.
+
+\begin{algorithm}[t]
+\caption{\Algo{PLT.Predict}$(\bx, T, \mathcal{Q}, \tau)$}%Prediction with a Probabilistic Label Tree}
+\label{alg:pt-prediction}
+\begin{algorithmic}[1]
+%\State \textbf{input:} a label tree $T$,  a set of probability estimation classifiers $\mathcal{Q}$, a test example $\bx$, a threshold $\tau$
+%\State \textbf{input:} a label vector $\hat{\by}$ 
+\State $\hat{\by} = \vec{0}_m$, $Q = \emptyset$, $Q.\mathrm{add}(r(T),\heta_T(\bx,r(T)))$ 
+\While{$Q \ne \emptyset$}
+\State{$(t,p_t) = \mathrm{pop}(Q)$} 
+%\State $p_j = p \cdot \heta(j,\bx)$ 
+%\State $h(j,\bx) = \sgn(p_j \ge \tau)$
+\If{$p_t \ge \tau$} 
+\If{$t$ is a leaf node} 
+\State $\hat{y}_t = 1$ 
+\Else
+\For{$c \in \Children{t}$} 
+\State $Q.\mathrm{add}(c, p_t \cdot \heta_T(\bx,c))$ 
+\EndFor
+\EndIf
+\EndIf
+\EndWhile
+\State \textbf{return} $\hat{\by}$. 
+\end{algorithmic}
+\end{algorithm} 
+
+
+Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. If there is only one label exceeding the threshold, \Algo{PLT} ideally needs to call only $bk+1$ classifiers (all classifiers on a path from the root to a leaf plus all classifiers in siblings of the path nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and accuracy of node classifiers.
+
+%Setting thresholds!!!
+
+Note that \Algo{PLT}s can be used with any value as a threshold. Moreover, by considering a separate threshold $\tau_t$ in each node $t$, one can use a different threshold for each label $j$ on posterior estimates $\hat\eta(\bx,j)$. It is enough to set a threshold in the parent node $t$ as follows:
+$\tau_t = \min_{j \in \Children{t}} \tau_j$. 
+In this way, \Algo{PLT}s  can efficiently obtain SPEs for any $\bkappa$ in \Algo{STO} and \Algo{FTA} (Algorithm~\ref{alg:eum}), and any $\btau$ in \Algo{OFO} (Algorithm~\ref{alg:ofo}). 
+%
+\Algo{PLT}s can easily be tailored for Precision@K, too. To predict the top labels, it is enough to change $Q$ to a priority queue and stop the prediction procedure after a given number of top labels. %Precision@K can be then efficiently computed. 
+
+Let us finally underline that  \Algo{PLT}s obey strong theoretical guarantees. In  Appendix~\ref{app:plt}, we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. For optimal node classifiers, we obtain optimal multi-label classifiers in terms of estimation of posterior probabilities $\eta(\bx,j)$.
+
+
+
+\vspace{\sectionBefore}
+\subsection{Related work}
+\vspace{\sectionAfter}
+
+\Algo{PLT}s share similarities with conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b} and probabilistic classifier chains~\cite{Dembczynski_et_al_2010c}, while being suited to estimate marginal posterior probabilities $\eta(\bx,j)$. They are also similar to Homer~\cite{Tsoumakas_et_al_2008}, which transforms training examples in the same way but does not admit a probabilistic interpretation. Let us also remark that a similar concept is known in neural networks and natural language processing under the name of hierarchical softmax~classifiers \cite{Morin_Bengio_2005}; however, it has not been used in a multi-label scenario.
+
+In a nutshell, \Algo{PLT}s are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011}, in which each leaf node corresponds to one label. Classification of a test example relies on a sequence of decisions made by node classifiers, leading the test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether or not to continue the path by moving to the child nodes. This is different from typical left/right decisions made in tree-based classifiers.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. \Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure. %We introduce \Algo{PLT} in more detail below. 
+
+
+\newpage
+
+
+
+\bibliography{xmlc_references}
+\bibliographystyle{icml2016}
+
+\appendix
+
+\onecolumn
+
+\input appendix_1
+
+\end{document} 
+
+
+
