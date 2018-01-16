@@ -168,15 +168,348 @@
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Extreme}
+\icmltitlerunning{Probabilistic label trees: No-regret generalization of hierarchical softmax}
 
 \begin{document} 
 
 \twocolumn[
-\icmltitle{Extreme}
+\icmltitle{Probabilistic label trees: No-regret generalization of hierarchical softmax to extreme multi-label classification}
 
 \vskip 0.3in
 ]
+
+\begin{abstract} 
+Probabilistic label trees (PLTs) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. It has already been shown that the basic variant of PLTs, based on sparse input vectors, is competitive to the state of the art approaches to XMLC, such as FastXML. In this paper, we theoretically show that PLTs are no-regret generalization of hierarchical softmax (HSM) to multi-label setting. HSM is commonly used in deep networks to deal with a large number of labels in the multi-class setting, mainly in natural language processing problems. We will also show that an existing adaptation of HSM, used for example in FastText, is not consistent. Finally, we use PLT in three different deep networks architectures for text classification, namely feature-embeddings (FastText-like representation), recurrent neural networks, and LSTMs, and show outstanding empirical results of them.
+\end{abstract} 
+
+\section{Introduction}
+\label{sec:formal}
+
+\begin{itemize}
+\item PLT, 
+\item proper generalization of HSM, 
+\item consistency of PLT, 
+\item inconsistency of FastText approximation, 
+\item correction of probability estimates, 
+\item PLT with sparse input, 
+\item PLT with FastText embeddings, 
+\item PLT with RNN, 
+\item PLT with LSTM.
+\end{itemize}
+
+Extreme multi-label classification ...
+
+In this paper we discuss the problem of document tagging or text classification ...
+
+PLT ... 
+
+In a nutshell, \Algo{PLT}s are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011}, in which each leaf node corresponds to one label. Classification of a test example relies on a sequence of decisions made by node classifiers, leading the test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether or not to continue the path by moving to the child nodes. This is different from typical left/right decisions made in tree-based classifiers.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. \Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure. %We introduce \Algo{PLT} in more detail below. 
+
+PLT vs. HSM
+
+\Algo{PLT}s share similarities with conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b} and probabilistic classifier chains~\cite{Dembczynski_et_al_2010c}, while being suited to estimate marginal posterior probabilities $\eta(\bx,j)$. They are also similar to Homer~\cite{Tsoumakas_et_al_2008}, which transforms training examples in the same way but does not admit a probabilistic interpretation. Let us also remark that a similar concept is known in neural networks and natural language processing under the name of hierarchical softmax~classifiers \cite{Morin_Bengio_2005}; however, it has not been used in a multi-label scenario.
+
+We will show that PLTs are no-regret generalization of HSM to multi-label classification. 
+
+
+
+\vspace{\sectionBefore}
+\section{Formal setup of document tagging}
+\label{sec:formal}
+\vspace{\sectionAfter}
+
+
+Input is given in form of document and set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\cD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
+
+Our approach consists of two modules: tagging and text representation modules. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n+1}$ is a (not necessarily) parametric function whose input is a document and its output is the vector presentation of both words and docs. The dimension of representation space is $d$. In the simplest case, this text representation module can be the bag-of-words presentation, in which case $d=N$, and the doc vector (n+1\/th column of the image space of function $f$) is an all zero vector. A more sophisticated text presentation module is the word2vec methodology which assign a vector to each word whose dimension is typically $\le300$, and the doc presentation is empty. 
+
+The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n+1} \rightarrow  \{ 0 , 1 \}^m$. 
+
+In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of the given document $\bd_i$ where $i_j$ is the index of $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
+
+
+DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of document. 
+
+
+
+\vspace{\sectionBefore}
+\subsection{Probabilistic Label Trees}
+\vspace{\sectionAfter}
+
+The general idea of PLTs is relatively simple. 
+
+To introduce \Algo{PLT}s more formally, denote a tree by $T$ and the root of the tree $r(T)$. In general, $T$ can be of any form; here, we consider trees of height $k$ and degree $b$. 
+The leaves of $T$ correspond to labels. We denote a set of leaves of a (sub)tree rooted in node $t$ by $L(t)$. %, and the internal nodes of the subtree by $N(t)$. %If $n$ is the root of $T$ then we write $N$. 
+%The root is also an internal node, i.e., $t \in N(t)$. 
+The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to the $j$\/th leaf is denoted by $\Path{j}$. %and the internal nodes on this path by $\Path{i,N}$.
+
+\Algo{PLT}s use a path from a root to the $j$\/th leaf to estimate posteriors $\eta(\bx, j)$. %, similarly as in probabilistic classifier trees. 
+%In other words, we divide the process of estimating $\Pr(y_i \given \bx)$ to $k+1$ stages, each corresponding to a level of the tree $T$. 
+With each node $t$ and training instance $\bx$, we associate a label $z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1}$.
+%Recall that $L(t)$ is a set of all leaves of a subtree with the root in the $t$-th node. 
+In the leaf nodes, the labels $z_j$, $j \in L$, correspond to the original labels $y_j$.
+
+Consider the leaf node $j$ and the path from the root to this leaf node. Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
+%\begin{equation}
+%\Pr(y_i = 1 \given \bx) = \prod_{j \in \Path{i}} \Pr(z_j = 1 \given z_{\pa{j}} = 1, \bx)\,,
+%\label{eqn:probabilistic_tree}
+%\end{equation}
+%where for the root node $r(T)$ we have  $\Pr(z_{r(T)} = 1 \given z_{\pa{r(T)}} = 1, \bx) = \Pr(z_{r(T)} = 1 \given \bx)$.
+\begin{equation}
+\eta(\bx, j) = \prod_{t \in \Path{j}} \eta_T(\bx, t)\,,
+\label{eqn:probabilistic_tree}
+\end{equation}
+where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$ for all non-root nodes $t$, and $\eta_T(\bx, t) = \prob(z_t = 1 \given \bx)$ if $t$ is the root node. 
+The correctness of (\ref{eqn:probabilistic_tree}) follows from the observation that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. A detailed derivation of the chain rule in this setup is given in Appendix~\ref{app:plt}.
+
+
+The training algorithm for \Algo{PLT}s is given in Algorithm~\ref{alg:pt-learning}.
+Let $\cD_n = \{ (\bx_i, \by_{i}) \}_{i=1}^n$ be a training set of multi-label examples.
+To learn classifiers in all nodes of a tree $T$, we need to properly filter training examples to estimate $\eta_T(\bx,t)$ (line 5). Moreover, we need to use a learning algorithm $A$ that trains a class probability estimator $\heta_T(\bx,t)$ for each node $t$ in the tree. %a probability estimator trained by such an algorithm in node~$j$. 
+The training algorithm returns a set of probability estimation classifiers $\mathcal{Q}$.
+
+The learning time complexity of \Algo{PLT}s can be expressed in terms of the number of nodes in which an original training example $(\bx,\by)$ is used. Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$. Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent~\cite{Bottou_2010}.
+
+Interestingly, in the case of sparse features, the space complexity can be significantly reduced as well. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because only the sibling nodes need to share the same features, while no other features are needed to build corresponding classifiers. Therefore, only those (few) features needed to describe the sibling labels have to be used in the models. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
+
+%\vspace{-2pt}
+%
+\begin{algorithm}[t]
+\caption{\Algo{PLT.Train}$(T, A, \cD_n)$}%Learning of a Probabilistic Label Tree}
+\label{alg:pt-learning}
+\begin{algorithmic}[1]
+%\State \textbf{input:} a label tree $T$, a learning algorithm $A$, and a training set $\mathcal{S}$
+%\State \textbf{output:} a set of probability estimation classifiers $\mathcal{Q}$
+\State $\mathcal{Q} = \emptyset$
+\For{each node $t \in T$} 
+\State $\cD' = \emptyset$
+\For{$i=1 \to n$}    %each training instance $(\bx, \by) \in \mathcal{S}$}
+\If{$t$ is \textbf{root} or $z_{\pa{t}} = 1 $}
+\State $z_t = \assert{\sum_{j \in L(t)} y_{ij} \ge 1 }$
+\State $\cD' = \cD' \cup (\bx_i, z_t)$ 
+\EndIf
+\EndFor
+\State $\heta_T(\bx,t) = A(\cD')$, $\mathcal{Q} = \mathcal{Q} \cup \heta_T(\bx,t) $  
+\EndFor
+\State \textbf{return} a set of probability estimation classifiers $\mathcal{Q}$. 
+\end{algorithmic}
+\end{algorithm} 
+
+Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
+%With properly estimated probabilities, the algorithm will not explore a large part of the tree.
+
+\begin{algorithm}[t]
+\caption{\Algo{PLT.Predict}$(\bx, T, \mathcal{Q}, \tau)$}%Prediction with a Probabilistic Label Tree}
+\label{alg:pt-prediction}
+\begin{algorithmic}[1]
+%\State \textbf{input:} a label tree $T$,  a set of probability estimation classifiers $\mathcal{Q}$, a test example $\bx$, a threshold $\tau$
+%\State \textbf{input:} a label vector $\hat{\by}$ 
+\State $\hat{\by} = \vec{0}_m$, $Q = \emptyset$, $Q.\mathrm{add}(r(T),\heta_T(\bx,r(T)))$ 
+\While{$Q \ne \emptyset$}
+\State{$(t,p_t) = \mathrm{pop}(Q)$} 
+%\State $p_j = p \cdot \heta(j,\bx)$ 
+%\State $h(j,\bx) = \sgn(p_j \ge \tau)$
+\If{$p_t \ge \tau$} 
+\If{$t$ is a leaf node} 
+\State $\hat{y}_t = 1$ 
+\Else
+\For{$c \in \Children{t}$} 
+\State $Q.\mathrm{add}(c, p_t \cdot \heta_T(\bx,c))$ 
+\EndFor
+\EndIf
+\EndIf
+\EndWhile
+\State \textbf{return} $\hat{\by}$. 
+\end{algorithmic}
+\end{algorithm} 
+
+
+Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. If there is only one label exceeding the threshold, \Algo{PLT} ideally needs to call only $bk+1$ classifiers (all classifiers on a path from the root to a leaf plus all classifiers in siblings of the path nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and accuracy of node classifiers.
+
+%Setting thresholds!!!
+
+Note that \Algo{PLT}s can be used with any value as a threshold. Moreover, by considering a separate threshold $\tau_t$ in each node $t$, one can use a different threshold for each label $j$ on posterior estimates $\hat\eta(\bx,j)$. It is enough to set a threshold in the parent node $t$ as follows:
+$\tau_t = \min_{j \in \Children{t}} \tau_j$. 
+In this way, \Algo{PLT}s  can efficiently obtain SPEs for any $\bkappa$ in \Algo{STO} and \Algo{FTA} (Algorithm~\ref{alg:eum}), and any $\btau$ in \Algo{OFO} (Algorithm~\ref{alg:ofo}). 
+%
+\Algo{PLT}s can easily be tailored for Precision@K, too. To predict the top labels, it is enough to change $Q$ to a priority queue and stop the prediction procedure after a given number of top labels. %Precision@K can be then efficiently computed. 
+
+Let us finally underline that  \Algo{PLT}s obey strong theoretical guarantees. In  Appendix~\ref{app:plt}, we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. For optimal node classifiers, we obtain optimal multi-label classifiers in terms of estimation of posterior probabilities $\eta(\bx,j)$.
+
+
+\vspace{\sectionBefore}
+\subsection{Correction of probability estimates}
+\label{sec:online_PLTs}
+\vspace{\sectionAfter}
+
+The resulting marginal probabilities of PLT, or in general all node probability models, may not correspond to a valid underlying distribution. For example, it is possible that a parent node will predict a probability of at least 1 positive label in its subtree being greater than a sum of similar probabilities of its children. So, in general the constraints in the $b$-ary tree should be of the following type:
+$$p_{pa} \ge p_j\,,~j=1,\ldots, k\,, \quad \mathrm{and} \quad  p_{pa} \le \sum_{j=1}^k p_j\,, $$
+where $p_pa$ is the probability in the parent node and $p_j$ is the probability in its$ $j-th child node.
+The first constraint is satisfied by the algorithm since $p_j = p_{pa} \times q_j$, where $q_j$ is the probability returned by the estimator in the $j$-th child node. The problem is the second constraint. A possible solution is to do the following. Let 
+$$
+s = \sum_{j=1}^k p_j\,.
+$$
+Then, if $s < p_{pa}$ the probabilities $p_j$, for all $j = 1, \ldots, k$, should be corrected according to:
+$$
+p_j = \frac{p_j \times p_{pa}}{s}\,.
+$$
+
+
+\vspace{\sectionBefore}
+\subsection{Generalization of HSM}
+\label{sec:online_PLTs}
+\vspace{\sectionAfter}
+
+Hierarchical softmax (HSM) and conditional probability estimation trees (CPET) are only for multi-class problems. 
+FastText also uses HSM. To deal with multi-label problems it applies a very simple heuristic. It randomly picks one of the labels for a given training instance and treats the problem as multi-class. During prediction, it returns multi-class distribution and the most probable label only. It can be easily extended to return the top $k$ labels, as the tree is traversed using a priority queue search. We will later show that this approach is not consistent in general. Before that we will show that PLTs described above are no-regret generalization of HSM. First of all let us observe that PLTs over a multi-class distribution gets the same model as HSM. In sake of simplicity, we will consider a binary tree in the following.  
+Take the probabilities of sibling nodes, $l$ and $r$ in PLT:
+$$
+\prob(z_l = 1 \given z_{\pa{l}} =1, \bx) \quad \prob(z_r = 1 \given z_{\pa{r}} =1, \bx)
+$$
+Since $\pa{l} = \pa{r}$ (as $l$ and $r$ sibling nodes, they need to have the same parent), the condition in the both probabilities above is the same. Moreover, since $z_{\pa{r}} =1$ there is at least one active label in the subtree rooted in the parent of $r$ and $l$. Since we deal with multi-class classification, there is exactly one such label. This further implies that $z_l + z_r = 1$, and finally: 
+$$
+\prob(z_l = 1 \given z_{\pa{l}} =1, \bx) + \prob(z_r = 1 \given z_{\pa{r}} =1, \bx) = 1 
+$$
+In other words, the model in node $l$ is the complement of the model in node $r$, i.e., both sibling nodes can be collapsed to one node with one model with the left and right decision. This reasoning nicely generalizes furthers to $b$-ary trees,
+
+\begin{figure}[h]
+		\begin{tikzpicture}[scale = 0.75,every node/.style={scale=0.75},
+		regnode/.style={circle,draw,minimum width=1.5ex,inner sep=0pt},
+		leaf/.style={circle,fill=black,draw,minimum width=1.5ex,inner sep=0pt},
+		pleaf/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
+		pnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
+		rootnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
+		activerootnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
+		activenode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
+		activepleaf/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
+		level/.style={sibling distance=18em/#1, level distance=9ex}
+		]
+		\node (z) [rootnode] {\thickmuskip=-1.5mu $\prob(y_1\lor y_2 \lor y_3 \lor y_4 \given\bx)$}
+		child {node (a) [pnode] {\thickmuskip=-1.5mu $\prob(\overbrace{y_1 \lor y_2}^{z_l}\given \overbrace{y_1 \lor y_2 \lor y_3  \lor y_4}^{z_{\mathrm{pa}(l)}}=1, \bx)$} 
+			%child {node [label=below:{$y_1$}] (b) [pleaf,fill=lightgray] {\thickmuskip=-1.5mu $\prob(y_1\given y_1 \lor y_2=1, \bx)$} edge from parent node[above left]{}}
+			%child {node [label=below:{$y_2$}] (g) [pleaf] {\thickmuskip=-1.5mu $\prob(y_2\given y_1 \lor y_2 = 1, \bx)$} edge from parent node[above right]{}}
+			edge from parent node[above left]{}
+		}
+		child {node (j) [pnode] {$\prob(\overbrace{y_3 \lor y_4}^{z_r} \given \overbrace{y_1 \lor y_2 \lor y_3 \lor y_4}^{z_{\mathrm{pa}(r)}} = 1, \bx)$}
+		%	child {node [label=below:{$y_3$}] (k) [pleaf] {\thickmuskip=-1.5mu $\prob(y_3\given y_3 \lor y_4 = 1, \bx)$} edge from parent node[above left]{}}
+		%	child {node [label=below:{$y_4$}] (l) [pleaf] {\thickmuskip=-1.5mu $\prob(y_4\given y_3 \lor y_4 = 1,  \bx)$}
+		%		{
+		%			child [grow=right] {node (s) {} edge from parent[draw=none]
+		%				child [grow=up] {node (t) {} edge from parent[draw=none]
+		%					child [grow=up] {node (u) {} edge from parent[draw=none]}
+		%				}
+		%			}
+		%		}
+		%		edge from parent node[above right]{}
+		%	}
+			edge from parent node[above right]{}
+		};
+		\end{tikzpicture}
+\caption{PLTs generalizes HSM}
+\end{figure}
+
+
+It can be easily shown that PLTs are consistent for any multi-label probability distribution $\prob$ (including the multi-class distributions).  
+
+This is not a case of the pick-one-label heuristic used for HSM. This heuristics maps the multi-label distribution to a multi-class distribution in the following way:\footnote{We use the same notation for the probability of the $i$-th label in the multi-class distribution as the marginal probability of the multi-label distribution, since the multi-class distribution can be also coded by vectors $\by$, but with a constraint that one and only one label is active}
+$$
+\eta'(\bx, j) = \prob'(y_j = 1 \given \bx) = \sum_{\by \in \calY} y_j \frac{\prob(\by \given \bx)}{\sum_{j'=1}^m y_{j'}}
+$$
+This is specific marginalization with respect to $y_j$ in which we divide the conditional probability of  $\prob(\by \given \bx)$ by the number of ones in $\by$. To see that the pick-one-label does not lead to optimal solution let us consider a following conditional distribution for some $\bx$ given in the table below.
+\begin{center}
+\begin{tabular}{c c}
+\toprule
+labels $\by$ & probability $\prob(\by \given \bx)$ \\
+\midrule
+$\{1\}$ & 0.15 \\
+$\{2\}$ & 0.1 \\
+$\{1, 2\}$ & 0.25 \\
+$\{3\}$ & 0.3 \\
+$\{4\}$ & 0.2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The optimal top 1 prediction for this example is obviously label $1$, since the marginal probabilities are $\eta(\bx,1) = 0.4, \eta(\bx,2) = 0.35,  \eta(\bx,3) = 0.3, \eta(\bx,4) =0.2$. However, the pick-one-label heuristic will transform the original distribution to the following one: $\eta'(\bx,1) = 0.275, \eta'(\bx,2) = 0.225,  \eta'(\bx,3) = 0.3, \eta'(\bx,4) =0.2$. The predicted top label will be then label $3$, giving the regret of 0.1. 
+
+%splits the probability of labels $\{1,2\}$ to half probabilities of $\{1\}$ and $\{2\}$ yielding the following marginal probabilities: $\eta(\bx,1) = 0.275, \eta(\bx,2) = 0.225,  \eta(\bx,3) = 0.3, \eta(\bx,4) =0.2$. 
+
+It is obvious that the heuristic will change the marginal probabilities of labels (unless the distribution is multi-class), therefore in general, it will lead to inconsistent solution in terms of logistic loss. 
+Interestingly, if the labels are conditionally independent, i.e.,:
+$$
+\prob(\by \given \bx) = \prod_{j=1}^m \prob(y_i \given \bx)\,,
+$$
+the optimal solution in terms of precision@k does not change. To show this let us observe the following.
+Let $y_i$ and $y_j$ be so that $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $. Then in the summation over of $\by$s, we are interested in four different subsets of $\calY$: 
+$$
+S_{i,j}^{u,w}  =  \{\by\in \calY: y_i = u \land y_j = w\} \quad u,w \in \{0,1\} \,.
+$$
+During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by \in S^{1,1}_{i,j}$, the value of $y_t \frac{\prob(\by \given \bx)}{\sum_{t'=1}^m y_{t'}}$ is the same for both $y_i$ and $y_j$. Now, let $\by' \in S^{1,0}_{i,j}$ and $\by'' \in S^{0,1}_{i,j}$ be the same on all elements except the $i$-th and the $j$-th one. Then, because   $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $, we will have $\prob(\by' \given \bx) \ge \prob(\by'' \given \bx)$. Therefore, after mapping we will get $\eta'(\bx,i) \ge \eta'(\bx, j)$. 
+
+
+%0.1 0.2
+%0    0    0.72
+%0    1    0.18
+%1    0    0.08
+%1    1    0.02
+%
+%
+%0.09 0.019
+%
+%0.1 0.5
+%0    0    0.45
+%0    1    0.45
+%1    0    0.05
+%1    1    0.05
+
+%0.075 0.475
+
+
+
+\vspace{\sectionBefore}
+\section{PLTs for document tagging}
+\label{sec:online_PLTs}
+\vspace{\sectionAfter}
+
+
+
+\vspace{\sectionBefore}
+\subsection{Online training of PLTs}
+\label{sec:online_PLTs}
+\vspace{\sectionAfter}
+
+
+\vspace{\sectionBefore}
+\subsection{PLTs with sparse input}
+\label{sec:sparse_input}
+\vspace{\sectionAfter}
+
+
+\vspace{\sectionBefore}
+\subsection{PLTs with word embeddings}
+\label{sec:sparse_input}
+\vspace{\sectionAfter}
+
+
+\vspace{\sectionBefore}
+\subsection{PLTs with recurrent neural network}
+\label{sec:sparse_input}
+\vspace{\sectionAfter}
+
+
+\vspace{\sectionBefore}
+\subsection{PLTs with LSTM}
+\label{sec:sparse_input}
+\vspace{\sectionAfter}
+
+
+\vspace{\sectionBefore}
+\section{Empirical results}
+\label{sec:empirical_results}
+\vspace{\sectionAfter}
+
+
+
+
 
 \vspace{\sectionBefore}
 \section{Formal setup of doc tagging}
