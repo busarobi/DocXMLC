@@ -412,9 +412,10 @@ In other words, the model in node $l$ is the complement of the model in node $r$
 It can be easily shown that PLTs are consistent for any multi-label probability distribution $\prob$ (including the multi-class distributions).  
 
 This is not a case of the pick-one-label heuristic used for HSM. This heuristics maps the multi-label distribution to a multi-class distribution in the following way:\footnote{We use the same notation for the probability of the $i$-th label in the multi-class distribution as the marginal probability of the multi-label distribution, since the multi-class distribution can be also coded by vectors $\by$, but with a constraint that one and only one label is active}
-$$
+\begin{equation}
 \eta'(\bx, j) = \prob'(y_j = 1 \given \bx) = \sum_{\by \in \calY} y_j \frac{\prob(\by \given \bx)}{\sum_{j'=1}^m y_{j'}}
-$$
+\label{eqn:mapping}
+\end{equation}
 This is specific marginalization with respect to $y_j$ in which we divide the conditional probability of  $\prob(\by \given \bx)$ by the number of ones in $\by$. To see that the pick-one-label does not lead to optimal solution let us consider a following conditional distribution for some $\bx$ given in the table below.
 \begin{center}
 \begin{tabular}{c c}
@@ -436,14 +437,18 @@ The optimal top 1 prediction for this example is obviously label $1$, since the 
 It is obvious that the heuristic will change the marginal probabilities of labels (unless the distribution is multi-class), therefore in general, it will lead to inconsistent solution in terms of logistic loss. 
 Interestingly, if the labels are conditionally independent, i.e.,:
 $$
-\prob(\by \given \bx) = \prod_{j=1}^m \prob(y_i \given \bx)\,,
+\prob(\by \given \bx) = \prod_{j=1}^m \prob(y_j \given \bx)\,,
 $$
 the optimal solution in terms of precision@k does not change. To show this let us observe the following.
-Let $y_i$ and $y_j$ be so that $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $. Then in the summation over of $\by$s, we are interested in four different subsets of $\calY$: 
+Let $y_i$ and $y_j$ be so that $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $. Then in the summation over of $\by$s in~(\ref{eqn:mapping}), we are interested in four different subsets of $\calY$: 
 $$
 S_{i,j}^{u,w}  =  \{\by\in \calY: y_i = u \land y_j = w\} \quad u,w \in \{0,1\} \,.
 $$
-During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by \in S^{1,1}_{i,j}$, the value of $y_t \frac{\prob(\by \given \bx)}{\sum_{t'=1}^m y_{t'}}$ is the same for both $y_i$ and $y_j$. Now, let $\by' \in S^{1,0}_{i,j}$ and $\by'' \in S^{0,1}_{i,j}$ be the same on all elements except the $i$-th and the $j$-th one. Then, because   $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $, we will have $\prob(\by' \given \bx) \ge \prob(\by'' \given \bx)$. Therefore, after mapping we will get $\eta'(\bx,i) \ge \eta'(\bx, j)$. 
+During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by \in S^{1,1}_{i,j}$, the value of 
+$$
+y_t \frac{\prob(\by \given \bx)}{\sum_{t'=1}^m y_{t'}} = y_t \frac{\prod_{t'=1}^m \prob(y_{t'} \given \bx)}{\sum_{t'=1}^m y_{t'}}
+$$ 
+is the same for both $y_i$ and $y_j$. Now, let $\by' \in S^{1,0}_{i,j}$ and $\by'' \in S^{0,1}_{i,j}$ be the same on all elements except the $i$-th and the $j$-th one. Then, because   $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $, we will have $\prob(\by' \given \bx) \ge \prob(\by'' \given \bx)$. Therefore, after mapping we will get $\eta'(\bx,i) \ge \eta'(\bx, j)$. 
 
 
 %0.1 0.2
