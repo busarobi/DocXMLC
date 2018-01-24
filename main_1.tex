@@ -668,7 +668,7 @@ Top-k labels with respect to the estimated marginals
 
 Expected regret for Prec@k conditioned on $\bx$ 
 \[
-\mbox{Reg}_{P@k} (h, \bx) = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in \hat{M}_k(\bx)} h(\bx, j) \eta(\bx , j )
+\mbox{Reg}_{P@k} (h, \bx) = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j )
 \]
 
 We shall focus on multi-label classifiers in the following form:
@@ -681,10 +681,11 @@ In this case the Prec@k regret is $[0,1]$.
 The error for marginal estimates is denoted by $m_i = \vert \eta (\bx ,i ) - \hat{\eta} (\bx ,i )\vert$. With this we can upper bound 
 \begin{align}
 \mbox{Reg}_{P@k} (h, \bx) 
-  & = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in \hat{M}_k(\bx)} h(\bx, j) \eta(\bx , j ) \notag \\ 
-  & \le \sum_{i \in \hat{M}_k(\bx)} (\eta (\bx ,i ) + m_k )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
-  & = \sum_{i \in \hat{M}_k(\bx)} m_i \notag \\
-  & \le k\max_{i \in [m]} m_i
+  & = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
+  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
+  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
+  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
+  & \le 2k\max_{i \in [m]} m_i
 \end{align}
 
 \section{Probabilistic label trees}
