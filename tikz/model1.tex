@@ -1,0 +1,34 @@
+
+%\usepackage{tikz}
+%\usetikzlibrary{positioning,calc}
+%  \tikzset{}
+%  }
+\begin{tikzpicture}[layer/.style = {rectangle, draw, minimum height=0.5cm, minimum width=7cm},
+xinput/.style = {rectangle, draw, minimum height=0.5cm, minimum width=1cm}]
+        %,yshift=0.5cm
+    \node (layerembedding)[layer]{embedding};
+    \node (layertagger)[layer,above of=layerembedding]{tagger};
+    \node (layeroutput)[layer,above of=layertagger]{output};
+    
+    \node (x1)[xinput,below of=layerembedding, xshift=-3cm]{$x_1$};
+    \node (x2)[xinput,below of=layerembedding, xshift=-1.5cm]{$x_2$};
+    \node (x3)[xinput,below of=layerembedding, xshift=1.5cm]{$x_{d-1}$};
+    \node (x4)[xinput,below of=layerembedding, xshift=3cm]{$x_{d}$};
+    
+    \draw[->] ($(layerembedding.north west)!0.5!(layerembedding.north east)$) -- node[below] {} ($(layertagger.south west)!0.5!(layertagger.south east)$);
+    \draw[->] ($(layertagger.north west)!0.5!(layertagger.north east)$) -- node[below] {} ($(layeroutput.south west)!0.5!(layeroutput.south east)$);
+    
+    
+    \draw[->] ($(x1.north west)!0.50!(x1.north east)$) -- node[below] {} ($(layerembedding.south west)!0.07142857142!(layerembedding.south east)$);
+    
+    
+    \draw[->] ($(x2.north west)!0.50!(x2.north east)$) -- node[below] {} ($(layerembedding.south west)!0.28571428571!(layerembedding.south east)$);
+    
+    
+    \draw[->] ($(x3.north west)!0.50!(x3.north east)$) -- node[below] {} ($(layerembedding.south west)!0.71428571428!(layerembedding.south east)$);
+    
+    
+    \draw[->] ($(x4.north west)!0.50!(x4.north east)$) -- node[below] {} ($(layerembedding.south west)!0.92857142857!(layerembedding.south east)$);
+    % more arrows here
+\end{tikzpicture}
+%\end{document}

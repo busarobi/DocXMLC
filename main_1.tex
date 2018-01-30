@@ -54,7 +54,8 @@
 \usepackage[subtle,mathspacing=normal, tracking=normal]{savetrees}
 \usepackage{microtype}
 
-
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% For theo
@@ -136,6 +137,9 @@
 \newcommand\R{\mathbb{R}}   % for the real numbers
 \newcommand\N{\mathbb{N}}   % for the natural numbers
 
+
+\newcommand{\leaf}[1]{\textrm{leaf}(#1)}
+%\newcommand{\Path}[1]{\mathrm{Path}(#1)}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -463,19 +467,32 @@ During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by
 
 %0.075 0.475
 
+\vspace{\sectionBefore}
+\section{Online training of PLTs}
+\label{sec:online_PLTs}
+\vspace{\sectionAfter}
 
+\input{algo_plt_train_online}
+
+The online training algorithm for PLTs is given in Algorithm \ref{algo:plt-train}. Let $(\bx, \by)$ be a training example. The online update of a PLT requires finding the sum, denoted with  $N_{path}$, of the sets of nodes on $\Path{y_i}$ for all $y_i \in \mathcal{P}(\by)$. The set of neighbors of nodes in $N_{path}$ that are not in $N_{path}$ is denoted with $N_{\lnot path}$. All nodes in $N_{path}$ are updated with $(\bx, 1)$, and all the nodes in $N_{\lnot path}$ with $(\bx, 0)$. Described learning algorithm can be applied to many different underlying models of document resulting in representation $\bx$.
 
 \vspace{\sectionBefore}
 \section{PLTs for document tagging}
-\label{sec:online_PLTs}
+\label{sec:tagging_PLTs}
 \vspace{\sectionAfter}
 
+PLTs no-regret tagging method can be combined with various underlying document representations. In this section we briefly describe sample applications of this idea for document tagging. 
+The described approaches differ mainly in the representation of the document, and therefore the architecture of the entire model. In principle the PLTs works the same in each of them, however in certain cases the application must be suited for the architecture.
+
+%Input is given in form of document and set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\cD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
+
+All the examples consist of two modules: text representation and tagging. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n}$ is a (not necessarily) parametric function whose input is a document and its output is the vector representation of the document. The dimension of representation space is $d$. 
+
+The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n} \rightarrow  \{ 0 , 1 \}^m$. 
+
+%In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of the given document $\bd_i$ where $i_j$ is the index of $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
 
 
-\vspace{\sectionBefore}
-\subsection{Online training of PLTs}
-\label{sec:online_PLTs}
-\vspace{\sectionAfter}
 
 
 \vspace{\sectionBefore}
@@ -483,11 +500,27 @@ During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
+In the simplest case, the text representation module can be a bag-of-words, in which case $d=N$. However, on average the number of non-zero features $\bar{\mathrm{nnz}(\bx)} << N$ 
+The training is a direct application of training Algorithm \ref{algo:plt-train}.
+This setting usually requires use of feature hashing to make the online training memory requirements feasible. 
 
 \vspace{\sectionBefore}
 \subsection{PLTs with word embeddings}
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
+
+Instead of a bag-of-words sparse document representation, a dense representation can be used. 
+One possibility is to use pretrained word embeddings, like word2vec \cite{word2vec} or glove \cite{glove}. This idea is presented on Figure \ref{pic:model-embedding}. The document representation can be created from the word representations in many ways, i.e, as an average \cite{!} or as the maximum value of each element \cite{!}.
+
+It is possible to train the word embeddings simultaneously with the tagger module, but such approach leads to serious lengthening of the training time \cite{!!} and often to worse results\cite{!!}. This is not surprising since the pretrained word embeddings represent knowledge transfered from larger text corpora then the tagging datasets.
+
+\begin{figure}
+	\begin{center}
+		\input{tikz/model1}
+	\end{center}
+	\caption{Model architecture}
+	\label{pic:model-embedding}
+\end{figure}
 
 
 \vspace{\sectionBefore}
@@ -495,12 +528,14 @@ During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
+\textbf{TODO: ??}
 
 \vspace{\sectionBefore}
 \subsection{PLTs with LSTM}
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
+\textbf{TODO: ??}
 
 \vspace{\sectionBefore}
 \section{Empirical results}
