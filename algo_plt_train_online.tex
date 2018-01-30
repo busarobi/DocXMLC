@@ -1,0 +1,41 @@
+
+
+\begin{algorithm}[]
+	\caption{Incremental learning of a \Algo{PLT}}
+	\label{algo:plt-train}
+	\begin{algorithmic}[1]
+		\State \textbf{input:} a label tree $T$, an online learning algorithm $A_{\textrm{online}}$, and a training set $\mathcal{S}$
+		\State \textbf{output:} a set of probability estimation classifiers $\mathcal{G}$
+		\State $\mathcal{G} = \emptyset$
+		\For{each node $t \in T$} 
+		\State $\heta_T(\cdot,t) = \textsc{nc}()$  
+		\State  $\mathcal{G} = \mathcal{G} \cup \heta_T(\cdot,t) $  
+		\EndFor
+		
+		\For{each instance $(\bx, \by) \in \mathcal{S}$}
+		
+		\If{$|\mathcal{P}(\by) = 0$}
+		\State $N_{\textrm{path}} = \emptyset$
+		\State ${N}_{\lnot \textrm{path}} = \{r_T\}$
+		\Else
+		
+		\State $N_{\textrm{leaf}} = \{\leaf{\ell_i} : \ell_i \in \mathcal{P}(\by)\}$
+		\State $N_{\textrm{path}} = \bigcup\limits_{i \in {N}_{\textrm{leaf}} } \Path{i}$
+		%\State ${N}_{\lnot path} = \textsc{Neighbors}({N}_{path})$ \Comment{a set of neighbor nodes of ${N}$ that are not in ${N}$}
+		\State ${N}_{\lnot \textrm{path}} = \{t \in T: \exists_{t' \in N_{\textrm{path}}} \pa{t} = \pa{t'}\} \setminus N_{\textrm{path}}$
+		
+
+		\EndIf
+		
+		\For{$t \in \mathcal{N}_{\textrm{path}}$}
+		$\heta_T(\cdot,t) = A_{\textrm{online}}(\heta_T, \bx, 1)$
+		\EndFor
+		
+		\For{$t \in \mathcal{N}_{\lnot \textrm{path}}$}
+		$\heta_T(\cdot,t) = A_{\textrm{online}}(\heta_T, \bx, 0)$
+		\EndFor
+		
+		\EndFor		
+		\State \textbf{return} a set of probability estimation classifiers $\mathcal{H}$. 
+	\end{algorithmic}
+\end{algorithm} 

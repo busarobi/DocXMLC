@@ -1,0 +1,19 @@
+
+\begin{tikzpicture}[block/.style = {rectangle, draw, minimum height=0.5cm, minimum width=1cm}
+]
+%,yshift=0.5cm
+
+
+\node (layerinput)[block]{$\mathbf{d}$};
+\node (layerrepresentation)[block,right of=layerinput, xshift=1cm, blue]{$f(\mathbf{d})$};
+\node (layertagger)[block,right of=layerrepresentation, xshift=1cm, red]{$g(\bx)$};
+\node (layeroutput)[block,right of=layertagger, xshift=1cm]{$\by$};
+
+%\draw [red, thick, aligned dash] (-3.75,0.48) rectangle (3.75,-1.5);
+
+\draw[->] ($(layerinput.north east)!0.5!(layerinput.south east)$) -- node[below] {} ($(layerrepresentation.north west)!0.5!(layerrepresentation.south west)$);
+\draw[->] ($(layerrepresentation.north east)!0.5!(layerrepresentation.south east)$) -- node[above]{$\bx$} ($(layertagger.north west)!0.5!(layertagger.south west)$);
+\draw[->] ($(layertagger.north east)!0.5!(layertagger.south east)$) -- node[below] {} ($(layeroutput.north west)!0.5!(layeroutput.south west)$);
+
+\end{tikzpicture}
+%\end{document}
