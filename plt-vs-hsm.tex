@@ -373,7 +373,7 @@ The general idea of PLTs is relatively simple.
 To introduce \Algo{PLT}s more formally, denote a tree by $T$ and the root of the tree $r(T)$. In general, $T$ can be of any form; here, we consider trees of height $k$ and degree $b$. 
 The leaves of $T$ correspond to labels. We denote a set of leaves of a (sub)tree rooted in node $t$ by $L(t)$. %, and the internal nodes of the subtree by $N(t)$. %If $n$ is the root of $T$ then we write $N$. 
 %The root is also an internal node, i.e., $t \in N(t)$. 
-The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to the $j$\/th leaf is denoted by $\Path{j}$. %and the internal nodes on this path by $\Path{i,N}$.
+The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or leaf node, is denoted by $\Path{t}$. %and the internal nodes on this path by $\Path{i,N}$.
 
 \Algo{PLT}s use a path from a root to the $j$\/th leaf to estimate posteriors $\eta(\bx, j)$. %, similarly as in probabilistic classifier trees. 
 %In other words, we divide the process of estimating $\Pr(y_i \given \bx)$ to $k+1$ stages, each corresponding to a level of the tree $T$. 
@@ -473,17 +473,52 @@ Let us finally underline that  \Algo{PLT}s obey strong theoretical guarantees. I
 \label{sec:online_PLTs}
 \vspace{\sectionAfter}
 
-The resulting marginal probabilities of PLT, or in general all node probability models, may not correspond to a valid underlying distribution. For example, it is possible that a parent node will predict a probability of at least 1 positive label in its subtree being greater than a sum of similar probabilities of its children. So, in general the constraints in the $b$-ary tree should be of the following type:
-$$p_{pa} \ge p_j\,,~j=1,\ldots, k\,, \quad \mathrm{and} \quad  p_{pa} \le \sum_{j=1}^k p_j\,, $$
-where $p_pa$ is the probability in the parent node and $p_j$ is the probability in its$ $j-th child node.
-The first constraint is satisfied by the algorithm since $p_j = p_{pa} \times q_j$, where $q_j$ is the probability returned by the estimator in the $j$-th child node. The problem is the second constraint. A possible solution is to do the following. Let 
+The resulting marginal probabilities of PLT, or in general all node probabilities, may not correspond to a valid underlying multi-label distribution. Let us consider a node $t$ and the estimated probability of at least 1 positive label in its subtree: 
 $$
-s = \sum_{j=1}^k p_j\,.
+\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)
 $$
-Then, if $s < p_{pa}$ the probabilities $p_j$, for all $j = 1, \ldots, k$, should be corrected according to:
+This probability in case of a leaf node $j$ is just the marginal probability $\heta(\bx, j)$ of the label $j$ to be positive.
+In general, the estimated probabilities for a non-leaf node $t$ and its children nodes should satisfy the following constraints: 
+\begin{eqnarray*}
+&& \heta(\bx, t)  \ge \heta(\bx, c)\,, \forall c \in \Children{t}\,, \\
+&& \heta(\bx, t)  \le \sum_{c \in \Children{t}}  \heta(\bx, c) \,. 
+\end{eqnarray*}
+The first constraint is trivially satisfied by the algorithm since 
 $$
-p_j = \frac{p_j \times p_{pa}}{s}\,.
+\heta(\bx, c) = \heta(\bx, t) \heta_T(\bx, c)\,,\mathrm{~and~}  \heta_T(\bx, c) \in [0,1]\,.
+$$ 
+The problem is the second constraint. A possible solution is to do the following simple trick. Let 
 $$
+s = \sum_{c \in \Children{t}} \heta(\bx, c) \,.
+$$
+Then, if $s < \heta(\bx, t)$ the probabilities $\heta(\bx, c)$, for all $c \in \Children{t}$, should be corrected according to:
+$$
+\heta(\bx, c) := \heta(\bx, c) \frac{\heta(\bx, t)}{s}\,.
+$$
+Another option is:
+$$
+\heta(\bx, c) := \heta(\bx, c) + \frac{s - \heta(\bx, t)}{|\Children{t}|}\,.
+$$
+
+%In general the constraints in a $b$-ary tree for a node $t$ and its children nodes should be of the following type:
+%\begin{eqnarray*}
+%&& \prod_{j \in \Path{t}} \heta_T(\bx, j) \ge \prod_{j \in \Path{c}} \heta_T(\bx, j)\,,~c \in \Children{t}\,, \\
+%&& \prod_{j \in \Path{t}} \heta_T(\bx, j) \le \sum_{c \in \Children{t}}  \prod_{j \in \Path{c}} \heta_T(\bx, c) \,, 
+%\end{eqnarray*}
+%where $t$ is a non-leaf node. %$p_pa$ is the probability in the parent node and $p_j$ is the probability in its$ $j-th child node.
+%The first constraint is satisfied by the algorithm since 
+%$$
+%\prod_{j \in \Path{c}} \heta_T(\bx, j) = \heta_T(\bx, c) \prod_{j \in \Path{\pa{c}}} \heta_T(\bx, j)\,.
+%$$ 
+%%
+%The problem is the second constraint. A possible solution is to do the following simple trick. Let 
+%$$
+%s = \sum_{j=1}^k p_j\,.
+%$$
+%Then, if $s < p_{pa}$ the probabilities $p_j$, for all $j = 1, \ldots, k$, should be corrected according to:
+%$$
+%p_j = \frac{p_j \times p_{pa}}{s}\,.
+%$$
 
 
 \vspace{\sectionBefore}
