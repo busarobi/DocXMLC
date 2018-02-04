@@ -180,47 +180,69 @@
 \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 
 \begin{abstract}
-Probabilistic label trees (PLTs) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. It has already been shown that the basic variant of PLTs, based on sparse input vectors, is competitive to the state of the art approaches to XMLC, such as FastXML. In this paper, we theoretically show that PLTs are no-regret generalization of hierarchical softmax (HSM) to multi-label setting. HSM is commonly used in deep networks to deal with a large number of labels in the multi-class setting, mainly in natural language processing problems. We will also show that an existing adaptation of HSM, used for example in FastText, is not consistent. Finally, we use PLT in three different deep networks architectures for text classification, namely feature-embeddings (FastText-like representation), recurrent neural networks, and LSTMs, and show outstanding empirical results of them.
+Probabilistic label trees (PLTs) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. 
+They follow the label tree approach in which each label is assigned to one and only one path from the root to a leaf. %Already a basic variant of PLTs, based on sparse input vectors, has been shown to be competitive to the state of the art approaches for XMLC, such as FastXML. 
+%
+In this paper, we theoretically show that PLTs are no-regret multi-label generalization of hierarchical softmax (HSM), a commonly used approach in deep networks to speed up computations in case of a large output space (such as in natural language processing problems). We also prove that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is not consistent. Moreover, we empirically show that HSM with this heuristic is always worse than PLTs by a significant margin. Finally, we report the results of PLTs used with word-embeddings that are competitive to the results of more complex deep networks on a selection of XMLC benchmark datasets. 
+%
+%Hierarchical softmax is another label-tree approach, commonly used in deep networks to speed up computations in case of a large output sample, for example in the natural language processing problems. HSM has been, however, introduced for multi-class problems. In case of multi-label problems, a simple \emph{pick-one-label} heuristic is often used (for example, in the FastText library). Unfortunately, as we show in this paper this heuristic is suboptimal. 
+%%
+%The main theoretical contribution of this paper is the result in which show that PLTs are no-regret generalization of HSM to multi-label problems. We empirically show that PLTs are always better than HSM on multi-label problems by a significant margin. Moreover, PLTs used with word-embeddings achieve outstanding results being comparable to other more complex deep networks. 
+%%
+%In this paper, we theoretically show that PLTs are no-regret multi-label generalization of hierarchical softmax (HSM). HSM is commonly used in deep networks to speed up computations in case of a large output space, for example in the natural language processing problems. We also show that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is in general not consistent. Moreover, as we empirically show PLTs are always better than HSM on multi-label problems by a significant margin. Moreover, PLTs used with word-embeddings achieve outstanding results being comparable to other more complex deep networks. 
+
+% We will also show that an existing adaptation of HSM, used for example in FastText, is not consistent. Finally, we use PLT in three different deep networks architectures for text classification, namely feature-embeddings (FastText-like representation), recurrent neural networks, and LSTMs, and show outstanding empirical results of them.
 \end{abstract}
 
 \section{Introduction}
-\label{sec:formal}
+\label{sec:introduction}
 
-\begin{itemize}
-\item PLT, 
-\item proper generalization of HSM, 
-\item consistency of PLT, 
-\item inconsistency of FastText approximation, 
-\item correction of probability estimates, 
-\item PLT with sparse input, 
-\item PLT with FastText embeddings, 
-\item PLT with RNN, 
-\item PLT with LSTM.
-\end{itemize}
+%\begin{itemize}
+%\item PLT, 
+%\item proper generalization of HSM, 
+%\item consistency of PLT, 
+%\item inconsistency of FastText approximation, 
+%\item correction of probability estimates, 
+%\item PLT with sparse input, 
+%\item PLT with FastText embeddings, 
+%\item PLT with RNN, 
+%\item PLT with LSTM.
+%\end{itemize}
 
-Extreme multi-label classification ...
+Many current applications of machine learning are characterized not only by a vast number of training examples and features, but also by a very large number of classes (labels) to which examples can be assigned. The learning problems of this type are often referred to as \emph{extreme classification}. They can be either multi-class or multi-label. Examples of such problems are photo and video annotation~\citep{Deng_et_al_2011} (e.g., used for image search engines), tagging of text documents~\citep{Dekel_Shamir_2010} (e.g., automatic categorization of Wikipedia articles), recommendation of bid words for online ads~\citep{Prabhu_Varma_2014}, or prediction of the next word in a sentence~\citep{Mikolov_et_al_2013}.
 
-In this paper we discuss the problem of document tagging or text classification ...
+To be more specific, consider a problem of tagging Wikipedia articles. In this case, each article is an instance/example, words appearing in the text of articles can be considered as features, and categories to which articles are assigned as labels. By creating a data set from the current content of Wikipedia, we very easily end up with an enormous problem with millions of examples and features, but also with more than one million of labels, because that many categories are used in Wikipedia today. 
 
-PLT ... 
+The challenges posed by the problems at that scale have opened a new line of research within machine learning. It easy to notice that the BR approach (or 1-vs-All, in general) which scales linearly with the number of labels is too costly in the extreme setting. Therefore, there is a need for new algorithms being sublinear in time and space. 
 
-In a nutshell, \Algo{PLT}s are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011}, in which each leaf node corresponds to one label. Classification of a test example relies on a sequence of decisions made by node classifiers, leading the test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether or not to continue the path by moving to the child nodes. This is different from typical left/right decisions made in tree-based classifiers.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. \Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure. %We introduce \Algo{PLT} in more detail below. 
+In this paper we focus on extreme multi-label classification (XMLC) of text documents. These problems are characterized by sparse textual input, usually represented in the form of a bag-of-words. 
+Recently, ... word-embeddings. 
 
-PLT vs. HSM
 
-\Algo{PLT}s share similarities with conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b} and probabilistic classifier chains~\cite{Dembczynski_et_al_2010c}, while being suited to estimate marginal posterior probabilities $\eta(\bx,j)$. They are also similar to Homer~\cite{Tsoumakas_et_al_2008}, which transforms training examples in the same way but does not admit a probabilistic interpretation. Let us also remark that a similar concept is known in neural networks and natural language processing under the name of hierarchical softmax~classifiers \cite{Morin_Bengio_2005}; however, it has not been used in a multi-label scenario.
+Probabilistic label trees (PLTs)~\citep{Jasinska_et_al_2016} have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. Already a basic variant of PLTs, based on sparse input vectors, has been shown to be competitive to the state of the art approaches for XMLC, such as FastXML~\citep{Prabhu_Varma_2014}. 
 
-We will show that PLTs are no-regret generalization of HSM to multi-label classification. 
+In a nutshell, \Algo{PLTs} are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011} in which each label is assigned to one and only one path from the root to a leaf. Classification of a test example relies on a sequence of decisions made by node classifiers, leading the test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether or not to continue the path by moving to the child nodes. This is different from typical left/right decisions made in tree-based classifiers.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. 
+
+\Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure.
+
+As we will show in this paper \Algo{PLT}s are no-regret generalization of hierarchical softmax (HSM)~\cite{Morin_Bengio_2005} (and also of conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b}) to multi-label classification. HSM is a popular approach used in deep networks to speed up computations in case of a large output space. For example, they are used in natural language processing problems such as language modeling.  
+
+In case of multi-class distribution \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for the 0/1 and logistic loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification \Algo{PLT}s  lead to the consistent solution for logistic loss, Hamming loss and precision@k as we will prove it in this paper. To deal with multi-label problems, HSM are often used with the \emph{pick-one-label}. We will show that this heuristic leads to suboptimal results for these three multi-label performance measures. The popularity of this heuristic may, however, be caused by the fact that in case of label independence it leads to optimal solution. In the empirical studies, we show however that HSM with this heuristic is always worse than PLTs by a significant margin. 
+
+Finally, we also discuss how PLTs can be combined with word-embeddings and lead to very competitive results to the ones obtained by more complex deep networks on a selection of XMLC benchmark datasets. 
+
+The paper is organized  as follows.
+
 
 \vspace{\sectionBefore}
 \section{Related work}
 \vspace{\sectionAfter}
 
-\Algo{PLT}s share similarities with conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b} and probabilistic classifier chains~\cite{Dembczynski_et_al_2010c}, while being suited to estimate marginal posterior probabilities $\eta(\bx,j)$. They are also similar to Homer~\cite{Tsoumakas_et_al_2008}, which transforms training examples in the same way but does not admit a probabilistic interpretation. Let us also remark that a similar concept is known in neural networks and natural language processing under the name of hierarchical softmax~classifiers \cite{Morin_Bengio_2005}; however, it has not been used in a multi-label scenario.
+Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are also based on these classical approaches, significantly extending them by a number of new tricks. If the number of labels is of order of thousands then an independent model for each class can be trained. This is the so-called {1-vs-All} approach. Unfortunately, this approach scales linearly with the number of labels, which for many applications is too costly. The extreme classification algorithms try to improve the training and prediction time, and/or the model size over the standard methods. The algorithms can be categorized to several groups based on the used paradigm such as sparsity, low-rank approximation, tree-based search, or label filtering.
 
-In a nutshell, \Algo{PLT}s are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011}, in which each leaf node corresponds to one label. Classification of a test example relies on a sequence of decisions made by node classifiers, leading the test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether or not to continue the path by moving to the child nodes. This is different from typical left/right decisions made in tree-based classifiers.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. \Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure. %We introduce \Algo{PLT} in more detail below. 
+In this paper we focus on tree-based algorithms, therefore we discuss them more deeply here. There are two distinct types of tree-based algorithms: decision trees and label-trees. The former type follow the idea of classical decision trees. The direct use of available decision tree algorithms, however, can be very costly \citep{Agrawal_et_al_2013}. Therefore, the FastXML algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. It uses sparse linear classifiers in the internal tree nodes to split the feature space. The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. They also use an ensemble of trees to improve the overall accuracy. It is worth to underline that a leaf of the tree covers only a small region of the feature space, i.e., only a small fraction of training examples is associated with the leaf. This implies that the number of active labels in this leaf is also small (i.e., it is equal to the total number of unique labels assigned to training examples in this leaf). As a result, classification of test examples can be proceeded in a very effective way. FastXML, as well as the majority of decision tree algorithms, work in a batch mode. \citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm that also uses linear classifiers in the internal nodes of the tree.
 
-
+In the label trees~\citep{Bengio_et_al_2010} each label corresponds to one and only one path from the root to a leaf. Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@k and macro-averaging F-measure.
 
 \vspace{\sectionBefore}
 \section{Problem statement}
