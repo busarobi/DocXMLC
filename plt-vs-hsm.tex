@@ -250,14 +250,15 @@ In the label trees~\citep{Bengio_et_al_2010} each label corresponds to one and o
 \vspace{\sectionAfter}
 
 
-Let $\calX$ denote an instance space, and let $\calL = \{\lambda_1,\lambda_2, \ldots,\lambda_m\}$ be a finite set of $m$ class labels.
+Let $\calX$ denote an instance space, and let $\calL = \{\lambda_1,\lambda_2, \ldots,\lambda_m\}$ be a finite set of $m$ class labels. 
+In the extreme setting $m$ can be of order $10^5$ and higher.
 We assume that an instance $\bx \in \calX$ is associated with a subset of
 labels $\calL_{\bx} \in 2^\calL$; this subset is often called the set of relevant labels, while the complement
 $\calL \backslash \calL_{\bx}$ is considered as irrelevant for $\bx$. We assume $m$ to be a large number (e.g., $\ge 10^5$), but the size of the set of relevant labels $\calL_{\bx}$ is much smaller than $m$, i.e., $|\calL_{\bx}| \ll m$. We identify a set $\calL_{\bx}$ of relevant labels with a binary (sparse)
 vector $\by = (y_1,y_2, \ldots, y_m)$, in which $y_i = 1 \Leftrightarrow \lambda_i \in \calL_{\bx}$. By $\calY = \{0, 1\}^m$ we denote the set of all
 possible labellings.
 We assume that observations $(\bx, \by)$ are generated independently and identically according to the
-probability distribution $\Pr(\bX = \bx,\bY = \by)$ (denoted later by $\Pr(\bx, \by)$) defined on $\calX \times \calY$. We denote the marginal distribution $\Pr(\bx,y_i)$ by $\Pr_i$.
+probability distribution $\Pr(\bX = \bx,\bY = \by)$ (denoted later by $\Pr(\bx, \by)$) defined on $\calX \times \calY$. We denote the marginal distribution of the $i$-th label by $\Pr(\bx,y_i)$. % by $\Pr_i$.
 
 The problem of MLC can be defined as finding a  \emph{classifier} $\bh(\bx) = (h_1(\bx), h_2(\bx),\ldots, h_m(\bx))$, 
 which in general can be defined as a mapping $\calX \rightarrow \calR^m$, that minimizes the \emph{expected loss} (or \emph{risk}):  
@@ -274,117 +275,65 @@ The \emph{regret} of a classifier $\bh$ with respect to $\ell$ is defined as:
  $$
 \reg_\ell(\bh) = \loss_\ell(\bh) - \loss_\ell(\bh_{\ell}^*) = \loss_\ell(\bh) - \loss_\ell^* \,.
 $$
-The regret quantifies the suboptimality of $\bh$ compared to the optimal classifier $\bh^*$. The goal of MLC could then be defined as finding $\bh$ with a small regret, ideally equal to zero.
+The regret quantifies the suboptimality of $\bh$ compared to the optimal classifier $\bh^*$. The goal could be then defined as finding $\bh$ with a small regret, ideally equal to zero.
 
-Let us consider the label-wise log loss:
-\begin{eqnarray*}
-& & \ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(h_j(\bx))  \\
-& & =  -\sum_{j=1}^m y_j \log(h_j(\bx)) + (1-y_j) \log(1 - h_j(\bx)) 
-\end{eqnarray*}
-It can be easily shown that minimization of this loss leads to estimation of the marginal probabilities, $\eta_j(\bx) = \Pr(y_j = 1 \given \bx)$. Let us derive the expected loss for a single $\bx$ (i.e., the so-called \emph{conditional risk}):
-\begin{eqnarray*}
-& & \mathbb{E} \ell_{\log}(\bh \given \bx) =  \sum_{j=1}^m \mathbb{E}{\ell_{\log}(y, h_j(\bx))} = \sum_{j=1}^m \loss_{\log}(h_j(\bx)) \\ 
-& & =  -\sum_{j=1}^m \eta_j(\bx) \log(h_j(\bx)) + (1-\eta_j(\bx) ) \log(1 - h_j(\bx)) 
-\end{eqnarray*}
+In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \Pr(y_j = 1 \given \bx)$. As we will later show marginal probabilities are a key element to optimally solve extreme classification for many complex performance measures, like Hamming loss, precision@k, and macro-F measure. 
+To obtain the marginal probabilities one can use the label-wise log loss:
+$$
+\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(h_j(\bx)) \,
+$$
+where 
+$$
+\ell_{\log}(h_j(\bx)) = y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) 
+$$
+The expected loss for a single $\bx$ (i.e., the so-called \emph{conditional risk}) in terms of the label-wise log loss is:
+$$
+\mathbb{E} \ell_{\log}(\bh \given \bx) =  \sum_{j=1}^m \mathbb{E}{\ell_{\log}(y, h_j(\bx))} = \sum_{j=1}^m \loss_{\log}(h_j(\bx))\,. %\\ 
+$$
 Therefore, the pointwise optimal prediction for the $j$-th label is:
-\begin{eqnarray*}
- h_j^*(\bx)  =  \argmin_h -\eta_j(\bx) \log(h) - (1-\eta_j(\bx) ) \log(1 - h) & &\\
-=   \eta_j(\bx) & & 
-\end{eqnarray*}
+$$
+ h_j^*(\bx)  = \argmin_h \loss_{\log}(h_j(\bx)) = \eta(\bx, j) \,,
+$$
+since $\loss_{\log}(h_j(\bx))$ is given by:
+$$
+-\eta(\bx,j) \log(h_j(\bx)) - (1-\eta(\bx,j) ) \log(1 \!-\! h_j(\bx)) \,.
+$$
 
+As shown in~\citep{Dembczynski_et_al_2010}, the Hamming loss is minimized by 
+$$
+h_j(\bx) = \assert{\eta(\bx,j) > 0.5} \,.
+$$
+Macro F-measure is also optimized by predictions based on marginal probabilities. As proven in~\citep{}  to maximize the macro F-measure it suffices to find an optimal threshold on posteriors for each label separately. 
 
-
-
-We will recall now some results that show that based on the marginal probabilities we can optimally solve the extreme classification problem for many complex performance measures, like Hamming loss, precision@k, and macro-F measure. 
-
-
-In the following, we aim at estimating the marginal probabilities. This can be obtained by running the vanilla 1-vs-All approach. Since this approach is too costly in the extreme setting, we introduce an efficient algorithm based on the so-called label trees. 
-
-
-
-Unfortunately, the Hamming loss is not well-suited to the extreme setting
-in which on average only few labels are positive from a large number of all available ones.
-Additionally, the large number of label forces a trade-off between time and space complexity
-(which includes training and prediction time, and also the size of the model
-which all grow according to the algorithm's complexity) and the accuracy for every possible label.
-This makes Hamming loss not very well-suited for extreme classification problems.
-Moreover, an all-zero classifier (i.e., a classifier predicting always zero) has, in fact, a very small Hamming loss.
-Therefore, the ranking-based evaluation measures are often used in the extreme classification setting.
-%<MW:new>
-Since in many extreme multi-label learning applications it is more important to make relevant predictions
-for top-$k$ positions, rather attempting to predict all the labels, which may be much more than $k$.
-%</MW:new>
-
-In this thesis, we focus on \textbf{Precision$@k$ ($P@k$)}, which reports precision at the $k$-th position
-in the ranking of the most relevant labels. It is defined as:
-%
+In the following, we focus on precision@k which is a standard measure in extreme classification. Formally, it is defined as:
 \begin{equation}
-%\mathrm{Precision}@k = \frac{1}{k} \sum_{\ell \in rank_k(\hy)} \by_l,
-%\mathrm{Precision}@k = \frac{1}{k} \sum_{\ell \in rank_k(\hy)} \assert{y_i = 1},,
-\mathrm{Precision}@k = \frac{1}{k} \sum_{i=1}^k \assert{y_{r_i(\hy)} = 1},
+\mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1},
 \label{eqn:precision-at-k}
 \end{equation}
-%where $rank_k(\hy)$ is a set of top-$k$ labels in some ranking of labels $\mathcal{L}$.
-where $r_i(\hat\by)$ is an index of label on $i$-th position in some ranking of labels $\mathcal{L}$.
+where $\calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
 %
+The loss function for precision$@k$ can be defined as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:
+\begin{eqnarray*}
+\loss_{P@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
+& = & 1 - \sum_{\by \in \calY} \Pr(\by \given \bx) \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \sum_{\by \in \calY} \Pr(\by \given \bx) \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \eta(\bx,j) \,.
+\end{eqnarray*}
+%
+The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
+with the highest conditional probabilities $\eta(\bx,j)$.
 
-%\textbf{KD: Spróbuj formalnie pokazać ryzyko oraz optymalny klasyfikator dla tej miary}
+From the above results, we see that estimation of marginal probabilities is crucial for XMLC problems. The minimization of the label-wise log loss can be performed by using the vanilla 1-vs-All approach. Unfortunately, this approach is too costly in the extreme setting. In the following section, we shortly describe PLTs which get the marginal probabilities in an efficient way. 
 
-%<MW:new>
-The key to maximizing Precision$@k$ is to select a subset of $k$ relevant labels and rank them at the top-$k$ positions.
-This can happen if the top-ranked $k$ relevant labels are not outranked by any irrelevant label.
-
-The loss function for Precision$@k$ is $l_{P@k} = 1 - \mathrm{Precision}@k$,
-then the expected loss for Precision$@k$ is given by:
-
-\begin{eqnarray}
-\loss_{P@k}(\bh,\Pr) & = & \mathbb{E}_{(\bx,\by) \sim \Pr} \left[l_{P@k}(\by,\bx) \right] =
-\int 1 - \frac{1}{k} \sum_{i=1}^k \assert{y_{r_i(h(\bx))} = 1} \,d \Pr(\bx,\by) \nonumber \\
-& = & \frac{1}{k} \sum_{i=1}^k \int 1 - \assert{y_{r_i(h(\bx))} = 1} \,d \Pr_i(\bx, y_{r_i(h(\bx))}) \nonumber \\
-& = & \frac{1}{k} \sum_{i=1}^k \int l_{0/1}(y_{r_i(h(\bx))}, 1) \,d \Pr(\bx, y_{r_i(h(\bx))}) \nonumber \\
-& = & \frac{1}{k} \sum_{i=1}^k \int l_{0/1}(y_{r_i(h(\bx))}, 1) \,d \Pr(y_{r_i(h(\bx))} | \bx)\Pr(\bx) \nonumber \\
-& = & \frac{1}{k} \sum_{i=1}^k \int_\mathcal{X}
-l_{0/1}(1, 1)\Pr(y_{r_i(h(\bx))} = 1 | \bx) +
-l_{0/1}(0, 1)\Pr(y_{r_i(h(\bx))} = 0 | \bx) \,d \Pr(\bx) \nonumber \\
-& = & \frac{1}{k} \sum_{i=1}^k \int_\mathcal{X}
-l_{0/1}(0, 1)\Pr(y_{r_i(h(\bx))} = 0 | \bx) \,d \Pr(\bx) \,.
-%\phantom{end_of_eqn}
-%\int 1 - \frac{1}{k} \sum_{i=1}^k l_{0/1}(y_{h(\bx, i)}, 1) d \Pr(\bx,\by) \nonumber  \\
-%& = & \frac{1}{k} \sum_{i=1}^k \int  l_{0/1}(y_{h(\bx, i)}, 1) d \Pr_i(\bx, y_{h(\bx, i)})\,,
-\label{eqn:expected-precision-at-k}
-\end{eqnarray}
-
-%where $\eta(\bx, y_{h(\bx, 1)}) \ge \eta(\bx, y_{h(\bx, 2)}) \ge ... \ge \eta(\bx, y_{h(\bx, \size)})$
-
-The above result show that optimal strategy for Precision$@k$ is predicting $k$ labels
-with the lowest condictional probability $\Pr(y_i = 0 | \bx)$,
-what is equal to predicting top-$k$ labels with the highest conditional
-probability $\Pr(y_i = 1 | \bx)$.
-%</MW:new>
-
-Since the distribution of labels follows the power law,
-measures like Precision$@k$ favor too much the most popular labels.
-Therefore, the choice of the most suitable loss function for extreme classification setting is still an open problem.
-This problem is, however, out of the scope of this thesis.
-
-
-
-
-The canonical loss function for multi-label classification is Hamming loss: 
-
-This loss is, however, not suitable for the extreme settings. We will, however, focus in the following on accurate estimation of marginal probabilities. 
-
-
-
-Input is given in form of document and a set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\calD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
-
-Our approach consists of two modules: tagging and text representation modules. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n+1}$ is a (not necessarily) parametric function whose input is a document and its output is the vector representation of both words and docs. The dimension of the representation space is $d$. In the simplest case, this text representation module can be the bag-of-words representation in which case $d=N$, and the doc vector (n+1\/th column of the image space of function $f$) is an all zero vector. A more sophisticated text representation module is the word2vec methodology which assigns a vector to each word whose dimension is typically $\le300$, and the doc representation is empty. 
-
-The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n+1} \rightarrow  \{ 0 , 1 \}^m$. 
-
-In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of a given document $\bd_i$, where $i_j$ is the index of the $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
-
-DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
+%Input is given in form of document and a set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\calD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
+%
+%Our approach consists of two modules: tagging and text representation modules. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n+1}$ is a (not necessarily) parametric function whose input is a document and its output is the vector representation of both words and docs. The dimension of the representation space is $d$. In the simplest case, this text representation module can be the bag-of-words representation in which case $d=N$, and the doc vector (n+1\/th column of the image space of function $f$) is an all zero vector. A more sophisticated text representation module is the word2vec methodology which assigns a vector to each word whose dimension is typically $\le300$, and the doc representation is empty. 
+%
+%The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n+1} \rightarrow  \{ 0 , 1 \}^m$. 
+%
+%In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of a given document $\bd_i$, where $i_j$ is the index of the $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
+%
+%DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
 
 \vspace{\sectionBefore}
 \subsection{Probabilistic Label Trees}
@@ -790,6 +739,27 @@ The multi-class data was generated based on the same model as independent multi-
 \onecolumn
 
 \section{Regret for Prec@k}
+
+
+Precision@k is formally defined as:
+\begin{equation}
+\mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1},
+\label{eqn:precision-at-k}
+\end{equation}
+where $\calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
+%
+The loss function for precision$@k$ is $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk for this loss is given by:
+\begin{eqnarray*}
+\loss_{P@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
+& = & 1 - \sum_{\by \in \calY} \Pr(\by \given \bx) \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \sum_{\by \in \calY} \Pr(\by \given \bx) \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \eta(\bx,j) \,.
+\end{eqnarray*}
+%
+The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
+with the highest conditional probabilities $\eta(\bx,j)$.
+
+
 Top-k labels with respect to the true marginals
 \[
 M_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \eta(\bx, j) \ge \eta(\bx, i)  \right\} \le k\right\}
