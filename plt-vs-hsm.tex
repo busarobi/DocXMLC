@@ -697,9 +697,21 @@ The independent multi-label data was generated from a multi-label OvR \cite{!} m
 %, where $s$ stands for a shift used to control the average probability of a positive label. 
 The score $a =\bx w_i$ of $i$-th label was then transformed to a probability $p_i(a) = \frac{1}{(1 + exp(-a))}$, and the $i$-th label was drawn with the probability $p_i$.
 
-The conditionally multi-label dependent data was generated from the PCC \cite{!} model. Example features were drawn as in the previous paragraph. The PCC model weights were drawn from  $[-0.5, 0.5]^{(d + m) \times m}$.
-%, also with the use of a shift $s$. 
-The score of $i$-th label was computed based on it's features and all the previous labels $j$ as $d+j$-th features, set to -$q$ or $q$ depending on the results of the draws with labels probabilities. The value of $q$, usually set to $0.5$, is related to the degree of dependence between labels.
+% The conditionally dependent multi-label data was generated from the PCC \cite{!} model. Example features were drawn as in the previous paragraph. The PCC model weights were drawn from  $[-0.5, 0.5]^{(d + m) \times m}$.
+% %, also with the use of a shift $s$. 
+% The score of $i$-th label was computed based on it's features and all the previous labels $j$ as $d+j$-th features, set to -$q$ or $q$ depending on the results of the draws with labels probabilities. The value of $q$, usually set to $0.5$, is related to the degree of dependence between labels.
+
+
+The conditionally dependent multi-label data was generated according to the following model:
+\begin{equation*}
+\boldsymbol{f} = \boldsymbol{A }\bx + \epsilon 
+\end{equation*}
+\begin{equation*}
+\by = \assert{\boldsymbol{M} \boldsymbol{f} >  0  },
+\end{equation*}
+
+\noindent
+where $\boldsymbol{f} = (f_1, f_2, \ldots, f_m)$ represent $m$ latent variables, $\boldsymbol{M}$ a mixing matrix, and $\epsilon$ a noise introducing label dependencies. The two-dimensional feature vector $\bx$ was drawn uniformly from a unit disc, the linear coefficients $A$ uniformly from two-dimensional unit sphere. The noise $\epsilon$ is a $m$-dimensional vector drawn from $N(0, 0.25)$, and the $m \times m$ mixing matrix $\boldsymbol{m}$ i.i.d. from $[-1, 1]$. To make the labels dependent $\boldsymbol{M} \neq \boldsymbol{I}$.
 
 The multi-class data was generated based on the same model as independent multi-label data, OvR, but we selected the label with the highest probability, instead of drawing $m$ times. 
 
