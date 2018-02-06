@@ -249,7 +249,6 @@ In the label trees~\citep{Bengio_et_al_2010} each label corresponds to one and o
 \label{sec:formal}
 \vspace{\sectionAfter}
 
-
 Let $\calX$ denote an instance space, and let $\calL = \{\lambda_1,\lambda_2, \ldots,\lambda_m\}$ be a finite set of $m$ class labels. 
 In the extreme setting $m$ can be of order $10^5$ and higher.
 We assume that an instance $\bx \in \calX$ is associated with a subset of
@@ -323,7 +322,7 @@ The loss function for precision$@k$ can be defined as $\ell_{p@k} = 1 - \mathrm{
 The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
 with the highest conditional probabilities $\eta(\bx,j)$.
 
-From the above results, we see that estimation of marginal probabilities is crucial for XMLC problems. The minimization of the label-wise log loss can be performed by using the vanilla 1-vs-All approach. Unfortunately, this approach is too costly in the extreme setting. In the following section, we shortly describe PLTs which get the marginal probabilities in an efficient way. 
+From the above results, we see that estimation of marginal probabilities is crucial for XMLC problems. To get these probabilities we can take the vanilla 1-vs-All approach trained with the label-wise log loss. Unfortunately, 1-vs-All is too costly in the extreme setting. In the following section, we shortly describe PLTs which get the marginal probabilities in an efficient way. 
 
 %Input is given in form of document and a set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\calD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
 %
@@ -336,28 +335,18 @@ From the above results, we see that estimation of marginal probabilities is cruc
 %DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
 
 \vspace{\sectionBefore}
-\subsection{Probabilistic Label Trees}
+\section{Probabilistic Label Trees}
 \vspace{\sectionAfter}
 
-The general idea of PLTs is relatively simple. 
+Let us consider a $b$-ary tree $T$. We denote the root of the tree by $r(T)$ and the set of leaves of a subtree rooted in node $t$ by $L(t)$. The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or a leaf node, is denoted by $\Path{t}$. 
+%A path for a leaf node $j \in L(r(T))$ corresponds to one and only one label. 
+%
+Each label $j$ is uniquely identified by a path $\Path{j}$ from the root to the $j$\/th leaf. This implies that the number of leaves corresponds to the number of labels. 
 
-To introduce \Algo{PLT}s more formally, denote a tree by $T$ and the root of the tree $r(T)$. In general, $T$ can be of any form; here, we consider trees of height $k$ and degree $b$. 
-The leaves of $T$ correspond to labels. We denote a set of leaves of a (sub)tree rooted in node $t$ by $L(t)$. %, and the internal nodes of the subtree by $N(t)$. %If $n$ is the root of $T$ then we write $N$. 
-%The root is also an internal node, i.e., $t \in N(t)$. 
-The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or leaf node, is denoted by $\Path{t}$. %and the internal nodes on this path by $\Path{i,N}$.
-
-\Algo{PLT}s use a path from a root to the $j$\/th leaf to estimate posteriors $\eta(\bx, j)$. %, similarly as in probabilistic classifier trees. 
-%In other words, we divide the process of estimating $\Pr(y_i \given \bx)$ to $k+1$ stages, each corresponding to a level of the tree $T$. 
+The $\Path{j}$ is used by \Algo{PLT}s to estimate the posterior probability $\eta(\bx, j)$.
 With each node $t$ and training instance $\bx$, we associate a label $z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1}$.
-%Recall that $L(t)$ is a set of all leaves of a subtree with the root in the $t$-th node. 
 In the leaf nodes, the labels $z_j$, $j \in L$, correspond to the original labels $y_j$.
-
-Consider the leaf node $j$ and the path from the root to this leaf node. Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
-%\begin{equation}
-%\Pr(y_i = 1 \given \bx) = \prod_{j \in \Path{i}} \Pr(z_j = 1 \given z_{\pa{j}} = 1, \bx)\,,
-%\label{eqn:probabilistic_tree}
-%\end{equation}
-%where for the root node $r(T)$ we have  $\Pr(z_{r(T)} = 1 \given z_{\pa{r(T)}} = 1, \bx) = \Pr(z_{r(T)} = 1 \given \bx)$.
+Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
 \begin{equation}
 \eta(\bx, j) = \prod_{t \in \Path{j}} \eta_T(\bx, t)\,,
 \label{eqn:probabilistic_tree}
@@ -373,7 +362,6 @@ The training algorithm returns a set of probability estimation classifiers $\mat
 
 The learning time complexity of \Algo{PLT}s can be expressed in terms of the number of nodes in which an original training example $(\bx,\by)$ is used. Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$. Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent~\cite{Bottou_2010}.
 
-Interestingly, in the case of sparse features, the space complexity can be significantly reduced as well. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because only the sibling nodes need to share the same features, while no other features are needed to build corresponding classifiers. Therefore, only those (few) features needed to describe the sibling labels have to be used in the models. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
 
 %\vspace{-2pt}
 %
@@ -398,8 +386,9 @@ Interestingly, in the case of sparse features, the space complexity can be signi
 \end{algorithmic}
 \end{algorithm} 
 
-Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
-%With properly estimated probabilities, the algorithm will not explore a large part of the tree.
+To get prediction suited for precision@K, Algorithm~\ref{alg:pt-prediction} traverses the tree to find top $k$ labels. To this end it starts with adding the root node to a priority queue $Q$ with the probability returned by the root node classifier. Then, in the loop, the algorithm pops from $Q$ a node $t$ with the highest intermediate probability (i.e., the probability $\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)$). If this node is a leaf, then the corresponding label will be added to the final precision. Otherwise, its children nodes will be added to $Q$ with the corresponding probabilities $\heta(\bx, c)$, $c \in Children{t}$. The prediction stops after finding top k labels. 
+
+%Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
 
 \begin{algorithm}[t]
 \caption{\Algo{PLT.Predict}$(\bx, T, \mathcal{Q}, \tau)$}%Prediction with a Probabilistic Label Tree}
@@ -426,18 +415,16 @@ Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabi
 \end{algorithmic}
 \end{algorithm} 
 
+Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. To find the label with the highest marginal probability, \Algo{PLT} ideally needs to call only $bk+1$ classifiers (all classifiers on a path from the root to a leaf plus all classifiers in siblings of the path nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and accuracy of node classifiers.
 
-Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. If there is only one label exceeding the threshold, \Algo{PLT} ideally needs to call only $bk+1$ classifiers (all classifiers on a path from the root to a leaf plus all classifiers in siblings of the path nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and accuracy of node classifiers.
+\vspace{\sectionBefore}
+\subsection{Theoretical guarantees}
+\label{sec:online_PLTs}
+\vspace{\sectionAfter}
 
-%Setting thresholds!!!
+As proven in~\citep{Jasinska_et_al_2016}  \Algo{PLT}s obey strong theoretical guarantees. It has been shown that the absolute difference between the true and the estimated marginal probability of label $j$ can be upperbounded by the loss of the inner node classifiers. In this paper, we extend this result to give guarantees for precision@k. 
 
-Note that \Algo{PLT}s can be used with any value as a threshold. Moreover, by considering a separate threshold $\tau_t$ in each node $t$, one can use a different threshold for each label $j$ on posterior estimates $\hat\eta(\bx,j)$. It is enough to set a threshold in the parent node $t$ as follows:
-$\tau_t = \min_{j \in \Children{t}} \tau_j$. 
-%
-\Algo{PLT}s can easily be tailored for Precision@K, too. To predict the top labels, it is enough to change $Q$ to a priority queue and stop the prediction procedure after a given number of top labels. %Precision@K can be then efficiently computed. 
-
-Let us finally underline that  \Algo{PLT}s obey strong theoretical guarantees. In  Appendix~\ref{app:plt}, we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. For optimal node classifiers, we obtain optimal multi-label classifiers in terms of estimation of posterior probabilities $\eta(\bx,j)$.
-
+In  Appendix~\ref{app:plt}, we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. For optimal node classifiers, we obtain optimal multi-label classifiers in terms of estimation of posterior probabilities $\eta(\bx,j)$.
 
 \vspace{\sectionBefore}
 \subsection{Correction of probability estimates}
@@ -490,7 +477,6 @@ $$
 %$$
 %p_j = \frac{p_j \times p_{pa}}{s}\,.
 %$$
-
 
 \vspace{\sectionBefore}
 \subsection{Generalization of HSM}
@@ -649,6 +635,9 @@ This is important as in case of text classification problems we usually deal wit
 
 In the simplest case PLTs can be used on sparse representation of text. In other words, the text representation module $f$ can transform text to bag-of-words representation, in which case $d=N$. However, on average the number of non-zero features $\overline{\mathrm{nnz}}(\bx) \ll N$, and the documents are represented as sparse matrices. %The training is a direct application of the training Algorithm \ref{algo:plt-train}.
 There are two possibilities how to work with the sparse representation. When batch training is feasible, one can train the models effectively one by one, or in parallel, in a dense format, and then store them in a sparse format. However, when online training is required, it is necessary use of feature hashing~\citep{Weinberger_et_al_2009} to make the memory requirements feasible. 
+
+Interestingly, in the case of sparse features, the space complexity can be significantly reduced as well. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because only the sibling nodes need to share the same features, while no other features are needed to build corresponding classifiers. Therefore, only those (few) features needed to describe the sibling labels have to be used in the models. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
+
 
 \vspace{\sectionBefore}
 \subsection{PLTs with word embeddings}
