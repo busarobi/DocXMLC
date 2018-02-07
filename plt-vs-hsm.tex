@@ -338,10 +338,10 @@ From the above results, we see that estimation of marginal probabilities is cruc
 \section{Probabilistic Label Trees}
 \vspace{\sectionAfter}
 
-Let us consider a $b$-ary tree $T$. We denote the root of the tree by $r(T)$ and the set of leaves of a subtree rooted in node $t$ by $L(t)$. The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or a leaf node, is denoted by $\Path{t}$. 
+Let us consider a $b$-ary tree $T$ with the number of leaves corresponding to the number of labels. We denote the root of the tree by $r(T)$ and the set of leaves of a subtree rooted in node $t$ by $L(t)$. The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or a leaf node, is denoted by $\Path{t}$. 
 %A path for a leaf node $j \in L(r(T))$ corresponds to one and only one label. 
 %
-Each label $j$ is uniquely identified by a path $\Path{j}$ from the root to the $j$\/th leaf. This implies that the number of leaves corresponds to the number of labels. 
+Each label $j$ is uniquely identified by a path $\Path{j}$ from the root to the $j$\/th leaf. %This implies that the number of leaves corresponds to the number of labels. 
 
 The $\Path{j}$ is used by \Algo{PLT}s to estimate the posterior probability $\eta(\bx, j)$.
 With each node $t$ and training instance $\bx$, we associate a label $z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1}$.
@@ -354,68 +354,67 @@ Using the chain rule of probability, we can express $\eta(\bx, j)$ in the follow
 where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$ for all non-root nodes $t$, and $\eta_T(\bx, t) = \prob(z_t = 1 \given \bx)$ if $t$ is the root node. 
 The correctness of (\ref{eqn:probabilistic_tree}) follows from the observation that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. A detailed derivation of the chain rule in this setup is given in Appendix~\ref{app:plt}.
 
+Training of \Algo{PLT}s can be performed independently for each node, either in batch or online mode.  Algorithm~\ref{alg:plt-training} presents the procedure for online learning. As input it takes a structure of the tree $T$, set $\calD$ of training examples, and a chosen variant $A$ of stochastic gradient descent~\cite{Bottou_2010}. In the main \textbf{for} loop, it assigns each training example $(\bx, \by)$ to corresponding nodes (such that  $z_{\pa{t}} = 1$, see line 4) and updates their classifiers (line 5). This assignment can be easily performed by traversing the tree from the root node to the leaves corresponding to the positive labels of a training example. The number of updated node classifiers is upper bounded by $s \times b \times h+1$, where $b$ and $h$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
 
-The training algorithm for \Algo{PLT}s is given in Algorithm~\ref{alg:plt-training}.
-Let $\calD_n = \{ (\bx_i, \by_{i}) \}_{i=1}^n$ be a training set of multi-label examples.
-To learn classifiers in all nodes of a tree $T$, we need to properly filter training examples to estimate $\eta_T(\bx,t)$ (line 5). Moreover, we need to use a learning algorithm $A$ that trains a class probability estimator $\heta_T(\bx,t)$ for each node $t$ in the tree. %a probability estimator trained by such an algorithm in node~$j$. 
-The training algorithm returns a set of probability estimation classifiers $\mathcal{Q}$.
+%Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
 
-The learning time complexity of \Algo{PLT}s can be expressed in terms of the number of nodes in which an original training example $(\bx,\by)$ is used. Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$. Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent~\cite{Bottou_2010}.
+%Remark that the  line 4 can be updates an appropriate node classifie As input Let $\calD_n = \{ (\bx_i, \by_{i}) \}_{i=1}^n$ be a training set of multi-label examples.
+%To learn classifiers in all nodes of a tree $T$, we need to properly filter training examples to estimate $\eta_T(\bx,t)$ (line 5). Moreover, we need to use a learning algorithm $A$ that trains a class probability estimator $\heta_T(\bx,t)$ for each node $t$ in the tree. %a probability estimator trained by such an algorithm in node~$j$. 
+%The training algorithm returns a set of probability estimation classifiers $\mathcal{Q}$
+
+%Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent
+
+%~\cite{Bottou_2010}.
+
+%The training algorithm for \Algo{PLT}s is given in Algorithm~\ref{alg:plt-training}.
+%Let $\calD_n = \{ (\bx_i, \by_{i}) \}_{i=1}^n$ be a training set of multi-label examples.
+%To learn classifiers in all nodes of a tree $T$, we need to properly filter training examples to estimate $\eta_T(\bx,t)$ (line 5). Moreover, we need to use a learning algorithm $A$ that trains a class probability estimator $\heta_T(\bx,t)$ for each node $t$ in the tree. %a probability estimator trained by such an algorithm in node~$j$. 
+%The training algorithm returns a set of probability estimation classifiers $\mathcal{Q}$.
+
+%The learning time complexity of \Algo{PLT}s can be expressed in terms of the number of nodes in which an original training example $(\bx,\by)$ is used. Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$. Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent~\cite{Bottou_2010}.
 
 
 %\vspace{-2pt}
 %
 \begin{algorithm}[t]
-\caption{\Algo{PLT.Train}$(T, A, \calD_n)$}%Learning of a Probabilistic Label Tree}
+\caption{Learning of \Algo{PLT}} %\Algo{PLT.Train}$(T, A, \calD_n)$}}
 \label{alg:plt-training}
 \begin{algorithmic}[1]
-%\State \textbf{input:} a label tree $T$, a learning algorithm $A$, and a training set $\mathcal{S}$
-%\State \textbf{output:} a set of probability estimation classifiers $\mathcal{Q}$
-\State $\mathcal{Q} = \emptyset$
-\For{each node $t \in T$} 
-\State $\calD' = \emptyset$
-\For{$i=1 \to n$}    %each training instance $(\bx, \by) \in \mathcal{S}$}
-\If{$t$ is \textbf{root} or $z_{\pa{t}} = 1 $}
-\State $z_t = \assert{\sum_{j \in L(t)} y_{ij} \ge 1 }$
-\State $\calD' = \calD' \cup (\bx_i, z_t)$ 
-\EndIf
+\State \textbf{input:} a label tree $T$, a learning algorithm $A$, and a training set $\calD$
+\State \textbf{output:} trained node classifiers $M$
+\For{each training example $(\bx, \by) \in \calD$}
+\For{each node $t \in T$ such that $ z_{\pa{t}} = 1$} 
+\State $A$.update($t$, $z_t$, $\bx$)
 \EndFor
-\State $\heta_T(\bx,t) = A(\calD')$, $\mathcal{Q} = \mathcal{Q} \cup \heta_T(\bx,t) $  
 \EndFor
-\State \textbf{return} a set of probability estimation classifiers $\mathcal{Q}$. 
+\State \textbf{return} $M$ = $A$.model($T$). 
 \end{algorithmic}
 \end{algorithm} 
 
-To get prediction suited for precision@K, Algorithm~\ref{alg:pt-prediction} traverses the tree to find top $k$ labels. To this end it starts with adding the root node to a priority queue $Q$ with the probability returned by the root node classifier. Then, in the loop, the algorithm pops from $Q$ a node $t$ with the highest intermediate probability (i.e., the probability $\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)$). If this node is a leaf, then the corresponding label will be added to the final precision. Otherwise, its children nodes will be added to $Q$ with the corresponding probabilities $\heta(\bx, c)$, $c \in Children{t}$. The prediction stops after finding top k labels. 
+To get prediction suited for precision@k, Algorithm~\ref{alg:pt-prediction} traverses the tree to find top $k$ labels. To this end it starts with adding the root node along with the probability returned by its classifier to a priority queue $Q$. Then, in the \textbf{while} loop, the algorithm pops from $Q$ a node $t$ with the highest intermediate probability (i.e., the probability $\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)$). If this node is a leaf, then the corresponding label will be added to the final prediction. Otherwise, its children nodes will be added to $Q$ with the corresponding probabilities $\heta(\bx, c)$, $c \in \Children{t}$. The prediction stops after finding top k labels. 
 
 %Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
 
 \begin{algorithm}[t]
-\caption{\Algo{PLT.Predict}$(\bx, T, \mathcal{Q}, \tau)$}%Prediction with a Probabilistic Label Tree}
+\caption{Prediction of \Algo{PLT}} %\Algo{PLT.Predict}$(\bx, T, \mathcal{Q}, \tau)
 \label{alg:pt-prediction}
 \begin{algorithmic}[1]
-%\State \textbf{input:} a label tree $T$,  a set of probability estimation classifiers $\mathcal{Q}$, a test example $\bx$, a threshold $\tau$
-%\State \textbf{input:} a label vector $\hat{\by}$ 
-\State $\hat{\by} = \vec{0}_m$, $Q = \emptyset$, $Q.\mathrm{add}(r(T),\heta_T(\bx,r(T)))$ 
-\While{$Q \ne \emptyset$}
-\State{$(t,p_t) = \mathrm{pop}(Q)$} 
-%\State $p_j = p \cdot \heta(j,\bx)$ 
-%\State $h(j,\bx) = \sgn(p_j \ge \tau)$
-\If{$p_t \ge \tau$} 
-\If{$t$ is a leaf node} 
-\State $\hat{y}_t = 1$ 
-\Else
-\For{$c \in \Children{t}$} 
-\State $Q.\mathrm{add}(c, p_t \cdot \heta_T(\bx,c))$ 
-\EndFor
-\EndIf
+\State \textbf{input:} a label tree $T$,  a set of node classifiers $M$, a test example $\bx$, a number of predicted labels $k$ 
+\State \textbf{output:} a set of predicted labels $\calY_k$ 
+\State $\calY_k = \emptyset$
+\State $Q = \emptyset$ \Comment{a priority queue}
+\State $Q.\mathrm{add}(r(T),\heta_T(\bx,r(T)))$ 
+\While{$|\calY_k| < k$}
+\State $(t,p_t) = Q.\mathrm{pop}$
+\If{$t$ is a leaf node} $\calY_k.\mathrm{add}(t)$ 
+\Else \ \algorithmicfor\ $c \in \Children{t}$\ \algorithmicdo\ $Q.\mathrm{add}(c, p_t \cdot \heta_T(\bx,c))$\ 
 \EndIf
 \EndWhile
-\State \textbf{return} $\hat{\by}$. 
+\State \textbf{return} $\calY_k$. 
 \end{algorithmic}
 \end{algorithm} 
 
-Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. To find the label with the highest marginal probability, \Algo{PLT} ideally needs to call only $bk+1$ classifiers (all classifiers on a path from the root to a leaf plus all classifiers in siblings of the path nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and accuracy of node classifiers.
+Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. To find the label with the highest marginal probability, \Algo{PLT} ideally needs to call only $b\times h+1$ classifiers (all $h$ classifiers on a path of from the root to a leaf plus all classifiers in the siblings nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2 \times m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2 \times m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and the accuracy of node classifiers.
 
 \vspace{\sectionBefore}
 \subsection{Theoretical guarantees}
@@ -621,11 +620,11 @@ This is important as in case of text classification problems we usually deal wit
 %The online training algorithm for PLTs is given in Algorithm \ref{algo:plt-train}. 
 %Let $(\bx, \by)$ be a training example. The online update of a PLT requires finding the sum, denoted with  $N_{path}$, of the sets of nodes on $\Path{y_i}$ for all $y_i \in \mathcal{P}(\by)$. The set of neighbors of nodes in $N_{path}$ that are not in $N_{path}$ is denoted with $N_{\lnot path}$. All nodes in $N_{path}$ are updated with $(\bx, 1)$, and all the nodes in $N_{\lnot path}$ with $(\bx, 0)$. The described learning algorithm can be applied to many different underlying models for document representation. 
 %%
-%\begin{algorithm}[]
-%	\caption{Incremental learning of a \Algo{PLT}}
-%	\label{algo:plt-train}
-%	\input{algo_plt_train_online}
-%\end{algorithm}
+\begin{algorithm}[]
+	\caption{Incremental learning of a \Algo{PLT}}
+	\label{algo:plt-train}
+	\input{algo_plt_train_online}
+\end{algorithm}
 
 
 \vspace{\sectionBefore}
