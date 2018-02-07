@@ -306,17 +306,17 @@ Macro F-measure is also optimized by predictions based on marginal probabilities
 
 In the following, we focus on precision@k which is a standard measure in extreme classification. Formally, it is defined as:
 \begin{equation}
-\mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1},
+\mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1},
 \label{eqn:precision-at-k}
 \end{equation}
-where $\calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
+where $\hat \calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
 %
 The loss function for precision$@k$ can be defined as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:
 \begin{eqnarray*}
 \loss_{P@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
-& = & 1 - \sum_{\by \in \calY} \Pr(\by \given \bx) \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1} \\
-& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \sum_{\by \in \calY} \Pr(\by \given \bx) \assert{y_j = 1} \\
-& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \eta(\bx,j) \,.
+& = & 1 - \sum_{\by \in \calY} \Pr(\by \given \bx) \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \sum_{\by \in \calY} \Pr(\by \given \bx) \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \eta(\bx,j) \,.
 \end{eqnarray*}
 %
 The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
@@ -421,9 +421,54 @@ Traversing a label tree can be much cheaper than querying $m$ independent classi
 \label{sec:online_PLTs}
 \vspace{\sectionAfter}
 
-As proven in~\citep{Jasinska_et_al_2016}  \Algo{PLT}s obey strong theoretical guarantees. It has been shown that the absolute difference between the true and the estimated marginal probability of label $j$ can be upperbounded by the loss of the inner node classifiers. In this paper, we extend this result to give guarantees for precision@k. 
+As proven in~\citep{Jasinska_et_al_2016}  \Algo{PLT}s obey strong theoretical guarantees. It has been shown that the absolute difference between the true and the estimated marginal probability of label $j$, $|\eta(\bx,j) - \heta(\bx,j)|$ can be upperbounded by the loss of the inner node classifiers. This also means that for optimal node classifiers, we obtain an optimal multi-label classifier in terms of estimation of posterior probabilities $\eta(\bx,j)$. In this paper, we extend this result to give guarantees for precision@k. 
 
-In  Appendix~\ref{app:plt}, we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. For optimal node classifiers, we obtain optimal multi-label classifiers in terms of estimation of posterior probabilities $\eta(\bx,j)$.
+Let us denote the top k labels with respect to the true marginals by $\calY_k$ and the top k labels with respect to predicted marginals by $\hat \calY_k$.
+Conditional regret for precision@k is given by:
+$$
+\reg_{p@k} (\bh \given \bx) = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i ) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )
+$$
+
+%We shall focus on multi-label classifiers in the following form:
+%\[
+%h(\bx,i) =h_{k, \hat{\eta}}(\bx,i) = \assert{\textstyle i \in \hat{M}_k(\bx) }
+%\]
+%
+%In this case the Prec@k regret is $[0,1]$.
+
+We can upper bound $\reg_{p@k} (\bh \given \bx)$ by noticing that $\hat \calY_k$ does not include label $i \in \calY_k$ when for all $j \in \hat \calY_k$ we have:
+$$
+\heta(\bx, i) < \heta(\bx,j) \,. % \quad \mathrm{and} \quad \,.
+$$
+To use the upper bound of $m_j = |\eta(\bx,j) - \heta(\bx,j)|$ we can write 
+$$
+\eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i)  < \eta(\bx,j) - \eta(\bx,j) + \heta(\bx,j) \,,
+$$
+which gives us 
+\begin{align*}
+\eta(\bx, j) & > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,, \\
+\eta(\bx, j) & > \eta(\bx, i) - m_i - m_j < \eta(\bx,i) - 2 \max_{l} m_l \,, %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
+\end{align*}
+as we know that $\eta(\bx, i) > \eta(\bx, j)$ for all $j \in \calY_k$.
+%where $m_i = |\eta(\bx,i) - \heta(\bx,i)|$. 
+%This is because that the true top label j can be replaced by label k in the worse case when \eta_j - m_j < \eta_k + m_k.
+%$m_j = |\eta(\bx,j) - \heta(\bx,j)|$ in the following way 
+The regret can be then written as follows:
+\begin{align*}
+\reg_{p@k} (\bh \given \bx)
+  & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
+  & \le \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \eta(\bx,i) - 2 \max_{l} m_l \\
+  & \le 2 \max_{l} m_l 
+\end{align*}
+%\sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
+%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
+%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
+%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
+%  & \le 2k\max_{i \in [m]} m_i
+%\end{align}
+
+The more detailed derivation can be found in Appendix~\ref{app:plt}.  
+%we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. 
 
 \vspace{\sectionBefore}
 \subsection{Correction of probability estimates}
@@ -566,7 +611,6 @@ $$
 S_{i,j}^{u,w}  =  \{\by\in \calY: y_i = u \land y_j = w\} \quad u,w \in \{0,1\} \,.
 $$
 During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by \in S^{1,1}_{i,j}$, the value of $y_t \frac{\prob(\by \given \bx)}{\sum_{t'=1}^m y_{t'}}$ is the same for both $y_i$ and $y_j$. Now, let $\by' \in S^{1,0}_{i,j}$ and $\by'' \in S^{0,1}_{i,j}$ be the same on all elements except the $i$-th and the $j$-th one. Then, because   $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $, we will have $\prob(\by' \given \bx) \ge \prob(\by'' \given \bx)$. Therefore, after mapping we will get $\eta'(\bx,i) \ge \eta'(\bx, j)$. 
-
 
 %0.1 0.2
 %0    0    0.72
