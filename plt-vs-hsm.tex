@@ -86,6 +86,15 @@
 \newcommand{\bd}{\mathbf{d}}
 
 
+\newcommand{\data}[3]{
+    \begin{tabular}{ll}
+    \rule{0pt}{0pt} #1 \\
+    \rule{3pt}{0pt} #2 \\
+    \rule{6pt}{0pt} #3 \\
+    \end{tabular}
+}
+
+
 \newcommand{\assert}[1]{\llbracket #1 \rrbracket}
 
 \newcommand{\given}{\, | \,}
@@ -810,44 +819,24 @@ The input data was the same for PLT and HSM, and the weight initialization was a
 
 The second part of the experiment uses benchmark datasets taken from the XMLC repository. Each dataset we used conists of textual data. We used two represenations of the input text: bag of words and word embeddigns~\citep{Mikolov}. 
 
+Yahoo news multi-label corpus~\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}
 
-\begin{table}[]
-	\centering
-	\caption{Precision@1 of PLT and HSM on XMLC benchmark datasets using the standard train-test cuts.}
-	\label{tab:synthetic1}
-\begin{tabular}{l|rr|rr|rr}
-	\toprule
-	 & \multicolumn{2}{c|}{dependent}                     & \multicolumn{2}{c|}{independent}                   & \multicolumn{2}{c}{multiclass}                    \\
-	 passes & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c|}{HSM} & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c|}{HSM} & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c}{HSM} \\
-	\midrule
-	1      & 73.17 & 72.04 & 61.87    & 53.64 & 34.31  & 34.31  \\
-	10     & 85.51 & 84.16 & 63.36    & 58.00 & 38.67  & 38.67  \\
-	100    & 89.09 & 85.48 & 62.23    & 60.45 & 36.71  & 36.71  \\
-	1000   & 87.12 & 84.76 & 62.69    & 61.98 & 34.26  & 34.26 \\
-	\bottomrule
-\end{tabular}
-\end{table}
-
-
-\begin{table*}[t!]
+\begin{table*}[ht!]
 \vspace{-.2cm}
-        \caption{Main characteristics of the datasets used in the experiment and Precision@K scores with $K=\{ 1,3,5\}$ for \Algo{PLT}s and \Algo{FastXML} along with their training time in  minutes. The highest Precision@K values are in bold for every dataset.}
+        \caption{Precision@K scores with $K=\{ 1,3,5\}$ of \Algo{HSM}, \Algo{LOM} and \Algo{PLT} lgorithms. The highest Precision@K values are in bold for every dataset.}
         \label{tab:datasets-differences-table}
         \begin{center}
                 \begin{small}
                         \vspace{-0.1cm}
-                        \begin{tabular}{l@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} }
+                        \begin{tabular}{l@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} }
                                 \toprule
-& \multicolumn{6}{|c|}{Main statistics of datasets} & \multicolumn{4}{|c|}{\Algo{PLT}} & \multicolumn{4}{|c}{\Algo{FastXML}} \\
+& \multicolumn{4}{|c|}{\Algo{Bag of words}} & \multicolumn{5}{|c|}{\Algo{Word embeddings}} \\
 \hline
-& \#labels &\#features &\#test &\#train & inst./lab. & lab./inst. & P@1 & P@3 & P@5 & Time & P@1 & P@3 & P@5 & Time \\
+& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c|}{\Algo{CNN}} \\
                                 \midrule
-RCV1 & 2456 & 47236 & 155962 & 623847 & 1218.56 & 4.79 & 90.46 & 72.4 & 51.86 & 64 & {\bf 91.13} & {\bf 73.35} & {\bf 52.67} & 78 \\
-AmazonCat & 13330 & 203882 & 306782 & 1186239 & 448.57 & 5.04 & 91.47 & 75.84 & 61.02 & 96 & {\bf 92.95} & {\bf 77.50} & {\bf 62.51} & 561 \\
-Wiki10 & 30938  &  101938 & 6616 & 14146 & 8.52 & 18.64  & {\bf 84.34} & {\bf 72.34} & {\bf 62.72} & 290 & 81.71 & 66.67 & 56.70 & 16 \\
-Delicious & 205443 & 782585 & 100095 & 196606 & 72.29 & 75.54 & {\bf 45.37} & {\bf 38.94} & {35.88}& 1327 & 42.81 & 38.76 & {\bf 36.34} & 458 \\
-WikiLSHTC & 325056 & 1617899 & 587084 & 1778351 & 17.46 & 3.19 & 45.67 & 29.13 & 21.95 & 653 & {\bf 49.35} & {\bf 32.69} & {\bf 24.03} & 724\\
-Amazon & 670091 & 135909 & 153025 & 490449 & 3.99 & 5.45 & {\bf 36.65} & {\bf 32.12} & {\bf 28.85}& 54 & 34.24 & 29.3 & 26.12 & 422\\
+RCV1 & \data{}{}{} & \data{}{}{} &\data{87.52}{70.11}{50.44} & \data{88.52}{79.99}{72.74} & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{90.99}{82.53} & \data{96.83}{}{} \\ \midrule
+Yahoo & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{74.08}{69.63}{64.05} & \data{71.71}{}{} \\ \midrule
+Wiki-30K & \data{80.75}{50.49}{36.75} & \data{80.78}{50.44}{36.71} & \data{83.26}{69.14}{58.02} & \data{83.67}{79.26}{72.67} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{}\\ \midrule
                                 \bottomrule
                         \end{tabular}
                 \end{small}
@@ -858,11 +847,12 @@ Amazon & 670091 & 135909 & 153025 & 490449 & 3.99 & 5.45 & {\bf 36.65} & {\bf 32
 
 
 
-
-
-
-
 We would especially like to underline the fact that the PLT with word embeddings is on-par with the more complex CNN model in terms of precision for a computational cost that is an order of magnitude smaller.
+
+
+\section{Conclusions}
+
+
 \newpage
 
 
