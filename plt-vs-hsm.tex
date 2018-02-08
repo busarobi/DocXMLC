@@ -830,21 +830,20 @@ where $\epsilon$ a random noise and $\boldsymbol{M}$ a mixing matrix, introducin
 
 
 
-The results are shown in Table \ref{tab:synthetic1}. The input data was the same for \Algo{PLT} and \Algo{HSM} in each random repetition, and in addition, the weight initialization was also the same for both algorithms for a fair comparison. Consequently, the performance of \Algo{HSM} and \Algo{PLT} on multi-class data match to each other, as one would expect that. On data with independent labels, the performance of \Algo{HSM} and \Algo{PLT} is on-par after $1000$ iteration, whereas on data with dependent label, \Algo{PLT} outperforms \Algo{HSM}. This coincide with our theoretical finding regarding the non-vanishing regret of \Algo{HSM}. Lastly, \Algo{PLT} exhibits faster convergence, which can be explained by the fact, that \Algo{HSM} updates the model by picking one positive label at once, wheres \Algo{PLT}  carries out the update for each positive label simultaneously.
+The results are shown in Table \ref{tab:synthetic1}. The input data was the same for \Algo{PLT} and \Algo{HSM} in each random repetition, and in addition, the weights of learners were initialized by the same random values for a fair comparison. Consequently, the performance of \Algo{HSM} and \Algo{PLT} on multi-class data match to each other, as one would expect that. On data with independent labels, the performance of \Algo{HSM} and \Algo{PLT} is on-par after $1000$ iteration. The difference in convergence speed can be explained by the fact that \Algo{HSM} updates the model by picking one positive label at once, wheres \Algo{PLT}  carries out the update for each positive label simultaneously. On data with dependent label, \Algo{PLT} outperforms \Algo{HSM}. This coincide with our theoretical finding regarding the non-vanishing regret of \Algo{HSM}. 
 
 
 
 \subsection{Benchmark data}
 
-The second part of the experiment uses benchmark datasets taken from the XMLC repository. Each dataset we used consists of textual data. We used two representations of the input text: the feature vectors taken from XMLC repository~\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html} and word embeddings~\citep{Mikolov}. 
+We also carried out experiments on commonly used benchmark datasets taken from XMLC repository~\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html} and Yahoo news multi-label corpus~\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}. Each dataset we used consists of text data, so we decided to use two representations of them: the feature vectors taken from XMLC repository and word embeddings as it is implemented in fastText~\citep{Mikolov}. 
 
-Yahoo news multi-label corpus~\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}
 
 
 \begin{table}[ht!]
 \vspace{-.2cm}
         \caption{Precision@K scores with $K=\{ 1,3,5\}$ of \Algo{HSM}, \Algo{LOM} and \Algo{PLT} algorithms. }
-        \label{tab:datasets-differences-table}
+        \label{tab:hsm_vs_plt}
         \begin{center}
                 \begin{small}
                         \vspace{-0.1cm}
@@ -865,6 +864,8 @@ Yahoo news multi-label corpus~\footnote{https://yahooresearch.tumblr.com/post/16
           %              \vspace{-0.4cm}
 \end{table}
 
+
+First, we compared the performance of \Algo{HSM} and \Algo{PLT}. We tuned the hyper-parameters of the models by using grid search. The range of the hyper-parameters is reported in Appendix. The results are shown in Table \ref{tab:hsm_vs_plt}. \Algo{PLT} clearly outperforms hierarchical soft-max in all cases by a very significant margin. 
 
 
 \begin{table*}[ht!]
