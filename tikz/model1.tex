@@ -73,8 +73,8 @@
 	\node (x3)[xinput,below of=layerembedding, xshift=1.5cm]{$w_{n-1}$};
 	\node (x4)[xinput,below of=layerembedding, xshift=3cm]{$w_{n}$};
 	
-	\draw [blue, thick, aligned dash] (-3.75,3.5) rectangle (3.75,1.52);
-	\draw [red, thick, aligned dash] (-3.75,1.48) rectangle (3.75,-1.5);
+	\draw [red, thick, aligned dash] (-3.75,3.5) rectangle (3.75,1.52);
+	\draw [blue, thick, aligned dash] (-3.75,1.48) rectangle (3.75,-1.5);
 	
 	\draw[->] ($(layerembedding.north west)!0.5!(layerembedding.north east)$) -- node[below] {} ($(layeragregation.south west)!0.5!(layeragregation.south east)$);
 	\draw[->] ($(layeragregation.north west)!0.5!(layeragregation.north east)$) -- node[below] {} ($(layertagger.south west)!0.5!(layertagger.south east)$);

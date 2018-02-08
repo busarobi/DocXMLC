@@ -5,14 +5,16 @@
 
 
 \node (layerinput)[block]{$\mathbf{d}$};
-\node (layerrepresentation)[block,right of=layerinput, xshift=1cm, blue]{$f(\mathbf{d})$};
-\node (layertagger)[block,right of=layerrepresentation, xshift=1cm, red]{$g(\bx)$};
-\node (layeroutput)[block,right of=layertagger, xshift=1cm]{$\by$};
+\node (layerrepresentation)[block,right of=layerinput, xshift=.7cm, blue]{$f(\mathbf{d})$};
+\node (x)[block,right of=layerrepresentation, xshift=.7cm]{$\bx$};
+\node (layertagger)[block,right of=x, xshift=.7cm, red]{$g(\bx)$};
+\node (layeroutput)[block,right of=layertagger, xshift=.7cm]{$\by$};
 
 %\draw [red, thick, aligned dash] (-3.75,0.48) rectangle (3.75,-1.5);
 
 \draw[->] ($(layerinput.north east)!0.5!(layerinput.south east)$) -- node[below] {} ($(layerrepresentation.north west)!0.5!(layerrepresentation.south west)$);
-\draw[->] ($(layerrepresentation.north east)!0.5!(layerrepresentation.south east)$) -- node[above]{$\bx$} ($(layertagger.north west)!0.5!(layertagger.south west)$);
+\draw[->] ($(layerrepresentation.north east)!0.5!(layerrepresentation.south east)$) -- node[above]{} ($(x.north west)!0.5!(x.south west)$);
+\draw[->] ($(x.north east)!0.5!(x.south east)$) -- node[above]{} ($(layertagger.north west)!0.5!(layertagger.south west)$);
 \draw[->] ($(layertagger.north east)!0.5!(layertagger.south east)$) -- node[below] {} ($(layeroutput.north west)!0.5!(layeroutput.south west)$);
 
 \end{tikzpicture}

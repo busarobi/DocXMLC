@@ -125,8 +125,6 @@
 
 \newcommand{\figures}{./Figs}
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -333,15 +331,6 @@ with the highest conditional probabilities $\eta(\bx,j)$.
 
 From the above results, we see that estimation of marginal probabilities is crucial for XMLC problems. To get these probabilities we can take the vanilla 1-vs-All approach trained with the label-wise log loss. Unfortunately, 1-vs-All is too costly in the extreme setting. In the following section, we shortly describe PLTs which get the marginal probabilities in an efficient way. 
 
-%Input is given in form of document and a set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\calD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
-%
-%Our approach consists of two modules: tagging and text representation modules. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n+1}$ is a (not necessarily) parametric function whose input is a document and its output is the vector representation of both words and docs. The dimension of the representation space is $d$. In the simplest case, this text representation module can be the bag-of-words representation in which case $d=N$, and the doc vector (n+1\/th column of the image space of function $f$) is an all zero vector. A more sophisticated text representation module is the word2vec methodology which assigns a vector to each word whose dimension is typically $\le300$, and the doc representation is empty. 
-%
-%The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n+1} \rightarrow  \{ 0 , 1 \}^m$. 
-%
-%In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of a given document $\bd_i$, where $i_j$ is the index of the $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
-%
-%DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
 
 \vspace{\sectionBefore}
 \section{Probabilistic label trees}
@@ -363,7 +352,7 @@ Using the chain rule of probability, we can express $\eta(\bx, j)$ in the follow
 where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$ for all non-root nodes $t$, and $\eta_T(\bx, t) = \prob(z_t = 1 \given \bx)$ if $t$ is the root node. 
 The correctness of (\ref{eqn:probabilistic_tree}) follows from the observation that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. A detailed derivation of the chain rule in this setup is given in Appendix~\ref{app:plt}.
 
-Training of \Algo{PLT}s can be performed independently for each node, either in batch or online mode.  Algorithm~\ref{alg:plt-training} presents the procedure for online learning. As input it takes a structure of the tree $T$, set $\calD$ of training examples, and a chosen variant $A$ of stochastic gradient descent~\cite{Bottou_2010}. In the main \textbf{for} loop, it assigns each training example $(\bx, \by)$ to corresponding nodes (such that  $z_{\pa{t}} = 1$, see line 4) and updates their classifiers (line 5). This assignment can be easily performed by traversing the tree from the root node to the leaves corresponding to the positive labels of a training example. The number of updated node classifiers is upper bounded by $s \times b \times h+1$, where $b$ and $h$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
+Training of \Algo{PLT}s can be performed independently for each node, either in batch or online mode.  Algorithm~\ref{alg:plt-training} presents the procedure for online learning. We assume here that each node classifier is a logistic linear model. As input it takes a structure of the tree $T$, set $\calD$ of training examples, and a chosen variant $A$ of stochastic gradient descent~\cite{Bottou_2010}. In the main \textbf{for} loop, it assigns each training example $(\bx, \by)$ to corresponding nodes (such that  $z_{\pa{t}} = 1$, see line 4) and updates their classifiers (line 5). This assignment can be easily performed by traversing the tree from the root node to the leaves corresponding to the positive labels of a training example. The number of updated node classifiers is upper bounded by $s \times b \times h+1$, where $b$ and $h$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
 
 %Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
 
@@ -671,18 +660,31 @@ Thus, for this specific situation of independent labels, the pick-one-label heur
 \label{sec:tagging_PLTs}
 \vspace{\sectionAfter}
 
+In this section we focus on application of \Algo{PLT}s to document tagging. In general, \Algo{PLT}s can work with various document representations, such as sparse representations in the form of a bag-of-words and its TF-IDF variant, or dense representations being an output of a neural network. In the later case, \Algo{PLT}s play a role of the output layer of the network. 
+  
+%PLTs can be combined with various underlying document representations. In this section we briefly describe sample applications of PLTs to document tagging. 
+%The described approaches differ mainly in the representation of a document, and therefore in the architecture of the entire model. In principle PLTs work the same in each of them, however in certain cases the application must be suited for the architecture.
 
-PLTs can be combined with various underlying document representations. In this section we briefly describe sample applications of PLTs to document tagging. 
-The described approaches differ mainly in the representation of a document, and therefore in the architecture of the entire model. In principle PLTs work the same in each of them, however in certain cases the application must be suited for the architecture.
+In general, a document tagging system consists of two modules: text representation and tagging, as presented on the schema on Figure~\ref{pic:module-repres-module-tag}. The text representation module $f : \calW^{n} \rightarrow \R^{d}$ is a (not necessarily) parametric function whose input is a document being represented as a sequence of words of length $n$ and its output is the vector representation of a document. The dimension of the representation space is $d$. 
+The input of the tagging module is the output of the text representation module. The output is the set of tags assigned to the document. Thus, the tagging system can be defined as $g: \R^{d} \rightarrow  \{ 0 , 1 \}^m$. 
 
-All the examples consist of two modules: text representation and tagging, as presented on the schema on Figure~\ref{pic:module-repres-module-tag}. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n}$ is a (not necessarily) parametric function whose input is a document and its output is the vector representation of the document. The dimension of the representation space is $d$. 
-The input of the tagging input is the output of the text representation module, that is $g: \R^{d \times n} \rightarrow  \{ 0 , 1 \}^m$. 
+
+%Input is given in form of document and a set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\calD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
+%
+%Our approach consists of two modules: tagging and text representation modules. The text representation module $f : \calW^{n} \rightarrow \R^{d \times n+1}$ is a (not necessarily) parametric function whose input is a document and its output is the vector representation of both words and docs. The dimension of the representation space is $d$. In the simplest case, this text representation module can be the bag-of-words representation in which case $d=N$, and the doc vector (n+1\/th column of the image space of function $f$) is an all zero vector. A more sophisticated text representation module is the word2vec methodology which assigns a vector to each word whose dimension is typically $\le300$, and the doc representation is empty. 
+%
+%The tagging module's input is the output of the text presentation module, that is $g: \R^{d \times n+1} \rightarrow  \{ 0 , 1 \}^m$. 
+%
+%In case of Deep PLT, the text representation module simply assigns a vector $\bx_{i_j} \in \R^d$ to each word of a given document $\bd_i$, where $i_j$ is the index of the $j$\/th word of the document $i$, i.e. $f(\bd; \bx_1, \dots, \bx_N) = f(\bd) = \left[\bx_{i_1}, \dots , \bx_{i_n}, \mathbf{0}\right]$ and the document vector is zero. The labeling module is then a PLT model denoted by $g : \R^d \rightarrow  \{ 0 , 1 \}^m$ which projects the text representation to the unit vector $g( \mathbf{1}^T  f(\bd))$.
+%
+%DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
+
 
 \begin{figure}
 	\begin{center}
 		\input{tikz/modules}
 	\end{center}
-	\caption{A schema of all the described models.}
+	\caption{A schema of a document tagging system.}
 	\label{pic:module-repres-module-tag}
 \end{figure}
 
@@ -711,10 +713,10 @@ The input of the tagging input is the output of the text representation module, 
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
-In the simplest case PLTs can be used on sparse representation of text. In other words, the text representation module $f$ can transform text to bag-of-words representation, in which case $d=N$. However, on average the number of non-zero features $\overline{\mathrm{nnz}}(\bx) \ll N$, and the documents are represented as sparse matrices. %The training is a direct application of the training Algorithm \ref{algo:plt-train}.
-There are two possibilities how to work with the sparse representation. When batch training is feasible, one can train the models effectively one by one, or in parallel, in a dense format, and then store them in a sparse format. However, when online training is required, it is necessary use of feature hashing~\citep{Weinberger_et_al_2009} to make the memory requirements feasible. 
+In the simplest case PLTs can be used on sparse representation of text. In other words, the text representation module $f$ can transform text to bag-of-words representation, in which case $d$ is equal to the size $N$ of the word dictionary. However, on average the number of non-zero features $\overline{\mathrm{nnz}}(\bx) \ll N$, and a document can be represented as a sparse vector. 
+%There are two possibilities how to work with the sparse representation. When batch training is feasible, one can train the models effectively one by one, or in parallel, in a dense format, and then store them in a sparse format. However, when online training is required, it is necessary to use of feature hashing~\citep{Weinberger_et_al_2009} to make the memory requirements feasible. 
 
-Interestingly, in the case of sparse features, the space complexity can be significantly reduced as well. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because only the sibling nodes need to share the same features, while no other features are needed to build corresponding classifiers. Therefore, only those (few) features needed to describe the sibling labels have to be used in the models. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
+Interestingly, in the case of sparse features, the space complexity of \Algo{PLT}s can be significantly reduced. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because the models need to use only the non-zero features of the training examples common for the sibling nodes; no other features are needed to build corresponding classifiers. To train a \Algo{PLT} efficiently in this situation, one needs to store the weights of the node models in hash tables and use an appropriate variant of stochastic gradient descent, in which weights of the non-zero features are updated only. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
 
 
 \vspace{\sectionBefore}
@@ -722,10 +724,11 @@ Interestingly, in the case of sparse features, the space complexity can be signi
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
-Instead of the sparse representation we can also use a dense representation being a result of a deep or shallow neural network.
-One possibility is to use pretrained word embeddings, like word2vec~\citep{word2vec} or glove~\citep{glove}. This idea is presented on Figure~\ref{pic:model-embedding}. The document representation can be created from the word representations in many ways, i.e, as an average \cite{!} or as the maximum or minimum value of each element \cite{!}.
+Instead of the sparse representation one can also use a dense representation being a result of a deep or shallow neural network. This idea is presented on Figure~\ref{pic:model-embedding}.
 
-It is possible to train the word embeddings simultaneously with the tagger module, similarly as in FastText~\citep{}. Depending on the application and the size of the text corpus this might be either inferior or superior to the former approach. Another option is to initiate the network with the pre-trained values and then update all the parameters of both the tagging and text representation module. 
+One possibility is to use pretrained word embeddings, like those from word2vec~\citep{word2vec} or glove~\citep{glove} obtained on large text corpuses. The document representation can be then created from these word embeddings in many ways, for example, as an average \cite{!} or as the maximum or minimum value of each element of the embeddings~\cite{!}.
+
+Alternatively, one can train the word embeddings simultaneously with the tagger module, similarly as in FastText~\citep{}. Depending on the application and the size of the text corpus this might be either inferior or superior to the former approach. Another option is to initiate the network with the pretrained embeddings and then update all the parameters of both the tagging and text representation module. 
 %but such approach leads to serious lengthening of the training time \cite{!!} and often to worse results\cite{!!}. This is not surprising since the pretrained word embeddings represent knowledge transfered from larger text corpora then the tagging datasets.
 
 \begin{figure}
@@ -743,12 +746,16 @@ It is possible to train the word embeddings simultaneously with the tagger modul
 %\vspace{\sectionAfter}
 
 \vspace{\sectionBefore}
-\subsection{PLTs with LSTM}
+\subsection{PLTs with deep networks}
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
-To improve the document representation, instead of a simple average over words, we feed the embeddings of consecutive words into an LSTM newtork~\citep{!}. The output of the LSTM is then input of the tagger.
+To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advance deep architecture, such as LSTM ~\citep{!} or the text-based convolution neural network~\cite{Yiming_Yang}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
 
+\vspace{\sectionBefore}
+\subsection{Ensemble of PLTs}
+\label{sec:sparse_input}
+\vspace{\sectionAfter}
 
 
 
