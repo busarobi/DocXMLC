@@ -37,7 +37,6 @@
 \usetikzlibrary{calc}
 \usetikzlibrary{decorations}
 \usepackage{multirow}
-\usepackage{adjustbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Command
@@ -111,6 +110,7 @@
     \rule{0pt}{0pt} #2 \\
     \end{tabular}
 }
+
 
 \newcommand{\datarr}[2]{
     \begin{tabular}{rr}
@@ -261,6 +261,7 @@ In either setting, it is necessary to design the algorithm that could
 handle large pool of labels.
 %
 
+
 Probabilistic label trees (\Algo{PLT}s)~\citep{Jasinska_et_al_2016}
 have been recently introduced for solving XMLC problems. Already their
 very basic variant, based on sparse input vectors, is competitive to
@@ -277,15 +278,49 @@ to a leaf.
 %
 %\Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure.
 
-As we will show in this paper, \Algo{PLT}s are no-regret generalization of hierarchical softmax (HSM)~\citep{Morin_Bengio_2005} to multi-label classification. HSM is a popular approach used in neural networks to speed up computations in multi-class problems with large output spaces. For example, it is commonly used in natural language processing problems such as language modeling~\citep{Mikolov_et_al_2013}.  
+As we will show in this paper, \Algo{PLT}s are no-regret
+generalization of hierarchical softmax (HSM)~\citep{Morin_Bengio_2005}
+to multi-label classification. HSM is a popular approach used in
+neural networks to speed up computations in multi-class problems with
+large output spaces. For example, it is commonly used in natural
+language processing problems such as language
+modeling~\citep{Mikolov_et_al_2013}. In general, PLT has a vanishing
+regret in terms of log-loss and precision@K whereas HSM does not.
 
 %(and also of conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b})
 
-In case of multi-class distributions, \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification, we will prove in this paper that \Algo{PLT}s are consistent for precision@$k$. We will also show that the pick-one-label heuristic often used for adapting \Algo{HSM} to multi-label problems (for example, in FastText~\citep{Joulin_et_al_2016} and LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal results. Only in case of label independence this heuristic acts optimally for precision@$k$. This might justify its popularity and good results in terms of this measure. Nevertheless, \Algo{HSM} gets consistently worse results than \Algo{PLT}s in the empirical studies reported in this paper. 
+In case of multi-class distributions, \Algo{PLT}s lead to exactly the
+same solution as HSM. This implies that that they are consistent for
+logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In
+case of multi-label classification, we will prove in this paper that
+\Algo{PLT}s are consistent for precision@$k$. We will also show that
+the pick-one-label heuristic often used for adapting \Algo{HSM} to
+multi-label problems (for example, in
+FastText~\citep{Joulin_et_al_2016} and
+LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal
+results. Only in case of label independence this heuristic acts
+optimally for precision@$k$. This might justify its popularity and
+good results in terms of this measure. Nevertheless, \Algo{HSM} gets
+consistently worse results than \Algo{PLT}s in the empirical studies
+reported in this paper.
 %
-We also discuss different architectures for document tagging in which \Algo{PLT}s can be used, such as sparse and dense representations and specific ensembling of several trees. As we show the resulting classifiers are very competitive to state-of-the-art methods on popular XMLC benchmark datasets. 
+%We also discuss different architectures for document tagging in which
+%\Algo{PLT}s can be used, such as sparse and dense representations and
+%a tree-ensemble representation. A classifiers
+%are very competitive to state-of-the-art methods on popular XMLC
+%benchmark datasets.
 
-The paper is organized as follows. In the next section we shortly discuss the related work. In Section~\ref{sec:problem_statement} we formally define the XMLC problem and present some useful theoretical insights. Section~\ref{sec:plt} formally introduces \Algo{PLT}s and presents the main theoretical results concerning them and their relation to \Algo{HSM}. Section~\ref{sec:plt-tagging} discusses different variants of \Algo{PLT}s used for document tagging. The experimental results are presented in Section~\ref{sec:empirical_results}. The last section concludes the paper. 
+This paper is organized as follows. First we discuss the related work
+and situate our approach in the context. In
+Section~\ref{sec:problem_statement} we formally define the XMLC
+problem and present some useful theoretical
+insights. Section~\ref{sec:plt} formally introduces \Algo{PLT}s and
+presents the main theoretical results concerning them and their
+relation to \Algo{HSM}. Section~\ref{sec:plt-tagging} discusses
+different variants of \Algo{PLT}s viz., sparse, dense and tree-ensemble representations. The
+experimental results are presented in
+Section~\ref{sec:empirical_results}. Finally we make concluding remarks and discuss future directions.
+
 
 
 \vspace{\sectionBefore}
@@ -293,7 +328,21 @@ The paper is organized as follows. In the next section we shortly discuss the re
 \label{sec:related_work}
 \vspace{\sectionAfter}
 
-Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are still based on these classical approaches, significantly extending them by a number of new tricks. If the label space is of moderate size (like a few thousands of labels) then an independent model can be trained for each class. This is the so-called {\Algo{1-vs-All} approach. Unfortunately, it scales linearly with the number of labels, which is too costly for many applications. The extreme classification algorithms try to improve over this  approach by following different paradigms such as sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015}, tree-based search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015}, or label filtering~\citep{Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
+Historically, problems with a large number of labels were usually
+solved by nearest neighbor or decision tree methods. Some of today's
+algorithms are still based on these classical approaches,
+significantly extending them by a number of new tricks. If the label
+space is of moderate size (like a few thousands of labels) then an
+independent model can be trained for each class. This is the so-called
+{\Algo{1-vs-All} approach. Unfortunately, it scales linearly with the
+  number of labels, which is too costly for many applications. The
+  extreme classification algorithms try to improve over this approach
+  by following different paradigms such as
+  sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank
+  approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015},
+  tree-based
+  search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015}, or label
+  filtering~\citep{Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
 
 In this paper we focus on tree-based algorithms, therefore we discuss them here in more detail. There are two distinct types of these algorithms: decision trees and label trees. The former type follow the idea of classical decision trees. However, the direct use of the standard decision tree algorithms can be very costly~\citep{Agrawal_et_al_2013}. Therefore, the FastXML algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. It uses sparse linear classifiers in the internal tree nodes to split the feature space. The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. To improve the overall accuracy FastXML uses an ensemble of trees. FastXML, similarly as the majority of decision tree algorithms, works in a batch mode. \citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm that also uses linear classifiers in the internal nodes of the tree.
 
@@ -906,7 +955,6 @@ On data with dependent labels, \Algo{PLT} outperforms \Algo{HSM}.
 
 \subsection{Benchmark data}
 
-
 \begin{table}[t!]
 \vspace{-.2cm}
         \caption{Main characteristics of the datasets used in the experiment.}
@@ -1038,8 +1086,6 @@ The results reveal some general trends. First, \Algo{PLT}s outperform \Algo{HSM}
 We would especially like to underline the fact that \Algo{PLT}s with word embeddings is on-par with the more complex \Algo{XML-CNN} model in terms of precision for a computational cost that is an order of magnitude smaller. Moreover, \Algo{XML-CNN} requires pretrained embedding vectors as initialization, whereas \Algo{PLT}s can be used with random initializations.
 %
 Lastly, the ensemble of \Algo{PLT}s (\Algo{Fast+PLT+E}) significantly improves the precision at higher position, such as precision@3 and precision@5. 
-
-
 
 \section{Conclusions}
 
