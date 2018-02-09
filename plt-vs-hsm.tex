@@ -233,7 +233,7 @@ As we will show in this paper, \Algo{PLT}s are no-regret generalization of hiera
 
 %(and also of conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b})
 
-In case of multi-class distributions, \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification, we will prove in this paper that \Algo{PLT}s are consistent for precision@k. We will also show that the pick-one-label heuristic often used for adapting \Algo{HSM} to multi-label problems (for example, in FastText~\citep{Joulin_et_al_2016} and LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal results. Only in case of label independence this heuristic acts optimally for precision@k. This might justify its popularity and good results in terms of this measure. Nevertheless, \Algo{HSM} gets consistently worse results than \Algo{PLT}s in the empirical studies reported in this paper. 
+In case of multi-class distributions, \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification, we will prove in this paper that \Algo{PLT}s are consistent for precision@$k$. We will also show that the pick-one-label heuristic often used for adapting \Algo{HSM} to multi-label problems (for example, in FastText~\citep{Joulin_et_al_2016} and LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal results. Only in case of label independence this heuristic acts optimally for precision@$k$. This might justify its popularity and good results in terms of this measure. Nevertheless, \Algo{HSM} gets consistently worse results than \Algo{PLT}s in the empirical studies reported in this paper. 
 %
 We also discuss different architectures for document tagging in which \Algo{PLT}s can be used, such as sparse and dense representations and specific ensembling of several trees. As we show the resulting classifiers are very competitive to state-of-the-art methods on popular XMLC benchmark datasets. 
 
@@ -252,7 +252,7 @@ In this paper we focus on tree-based algorithms, therefore we discuss them here 
 In the label trees each label corresponds to one and only one path from the root to a leaf. There exist several instances of this approach. Besides \Algo{PLT}s and \Algo{HSM}, these are, for example, filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} or label embedding trees~\citep{Bengio_et_al_2010}. It is worth to underline that there exists several counterparts of \Algo{HSM} introduced independently in many different research fields, such as nested dichotomies~\citep{Fox_1997}, conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}, multi-stage classifiers~\citep{Kurzynski_1988}, and probabilistic classifier chains~\citep{Dembczynski_et_al_2010c}. All these methods have been jointly analyzed in~\citep{Dembczynski_et_al_2016}.
 Also the popular~\Algo{FastText}~\citep{Joulin_et_al_2016} and the recent \Algo{LearnedTrees}~\citep{Jernite_et_al_2017} are based on \Algo{HSM}. The latter uses a specific hierarchical clustering to reassign labels to paths during training. 
 
-%Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@k and macro-averaging F-measure.
+%Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@$k$ and macro-averaging F-measure.
 %
 %FastText, Learned trees!!!
 
@@ -266,7 +266,7 @@ Let $\calX$ denote an instance space, and let $\calL = \{\lambda_1,\lambda_2, \l
 We assume that an instance $\bx \in \calX$ is associated with a subset of
 labels $\calL_{\bx} \in 2^\calL$; this subset is often called a set of relevant labels, while the complement
 $\calL \backslash \calL_{\bx}$ is considered as irrelevant for $\bx$. We assume $m$ to be a large number (e.g., $\ge 10^5$), but the size of the set of relevant labels $\calL_{\bx}$ is much smaller than $m$, i.e., $|\calL_{\bx}| \ll m$. We identify a set $\calL_{\bx}$ of relevant labels with a binary (sparse)
-vector $\by = (y_1,y_2, \ldots, y_m)$, in which $y_i = 1 \Leftrightarrow \lambda_i \in \calL_{\bx}$. By $\calY = \{0, 1\}^m$ we denote a set of all
+vector $\by = (y_1,y_2, \ldots, y_m)$, in which $y_j = 1 \Leftrightarrow \lambda_j \in \calL_{\bx}$. By $\calY = \{0, 1\}^m$ we denote a set of all
 possible labellings.
 We assume that observations $(\bx, \by)$ are generated independently and identically according to the
 probability distribution $\prob(\bX = \bx,\bY = \by)$ (denoted later by $\prob(\bx, \by)$) defined on $\calX \times \calY$. 
@@ -289,7 +289,7 @@ The \emph{regret} of a classifier $\bh$ with respect to $\ell$ is defined as:
 $$
 The regret quantifies the suboptimality of $\bh$ compared to the optimal classifier $\bh^*$. The goal could be then defined as finding $\bh$ with a small regret, ideally equal to zero.
 
-In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \prob(y_j = 1 \given \bx)$. As we will show below marginal probabilities are a key element to optimally solve extreme classification for many complex performance measures, like Hamming loss, macro-F measure, and precision@k. 
+In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \prob(y_j = 1 \given \bx)$. As we will show below marginal probabilities are a key element to optimally solve extreme classification for many performance measures, like Hamming loss, macro-F measure, and precision@$k$. 
 To obtain the marginal probabilities one can use the label-wise log loss:
 $$
 \ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(y, h_j(\bx)) \,
@@ -321,14 +321,14 @@ h_j^*(\bx) = \assert{\eta(\bx,j) > 0.5} \,.
 $
 Macro F-measure is also optimized by predictions based on marginal probabilities. Following the results in~\citep{Ye_et_al_2012,Narasimhan_et_al_2014,Jasinska_et_al_2016, Dembczynski_et_al_2017}, we can state that to maximize the macro F-measure on the population level it suffices to find an optimal threshold on posteriors for each label separately. 
 
-In the following, we focus on precision@k which became a standard measure in extreme classification (although it is also often criticized, as it favors the most frequent labels). Formally, it is defined as:
+In the following, we focus on precision@$k$ which became a standard measure in extreme classification (although it is also often criticized, as it favors the most frequent labels). Formally, it is defined as:
 \begin{equation}
 \mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1},
 \label{eqn:precision-at-k}
 \end{equation}
 where $\hat \calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
 %
-To be consistent with the former discussion, let us define a loss function for precision@k as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:\footnote{A more detailed derivation is given in Appendix~\ref{app:prec@k}.}
+To be consistent with the former discussion, let us define a loss function for precision@$k$ as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:\footnote{A more detailed derivation is given in Appendix~\ref{app:prec@k}.}
 %\begin{eqnarray*}
 $$
 \loss_{p@k}(\bh \given \bx) = \mathbb{E} \left ( \ell_{p@k}(\by,\bx, \bh) \right ) = 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \eta(\bx,j) \,.
@@ -340,9 +340,9 @@ $$
 %\end{eqnarray*}
 %
 The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
-with the highest conditional probabilities $\eta(\bx,j)$.
+with the highest marginal probabilities $\eta(\bx,j)$.
 
-From the above results, we see that estimation of marginal probabilities is crucial for XMLC problems. To get these probabilities we can take the vanilla 1-vs-All approach trained with the label-wise log loss. Unfortunately, 1-vs-All is too costly in the extreme setting. In the following section, we shortly describe PLTs which get the marginal probabilities in an efficient way. 
+From the above results, we see that estimation of marginal probabilities is crucial for XMLC problems. To obtain these probabilities we can take the vanilla \Algo{1-vs-All} approach trained with the label-wise log loss. Unfortunately, \Algo{1-vs-All} is too costly in the extreme setting. In the following section, we shortly describe PLTs which get the marginal probabilities in an efficient way. 
 
 
 \vspace{\sectionBefore}
@@ -350,23 +350,23 @@ From the above results, we see that estimation of marginal probabilities is cruc
 \label{sec:plt}
 \vspace{\sectionAfter}
 
-Let us consider a $b$-ary tree $T$ with the number of leaves corresponding to the number of labels. We denote the root of the tree by $r(T)$ and the set of leaves of a subtree rooted in node $t$ by $L(t)$. The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or a leaf node, is denoted by $\Path{t}$. 
+Let us consider a $b$-ary tree $T$ with the number of leaves corresponding to the number of labels. We denote the root of the tree by $r(T)$ and the set of leaves of a subtree rooted in node $t$ by $L(t)$. The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to a node $t$, either internal or leaf, is denoted by $\Path{t}$. 
 %A path for a leaf node $j \in L(r(T))$ corresponds to one and only one label. 
 %
 Each label $j$ is uniquely identified by a path $\Path{j}$ from the root to the $j$\/th leaf. %This implies that the number of leaves corresponds to the number of labels. 
 
-The $\Path{j}$ is used by \Algo{PLT}s to estimate the posterior probability $\eta(\bx, j)$.
+The $\Path{j}$ is used by \Algo{PLT}s to estimate the marginal probability $\eta(\bx, j)$.
 With each node $t$ and training instance $\bx$, we associate a label $z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1}$.
-In the leaf nodes, the labels $z_j$, $j \in L$, correspond to the original labels $y_j$.
+In the leaf nodes, the labels $z_j$ correspond to the original labels $y_j$.
 Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
 \begin{equation}
 \eta(\bx, j) = \prod_{t \in \Path{j}} \eta_T(\bx, t)\,,
 \label{eqn:probabilistic_tree}
 \end{equation}
 where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$ for all non-root nodes $t$, and $\eta_T(\bx, t) = \prob(z_t = 1 \given \bx)$ if $t$ is the root node. 
-The correctness of (\ref{eqn:probabilistic_tree}) follows from the observation that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. A detailed derivation of the chain rule in this setup is given in Appendix~\ref{app:plt}.
+The correctness of (\ref{eqn:probabilistic_tree}) follows from the observation that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. %A detailed derivation of the chain rule in this setup is given in Appendix~\ref{app:plt}.
 
-Training of \Algo{PLT}s can be performed independently for each node, either in batch or online mode.  Algorithm~\ref{alg:plt-training} presents the procedure for online learning. We assume here that each node classifier is a logistic linear model. As input it takes a structure of the tree $T$, set $\calD$ of training examples, and a chosen variant $A$ of stochastic gradient descent~\cite{Bottou_2010}. In the main \textbf{for} loop, it assigns each training example $(\bx, \by)$ to corresponding nodes (such that  $z_{\pa{t}} = 1$, see line 4) and updates their classifiers (line 5). This assignment can be easily performed by traversing the tree from the root node to the leaves corresponding to the positive labels of a training example. The number of updated node classifiers is upper bounded by $s \times b \times h+1$, where $b$ and $h$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
+Training of \Algo{PLT}s can be performed independently for each node, either in batch or online mode.  Algorithm~\ref{alg:plt-training} presents the procedure for online learning. We assume here that each node classifier is a logistic linear model. As input it takes a structure of the tree $T$, set $\calD$ of training examples, and a chosen variant $A$ of stochastic gradient descent~\cite{Bottou_2010}. In the main \textbf{for} loop, it assigns each training example $(\bx, \by)$ to corresponding nodes (such that  $z_{\pa{t}} = 1$, see line 4) and updates their classifiers (line 5). This assignment can be easily performed by traversing the tree backwards from the leaves corresponding to the positive labels of a training example to the root node. The number of updated node classifiers is upper bounded by $s \times b \times h+1$, where $b$ and $h$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
 
 %Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$.
 
@@ -403,7 +403,7 @@ Training of \Algo{PLT}s can be performed independently for each node, either in 
 \end{algorithmic}
 \end{algorithm} 
 
-To get prediction suited for precision@k, Algorithm~\ref{alg:pt-prediction} traverses the tree to find top $k$ labels. To this end it starts with adding the root node along with the probability returned by its classifier to a priority queue $Q$. Then, in the \textbf{while} loop, the algorithm pops from $Q$ a node $t$ with the highest intermediate probability (i.e., the probability $\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)$). If this node is a leaf, then the corresponding label will be added to the final prediction. Otherwise, its children nodes will be added to $Q$ with the corresponding probabilities $\heta(\bx, c)$, $c \in \Children{t}$. The prediction stops after finding top k labels. 
+To get prediction suited for precision@$k$, Algorithm~\ref{alg:pt-prediction} traverses the tree to find top $k$ labels. To this end it starts with adding the root node along with the probability returned by its classifier to a priority queue $Q$. Then, in the \textbf{while} loop, the algorithm pops from $Q$ a node $t$ with the highest intermediate probability (i.e., the probability $\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)$). If this node is a leaf, then the corresponding label will be added to the final prediction. Otherwise, its child nodes will be added to $Q$ with the corresponding probabilities $\heta(\bx, c)$, $c \in \Children{t}$. The prediction stops after finding top k labels. 
 
 %Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
 
@@ -426,67 +426,65 @@ To get prediction suited for precision@k, Algorithm~\ref{alg:pt-prediction} trav
 \end{algorithmic}
 \end{algorithm} 
 
-Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. To find the label with the highest marginal probability, \Algo{PLT} ideally needs to call only $b\times h+1$ classifiers (all $h$ classifiers on a path of from the root to a leaf plus all classifiers in the siblings nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2 \times m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2 \times m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure and the accuracy of node classifiers.
+Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. To find the label with the highest marginal probability, \Algo{PLT} ideally needs to call only $b\times h+1$ classifiers (all $h$ classifiers on a path of from the root to a leaf plus all classifiers in the siblings nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2 \times m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2 \times m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure, the accuracy of node classifiers, and the number of positive labels.
 
 \vspace{\sectionBefore}
 \subsection{Theoretical guarantees}
 \label{sec:regret}
 \vspace{\sectionAfter}
 
-As proven in~\citep{Jasinska_et_al_2016}  \Algo{PLT}s obey strong theoretical guarantees. It has been shown that the absolute difference between the true and the estimated marginal probability of label $j$, $|\eta(\bx,j) - \heta(\bx,j)|$ can be upperbounded by the loss of the inner node classifiers. This also means that for optimal node classifiers, we obtain an optimal multi-label classifier in terms of estimation of posterior probabilities $\eta(\bx,j)$. In this paper, we extend this result to give guarantees for precision@k. 
+As proven in~\citep{Jasinska_et_al_2016}  \Algo{PLT}s obey strong theoretical guarantees. It has been shown that the absolute difference between the true and the estimated marginal probability of label $j$, $|\eta(\bx,j) - \heta(\bx,j)|$ can be upperbounded by the loss of the inner node classifiers. This also means that for optimal node classifiers, we obtain an optimal multi-label classifier in terms of estimation of marginal probabilities $\eta(\bx,j)$. In this paper, we extend this result to give guarantees for precision@$k$. 
 
-Let us denote the top k labels with respect to the true marginals by $\calY_k$ and the top k labels with respect to predicted marginals by $\hat \calY_k$.
-Conditional regret for precision@k is given by:
+Let us denote the top $k$ labels with respect to the true marginals by $\calY_k$ and the top $k$ labels with respect to predicted marginals by $\hat \calY_k$.
+Conditional regret for precision@$k$ is given by:
 $$
 \reg_{p@k} (\bh \given \bx) = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i ) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )
 $$
+The following regret bound can be proven:
+$$
+\reg_{p@k} (\bh \given \bx) \le 2 \max_{j} |\eta(\bx,j) - \heta(\bx,j)| \,.
+$$
+The detailed derivation can be found in Appendix~\ref{app:prec@k}.  
 
-%We shall focus on multi-label classifiers in the following form:
-%\[
-%h(\bx,i) =h_{k, \hat{\eta}}(\bx,i) = \assert{\textstyle i \in \hat{M}_k(\bx) }
-%\]
-%
-%In this case the Prec@k regret is $[0,1]$.
+%We can upper bound $\reg_{p@k} (\bh \given \bx)$ by noticing that $\hat \calY_k$ does not contain label $i \in \calY_k$ when for all $j \in \hat \calY_k$ we have:
+%$$
+%\heta(\bx, i) < \heta(\bx,j) \,. % \quad \mathrm{and} \quad \,.
+%$$
+%To use the upper bound of $m_j = |\eta(\bx,j) - \heta(\bx,j)|$ we can write 
+%$$
+%\eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i)  < \eta(\bx,j) - \eta(\bx,j) + \heta(\bx,j) \,,
+%$$
+%which gives us 
+%$$
+%\eta(\bx, j) > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,. \\
+%$$
+%Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for at least one $j \in \calY_k$, we can rearrange the terms and write:
+%$$
+%\eta(\bx, j)  > \eta(\bx, i) - |\eta(\bx, i) - \heta(\bx, i)| - |\eta(\bx,j) - \heta(\bx,j)| \,. 
+%$$
+%Finally, we obtain:
+%$$
+%\eta(\bx, j) > \eta(\bx, i) - m_i - m_j > \eta(\bx,i) - 2 \max_{l} m_l \,. %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
+%$$
+%%as we know that $\eta(\bx, i) > \eta(\bx, j)$ for all $j \in \calY_k$.
+%%where $m_i = |\eta(\bx,i) - \heta(\bx,i)|$. 
+%%This is because that the true top label j can be replaced by label k in the worse case when \eta_j - m_j < \eta_k + m_k.
+%%$m_j = |\eta(\bx,j) - \heta(\bx,j)|$ in the following way 
+%The regret can be then written as follows:
+%\begin{align*}
+%\reg_{p@k} (\bh \given \bx)
+%  & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
+%  & \le \frac{1}{k}\sum_{i \in \calY_k} \left ( \eta (\bx ,i) - \eta(\bx,i) + 2 \max_{l} m_l \right )\\
+%  & \le 2 \max_{l} m_l 
+%\end{align*}
+%%\sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
+%%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
+%%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
+%%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
+%%  & \le 2k\max_{i \in [m]} m_i
+%%\end{align}
 
-We can upper bound $\reg_{p@k} (\bh \given \bx)$ by noticing that $\hat \calY_k$ does not contain label $i \in \calY_k$ when for all $j \in \hat \calY_k$ we have:
-$$
-\heta(\bx, i) < \heta(\bx,j) \,. % \quad \mathrm{and} \quad \,.
-$$
-To use the upper bound of $m_j = |\eta(\bx,j) - \heta(\bx,j)|$ we can write 
-$$
-\eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i)  < \eta(\bx,j) - \eta(\bx,j) + \heta(\bx,j) \,,
-$$
-which gives us 
-$$
-\eta(\bx, j) > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,. \\
-$$
-Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for at least one $j \in \calY_k$, we can rearrange the terms and write:
-$$
-\eta(\bx, j)  > \eta(\bx, i) - |\eta(\bx, i) - \heta(\bx, i)| - |\eta(\bx,j) - \heta(\bx,j)| \,. 
-$$
-Finally, we obtain:
-$$
-\eta(\bx, j) > \eta(\bx, i) - m_i - m_j > \eta(\bx,i) - 2 \max_{l} m_l \,. %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
-$$
-%as we know that $\eta(\bx, i) > \eta(\bx, j)$ for all $j \in \calY_k$.
-%where $m_i = |\eta(\bx,i) - \heta(\bx,i)|$. 
-%This is because that the true top label j can be replaced by label k in the worse case when \eta_j - m_j < \eta_k + m_k.
-%$m_j = |\eta(\bx,j) - \heta(\bx,j)|$ in the following way 
-The regret can be then written as follows:
-\begin{align*}
-\reg_{p@k} (\bh \given \bx)
-  & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
-  & \le \frac{1}{k}\sum_{i \in \calY_k} \left ( \eta (\bx ,i) - \eta(\bx,i) + 2 \max_{l} m_l \right )\\
-  & \le 2 \max_{l} m_l 
-\end{align*}
-%\sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
-%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
-%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
-%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
-%  & \le 2k\max_{i \in [m]} m_i
-%\end{align}
 
-The more detailed derivation can be found in Appendix~\ref{app:plt}.  
 %we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. 
 
 \vspace{\sectionBefore}
@@ -494,9 +492,9 @@ The more detailed derivation can be found in Appendix~\ref{app:plt}.
 \label{sec:correction}
 \vspace{\sectionAfter}
 
-The resulting marginal probabilities of PLT, or in general all node probabilities, may not correspond to a valid underlying multi-label distribution. Let us consider a node $t$ and the estimated probability of at least 1 positive label in its subtree: 
+The resulting marginal probabilities of \Algo{PLT}, or in general all node probabilities, may not correspond to a valid underlying multi-label distribution. Let us consider a node $t$ and the estimated probability of at least 1 positive label in its subtree: 
 $$
-\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)
+\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j) \,.
 $$
 This probability in case of a leaf node $j$ is just the marginal probability $\heta(\bx, j)$ of the label $j$ being positive.
 In general, the estimated probabilities for a non-leaf node $t$ and its children nodes should satisfy the following constraints: 
@@ -546,7 +544,9 @@ $$
 \label{sec:online_PLTs}
 \vspace{\sectionAfter}
 
-Hierarchical softmax (HSM) (and conditional probability estimation trees as well) is designed for multi-class classification. In this section, we show that \Algo{PLT}s are proper generalization of HSM to multi-label classification. As discussed in Section~\ref{sec:regret}, PLTs are consistent in estimation of marginal probabilities and for maximization of precision@k in the multi-label setting. However, in case of a multi-class distribution, they get exactly the same model as HSM. In sake of simplicity, we will consider a binary tree in the following.  
+Hierarchical softmax (\Algo{HSM}) is designed for multi-class classification. In this section, we show that \Algo{PLT}s are no-regret generalization of \Algo{HSM} to multi-label classification as they get exactly the same model as \Algo{HSM} in case of a multi-class distribution. 
+%As discussed in Section~\ref{sec:regret}, PLTs are consistent in estimation of marginal probabilities and for maximization of precision@$k$ in the multi-label setting. Below, we show that they get exactly the same model as \Algo{HSM} in case of a multi-class distribution. 
+For sake of simplicity, we will consider a binary tree in the following.  
 
 \begin{figure}[h]
 		\begin{tikzpicture}[scale = 0.75,every node/.style={scale=0.75},
@@ -590,12 +590,12 @@ Let us consider probabilities in sibling nodes, $l$ and $r$, as in Figure~\ref{f
 \eta_T(\bx, l) & = & \prob(z_l = 1 \given z_{\pa{l}} =1, \bx)\,,  \\
 \eta_T(\bx, r) & = & \prob(z_r = 1 \given z_{\pa{r}} =1, \bx)\,.
 \end{eqnarray*}
-Since $\pa{l} = \pa{r}$ (as $l$ and $r$ sibling nodes, they need to have the same parent), the condition in the both probabilities above is the same. Moreover, since $z_{\pa{r}} =1$ there is at least one active label in the subtree rooted in the parent of $r$ and $l$. Since we deal with multi-class distribution, there is exactly one such label. This further implies that $z_l + z_r = 1$, and finally: 
+Since $\pa{l} = \pa{r}$ (as $l$ and $r$ are sibling nodes, they need to have the same parent), the condition in both probabilities above is the same. Moreover, since $z_{\pa{r}} =1$ there is at least one active label in the subtree rooted in the parent of $r$ and $l$. Since we deal with multi-class distribution, there is exactly one such label. This further implies that $z_l + z_r = 1$, and finally: 
 \begin{equation}
 \eta_T(\bx, l)+ \eta_T(\bx, r) = 1 \,.
 \label{eqn:sibling_summation}
 \end{equation}
-In other words, the model in node $l$ is the complement of the model in node $r$, i.e., both sibling nodes can be collapsed to one node with one model with the left and right decision. This is then exactly the model used is binary HSM. Let us also notice that this reasoning can be nicely generalized further to $b$-ary trees.
+In other words, the model in node $l$ is the complement of the model in node $r$, i.e., both sibling nodes can be collapsed to one node with one model with the left and right decision. This is then exactly the model used is binary \Algo{HSM}. Let us also notice that this reasoning can be nicely generalized further to $b$-ary trees.
 
 %Summarizing the above To summarize, It uses a similar tree, but without node classifiers in leaves. To compute the probability of the $j$-th label it also uses (\ref{eqn:probabilistic_tree}), but with $\heta(\bx, j)$ being set to 1, and the sibling probabilities summing to one (\ref{eqn:sibling_summation}). 
 
@@ -605,12 +605,14 @@ In other words, the model in node $l$ is the complement of the model in node $r$
 \vspace{\sectionAfter}
 
 %FastText also uses HSM. 
-To deal with multi-label problems HSM is often applied with the pick-one-label heuristic that randomly picks one of the labels for a given training instance. The training instance is then treated as a multi-class instance. During prediction, the heuristic returns a multi-class distribution and the most probable label only. It can be easily extended to return the top $k$ labels as in case of PLT. We will show that this approach is not consistent in general. 
+To deal with multi-label problems HSM is often applied with the pick-one-label heuristic that randomly picks one of the positive labels for a given training instance. The training instance is then treated as a multi-class instance. During prediction, the heuristic returns a multi-class distribution and the $k$ most probable labels. 
+% only. It can be easily extended to return the top $k$ labels as in case of \Algo{PLT}. 
+We will show below that this approach is not consistent in general. 
 
 %It can be easily shown that PLTs are consistent for any multi-label probability distribution $\prob$ (including the multi-class distributions).  
 
 %This is not a case of the pick-one-label heuristic used for HSM. 
-The pick-one-label heuristic maps the multi-label distribution to a multi-class distribution in the following way:\footnote{We use the same notation for the probability of the $i$-th label in the multi-class distribution as the marginal probability of the multi-label distribution, since the multi-class distribution can be also coded by vectors $\by$, but with a constraint that one and only one label is active.}
+The pick-one-label heuristic maps the multi-label distribution to a multi-class distribution in the following way:\footnote{We use the same notation for the probability of the $j$-th label in the multi-class distribution as for the marginal probability of the multi-label distribution, since the multi-class distribution can be also coded by vectors $\by$, but with a constraint that one and only one label is active.}
 \begin{equation}
 \eta'(\bx, j) = \prob'(y_j = 1 \given \bx) = \sum_{\by \in \calY} y_j \frac{\prob(\by \given \bx)}{\sum_{j'=1}^m y_{j'}}
 \label{eq:heuristic}
@@ -629,7 +631,7 @@ $\{4\}$ & 0.2 \\
 \bottomrule
 \end{tabular}
 \end{center}
-The optimal top 1 prediction for this example is obviously label $1$, since the marginal probabilities are $\eta(\bx,1) = 0.4, \eta(\bx,2) = 0.35,  \eta(\bx,3) = 0.3, \eta(\bx,4) =0.2$. However, the pick-one-label heuristic will transform the original distribution to the following one: $\eta'(\bx,1) = 0.275, \eta'(\bx,2) = 0.225,  \eta'(\bx,3) = 0.3, \eta'(\bx,4) =0.2$. The predicted top label will be then label $3$, giving the regret of 0.1. This shows that the heuristic is consistent neither for label-wise logistic loss nor precision@k. 
+The optimal top 1 prediction for this example is obviously label $1$, since the marginal probabilities are $\eta(\bx,1) = 0.4, \eta(\bx,2) = 0.35,  \eta(\bx,3) = 0.3, \eta(\bx,4) =0.2$. However, the pick-one-label heuristic will transform the original distribution to the following one: $\eta'(\bx,1) = 0.275, \eta'(\bx,2) = 0.225,  \eta'(\bx,3) = 0.3, \eta'(\bx,4) =0.2$. The predicted top label will be then label $3$, giving the regret of 0.1 for precision@$k$. This shows that the heuristic is consistent neither for label-wise logistic loss nor precision@$k$. 
 
 %splits the probability of labels $\{1,2\}$ to half probabilities of $\{1\}$ and $\{2\}$ yielding the following marginal probabilities: $\eta(\bx,1) = 0.275, \eta(\bx,2) = 0.225,  \eta(\bx,3) = 0.3, \eta(\bx,4) =0.2$. 
 
@@ -638,17 +640,17 @@ Interestingly, if the labels are conditionally independent, i.e.,:
 $$
 \prob(\by \given \bx) = \prod_{j=1}^m \prob(y_i \given \bx)\,,
 $$
-the optimal solution in terms of precision@k will not change. To show this let us observe the following.
+the heuristic will obtain the optimal solution for precision@$k$. To show this let us observe the following.
 Let $y_i$ and $y_j$ be so that $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $. Then in the summation over all $\by$s in (\ref{eq:heuristic}), we are interested in four different subsets of $\calY$: 
 $$
 S_{i,j}^{u,w}  =  \{\by\in \calY: y_i = u \land y_j = w\} \quad u,w \in \{0,1\} \,.
 $$
-During mapping any $\by \in S^{0,0}_{i,j}$ does not play any role. For each $\by \in S^{1,1}_{i,j}$, the value of 
+Let us remark that during mapping none of $\by \in S^{0,0}_{i,j}$ plays any role, and for each $\by \in S^{1,1}_{i,j}$, the value of 
 $$
 y_t \frac{\prob(\by \given \bx)}{\sum_{t'=1}^m y_{t'}}
 $$ 
 is the same for both $y_i$ and $y_j$. Now, let $\by' \in S^{1,0}_{i,j}$ and $\by'' \in S^{0,1}_{i,j}$ be the same on all elements except the $i$-th and the $j$-th one. Then, because   $\prob(y_i = 1 \given \bx) \ge \prob(y_j = 1 \given \bx) $, we will have $\prob(\by' \given \bx) \ge \prob(\by'' \given \bx)$. Therefore, after mapping we will get $\eta'(\bx,i) \ge \eta'(\bx, j)$. 
-Thus, for this specific situation of independent labels, the pick-one-label heuristic is consistent for precision@k.
+Thus, for this specific situation of independent labels, the pick-one-label heuristic is consistent for precision@$k$.
 
 %0.1 0.2
 %0    0    0.72
@@ -679,7 +681,7 @@ In this section we focus on application of \Algo{PLT}s to document tagging. In g
 %PLTs can be combined with various underlying document representations. In this section we briefly describe sample applications of PLTs to document tagging. 
 %The described approaches differ mainly in the representation of a document, and therefore in the architecture of the entire model. In principle PLTs work the same in each of them, however in certain cases the application must be suited for the architecture.
 
-In general, a document tagging system consists of two modules: text representation and tagging, as presented on the schema on Figure~\ref{pic:module-repres-module-tag}. The text representation module $f : \calW^{n} \rightarrow \R^{d}$ is a (not necessarily) parametric function whose input is a document being represented as a sequence of words of length $n$ and its output is the vector representation of a document. The dimension of the representation space is $d$. 
+In general, a document tagging system consists of two modules: text representation and tagging, as presented on the schema on Figure~\ref{pic:module-repres-module-tag}. The text representation module $f : \calW^{n} \rightarrow \R^{d}$ is a (not necessarily) parametric function whose input is a document being represented as a sequence of words, $w \in \calW$, of length $n$ and its output is the vector representation of a document. The dimension of the representation space is $d$. 
 The input of the tagging module is the output of the text representation module. The output is the set of tags assigned to the document. Thus, the tagging system can be defined as $g: \R^{d} \rightarrow  \{ 0 , 1 \}^m$. 
 
 
@@ -730,7 +732,7 @@ The input of the tagging module is the output of the text representation module.
 In the simplest case PLTs can be used on sparse representation of text. In other words, the text representation module $f$ can transform text to bag-of-words representation, in which case $d$ is equal to the size $N$ of the word dictionary. However, on average the number of non-zero features $\overline{\mathrm{nnz}}(\bx) \ll N$, and a document can be represented as a sparse vector. 
 %There are two possibilities how to work with the sparse representation. When batch training is feasible, one can train the models effectively one by one, or in parallel, in a dense format, and then store them in a sparse format. However, when online training is required, it is necessary to use of feature hashing~\citep{Weinberger_et_al_2009} to make the memory requirements feasible. 
 
-Interestingly, in the case of sparse features, the space complexity of \Algo{PLT}s can be significantly reduced. Admittedly, the number of models is the highest for binary trees and can be as high as $2m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because the models need to use only the non-zero features of the training examples common for the sibling nodes; no other features are needed to build corresponding classifiers. To train a \Algo{PLT} efficiently in this situation, one needs to store the weights of the node models in hash tables and use an appropriate variant of stochastic gradient descent, in which weights of the non-zero features are updated only. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
+Interestingly, in the case of sparse features, the space complexity of \Algo{PLT}s can be significantly reduced. Admittedly, the number of models is the highest for binary trees and can be as high as $2\times m-1$ (notice that the size of a tree with $m$ leaves is upper bounded by $2\times m-1$). This is twice the number of models in the simplest 1-vs-all approach. Paradoxically, the space complexity can be the lowest at this upper bound. This is because the models need to use only the non-zero features of the training examples common for the sibling nodes; no other features are needed to build corresponding classifiers. To train a \Algo{PLT} efficiently in this situation, one needs to store the weights of the node models in hash tables and use an appropriate variant of stochastic gradient descent, in which weights of the non-zero features are updated only. If the space complexity still exceeds the available memory, one can always use feature hashing over all nodes \cite{Weinberger_et_al_2009}.
 
 
 \vspace{\sectionBefore}
@@ -764,20 +766,22 @@ Alternatively, one can train the word embeddings simultaneously with the tagger 
 \label{sec:plt-deep}
 \vspace{\sectionAfter}
 
-To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advance deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
+To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advanced deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
 
 \vspace{\sectionBefore}
 \subsection{Ensemble of PLTs}
 \label{sec:plt-ensemble}
 \vspace{\sectionAfter}
 
-Simultaneously to improving the document representation, one can extend the tagger module with additional PLT instances.
-Depending on the tree structure, the PLT's accuracy of prediction for specific labels may vary.
-Thus the aggregation of predictions from an ensemble of PLTs with random tree structures leads to improvement of the overall predictive performance.
-Additionally, bootstrap aggregation can be applied to increase trees' variance further.
-
-Document representation can be updated using %ensemble of PLTs as well as single PLT by averaging the gradients
+Simultaneously to improving the document representation, one can extend the tagger module with additional \Algo{PLT} instances.
+Depending on the tree structure, the accuracy of a single \Algo{PLT} for specific labels may vary.
+Thus the aggregation of predictions from an ensemble of \Algo{PLT}s with random tree structures should lead to improvement of the overall predictive performance.
+Additionally, bootstrap aggregation can also be applied to decrease the variance of the trees. 
+%
+In our implementation, we also update the word embeddings by using %ensemble of PLTs as well as single PLT by averaging the gradients
 the average of gradients obtained from separate trees, which besides may lead to a reduction of overfitting.
+
+Let us also notice that classification of test examples with multiple trees can be still performed very efficiently. We query each tree for its top $k$ predictions. In the next step, we take a union of the predicted labels. In case, we did not get probability estimates for a given label from all the trees, we can efficiently obtain the missing probabilities by traversing the corresponding paths in the trees.
 
 %Taking into account fact, that the distribution of labels in the extream classification problems follows the Pareto distribution, it is expected to achive improvment.
 
@@ -991,116 +995,11 @@ To be consistent with the former discussion, let us define a loss function for p
 \end{eqnarray*}
 %
 The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
-with the highest conditional probabilities $\eta(\bx,j)$.
+with the highest marginal probabilities $\eta(\bx,j)$.
 
+As proven in~\citep{Jasinska_et_al_2016}  \Algo{PLT}s obey strong theoretical guarantees. It has been shown that the absolute difference between the true and the estimated marginal probability of label $j$, $|\eta(\bx,j) - \heta(\bx,j)|$ can be upperbounded by the loss of the inner node classifiers. Below recall this result. 
 
-
-
-
-Top-k labels with respect to the true marginals
-\[
-M_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \eta(\bx, j) \ge \eta(\bx, i)  \right\} \le k\right\}
-\]
-
-Top-k labels with respect to the estimated marginals
-\[
-\hat{M}_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \hat{\eta}(\bx, j) \ge \hat{\eta}(\bx, i)  \right\} \le k\right\}
-\]
-
-
-Expected regret for Prec@k conditioned on $\bx$ 
-\[
-\mbox{Reg}_{P@k} (h, \bx) = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j )
-\]
-
-We shall focus on multi-label classifiers in the following form:
-\[
-h(\bx,i) =h_{k, \hat{\eta}}(\bx,i) = \assert{\textstyle i \in \hat{M}_k(\bx) }
-\]
-
-In this case the Prec@k regret is $[0,1]$.
-
-The error for marginal estimates is denoted by $m_i = \vert \eta (\bx ,i ) - \hat{\eta} (\bx ,i )\vert$. With this we can upper bound 
-\begin{align}
-\mbox{Reg}_{P@k} (h, \bx) 
-  & = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
-  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
-  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
-  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
-  & \le 2k\max_{i \in [m]} m_i
-\end{align}
-
-\section{Probabilistic label trees}
-\label{app:plt}
-
-An example of a probabilistic label tree (\Algo{PLT}) for 4 labels $(y_1,y_2,y_3,y_4)$ is given in Fig.~\ref{fig:plt}. To estimate posterior probability $\eta(\bx, j) = \prob(y_j = 1 \given \bx)$, \Algo{PLT} uses a path from a root to the $j$-th leaf.
-In each node $t$, we associate with a training instance $(\bx,\by)$ a label $z_t$ such that:
-$$
-z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1} \quad \textrm{(or equivalently $z_t = \bigvee_{j \in L(t)} y_j$)}
-$$
-Recall that $L(t)$ is a set of all leaves of a subtree with the root in the $t$-th node. In leaf nodes the labels $z_j$, $j \in L$, correspond to original labels $y_j$.
-%
-\begin{figure}[h]
-	\begin{center}
-		\begin{tikzpicture}[scale = 0.85,every node/.style={scale=0.85},
-		regnode/.style={circle,draw,minimum width=1.5ex,inner sep=0pt},
-		leaf/.style={circle,fill=black,draw,minimum width=1.5ex,inner sep=0pt},
-		pleaf/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
-		pnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
-		rootnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
-		activerootnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
-		activenode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
-		activepleaf/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
-		level/.style={sibling distance=16em/#1, level distance=12ex}
-		]
-		\node (z) [rootnode,fill=lightgray] {\thickmuskip=-1.5mu $\prob(y_1\lor y_2 \lor y_3 \lor y_4 \given\bx)$}
-		child {node (a) [pnode,fill=lightgray] {\thickmuskip=-1.5mu $\prob(\overbrace{y_1 \lor y_2}^{z_t}\given \overbrace{y_1 \lor y_2 \lor y_3  \lor y_4}^{z_{\mathrm{pa}(t)}}=1, \bx)$} 
-			child {node [label=below:{ \scriptsize \thickmuskip=-1.5mu $y_1$}] (b) [pleaf,fill=lightgray] {\thickmuskip=-1.5mu $\prob(y_1\given y_1 \lor y_2=1, \bx)$} edge from parent node[above left]{}}
-			child {node [label=below:{\scriptsize \thickmuskip=0mu $y_2$}] (g) [pleaf] {\thickmuskip=-1.5mu $\prob(y_2\given y_1 \lor y_2 = 1, \bx)$} edge from parent node[above right]{}}
-			edge from parent node[above left]{}
-		}
-		child {node (j) [pnode] {$\prob(y_3 \lor y_4 \given y_1 \lor y_2 \lor y_3 \lor y_4 = 1, \bx)$}
-			child {node [label=below:{ \scriptsize \thickmuskip=0mu $y_3$}] (k) [pleaf] {\thickmuskip=-1.5mu $\prob(y_3\given y_3 \lor y_4 = 1, \bx)$} edge from parent node[above left]{}}
-			child {node [label=below:{ \scriptsize \thickmuskip=0mu $y_4$}] (l) [pleaf] {\thickmuskip=-1.5mu $\prob(y_4\given y_3 \lor y_4 = 1,  \bx)$}
-				{
-					child [grow=right] {node (s) {} edge from parent[draw=none]
-						child [grow=up] {node (t) {} edge from parent[draw=none]
-							child [grow=up] {node (u) {} edge from parent[draw=none]}
-						}
-					}
-				}
-				edge from parent node[above right]{}
-			}
-			edge from parent node[above right]{}
-		};
-		\end{tikzpicture}
-\end{center}
-\caption{An example of a probabilistic label tree for 4 labels $(y_1,y_2,y_3,y_4)$.}
-\label{fig:plt}
-\end{figure}
-%
-
-Consider the leaf node $j$ and the path from the root to this leaf node. Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
-\begin{equation}
-\eta(\bx, j) = \prod_{t \in \Path{j}} \eta_T(\bx, t)\,,
-\label{eqn:probabilistic_tree_appendix}
-\end{equation}
-where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$, for all non-root nodes $t$, and $\eta(\bx, t) = \prob(z_t = 1 \given \bx)$, if $t$ is the root node (denoted by $r(T)$). 
-
-To see the correctness of (\ref{eqn:probabilistic_tree_appendix}) notice that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. So, for non-root nodes $t$ and $\pa{t}$ we have:
-\begin{eqnarray*}
-\eta_T(\bx,t) \eta_T(\bx, \pa{t}) & = &  \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)\prob(z_{\pa{t}} = 1 \given z_{\pa{\pa{t}}} =1, \bx)\\
-& = & \frac{\prob(z_t = 1 , z_{\pa{t}} =1, \bx)}{\prob(z_{\pa{t}} =1, \bx)} \frac{\prob(z_{\pa{t}} = 1, z_{\pa{\pa{t}}} =1, \bx)}{\prob(z_{\pa{\pa{t}}} =1, \bx)} \\
-& = & \frac{\prob(z_t = 1, \bx)}{\prob(z_{\pa{t}} =1, \bx)} \frac{\prob(z_{\pa{t}} = 1, \bx)}{\prob(z_{\pa{\pa{t}}} =1, \bx)} \\
-& = & \frac{\prob(z_t = 1, \bx)}{\prob(z_{\pa{\pa{t}}} =1, \bx)} \,.
-\end{eqnarray*}
-In words, the probability associated with the parent node $\pa{t}$ cancels out and we can express $\eta_T(\bx,t) \eta_T(\bx, \pa{t})$ as the product of probabilities associated only with node $t$ and its grandparent node $\pa{\pa{t}}$. 
-%
-Applying the above rule consecutively to $\prod_{t \in \Path{j}} \eta_T(\bx, t)$ and recalling that for the root note $\eta_T(\bx, r(T)) = \prob(z_{r(T)} = 1 \given \bx)$, we finally get $\eta(\bx, j)$. 
-
-Below we show that \Algo{PLT}s posses strong theoretical guarantees. We derive a relation between  estimation error minimized by the node classifiers and estimation error of posterior probabilities $\eta(\bx,j)$. This relation states that we can upperbound the latter error by the former. This also implies that for optimal node classifiers we get optimal multi-label classifier in terms of estimation of posterior probabilities.
-
-We are interested in bounding the estimation error of posterior probabilities of labels at point $\bx$
+We are interested in bounding the estimation error of marginal probabilities of labels at point $\bx$:
 $$
 \ell(\eta(\bx),\heta(\bx)) = \frac{1}{m} \sum_{j=1}^m |\eta(\bx, j) - \heta(\bx, j)| \,,
 $$
@@ -1109,7 +1008,7 @@ $$
 \ell(\eta_T(\bx, t), \heta_T(\bx, t)) = |\eta_T(\bx, t) - \heta_T(\bx, t)  | \,.
 $$
 
-Expressing $\eta(\bx, j)$  and $\heta(\bx, j)$ by (\ref{eqn:probabilistic_tree_appendix}) and applying Lemma~2 from~\cite{Beygelzimer_et_al_2009b}, we get:
+Expressing $\eta(\bx, j)$  and $\heta(\bx, j)$ by (\ref{eqn:probabilistic_tree}) and applying Lemma~2 from~\cite{Beygelzimer_et_al_2009b}, we get:
 \begin{equation}
 \left | \eta(\bx, j) - \heta(\bx, j) \right | \le \sum_{t \in \Path{j}} \left | \eta_T(\bx, t) - \heta_T(\bx, t) \right | \,.
 \label{eqn:estimation_bound}
@@ -1127,7 +1026,7 @@ L_{\ell}(f \given \bx) = \mathbb{E}_{y_j\given\bx} \left [ \ell  (y_j, f_t(\bx))
 $$
 and  $L_{\ell}^*(\bx)$ is the minimum expected loss at point $\bx$.
 
-If a node classifier is trained by a learning algorithm that minimizes a strongly proper composite loss, e.g.,  squared, exponential, or logistic loss, like in our implementation (see in Appendix \ref{sec:training_of_node_classifiers}), then the bound (\ref{eqn:estimation_bound}) can be expressed in terms of the regret of this loss function: 
+If a node classifier is trained by a learning algorithm that minimizes a strongly proper composite loss, e.g.,  squared, exponential, or logistic loss, then the bound (\ref{eqn:estimation_bound}) can be expressed in terms of the regret of this loss function: 
 $$
 \left | \eta_T(\bx, t) - \psi^{-1}(f_t)  \right | \le \sqrt{ \frac{2}{\lambda}} \sqrt{\reg_\ell(f_t \given \bx)}
 $$
@@ -1136,35 +1035,182 @@ $$
 \left | \eta(\bx, j) - \heta(\bx, j) \right | \le \! \sum_{t \in \Path{j}} \! \left | \eta_T(\bx, t) - \heta_T(\bx, t) \right | = \!  \sum_{t \in \Path{j}}  \! \left | \eta_T(\bx, t) - \psi^{-1}(f_t)  \right | \le  \! \sum_{t \in \Path{j}}  \! \sqrt{ \frac{2}{\lambda}} \sqrt{\reg_\ell(f_t \given \bx)}
 $$ 
 
+The above result also means for optimal node classifiers, we obtain an optimal multi-label classifier in terms of estimation of marginal probabilities $\eta(\bx,j)$. Below we extend this result to give guarantees for precision@$k$. 
 
-\section{Tuning of hyperparameters}
-\label{sec:hyper}
+Let us denote the top $k$ labels with respect to the true marginals by $\calY_k$ and the top k labels with respect to predicted marginals by $\hat \calY_k$.
+Conditional regret for precision@$k$ is given by:
+$$
+\reg_{p@k} (\bh \given \bx) = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i ) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )
+$$
 
+We can upper bound $\reg_{p@k} (\bh \given \bx)$ by noticing that $\hat \calY_k$ does not contain label $i \in \calY_k$ when for all $j \in \hat \calY_k$ we have:
+$$
+\heta(\bx, i) < \heta(\bx,j) \,. % \quad \mathrm{and} \quad \,.
+$$
+To use the upper bound of $m_j = |\eta(\bx,j) - \heta(\bx,j)|$ we can write 
+$$
+\eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i)  < \eta(\bx,j) - \eta(\bx,j) + \heta(\bx,j) \,,
+$$
+which gives us 
+$$
+\eta(\bx, j) > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,. \\
+$$
+Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for at least one $j \in \calY_k$, we can rearrange the terms and write:
+$$
+\eta(\bx, j)  > \eta(\bx, i) - |\eta(\bx, i) - \heta(\bx, i)| - |\eta(\bx,j) - \heta(\bx,j)| \,. 
+$$
+Finally, we obtain:
+$$
+\eta(\bx, j) > \eta(\bx, i) - m_i - m_j > \eta(\bx,i) - 2 \max_{l} m_l \,. %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
+$$
+%as we know that $\eta(\bx, i) > \eta(\bx, j)$ for all $j \in \calY_k$.
+%where $m_i = |\eta(\bx,i) - \heta(\bx,i)|$. 
+%This is because that the true top label j can be replaced by label k in the worse case when \eta_j - m_j < \eta_k + m_k.
+%$m_j = |\eta(\bx,j) - \heta(\bx,j)|$ in the following way 
+The regret can be then written as follows:
+\begin{align*}
+\reg_{p@k} (\bh \given \bx)
+  & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
+  & \le \frac{1}{k}\sum_{i \in \calY_k} \left ( \eta (\bx ,i) - \eta(\bx,i) + 2 \max_{l} m_l \right )\\
+  & \le 2 \max_{l} m_l 
+\end{align*}
+%\sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
+%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
+%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
+%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
+%  & \le 2k\max_{i \in [m]} m_i
+%\end{align}
 
-A \Algo{PLT} has only one global hyperparameter which is the degree of the tree denoted by $b$. The other hyperparameters are associated with the node classifiers. To tune the stochastic gradient descent described above we varied values of $\gamma$, $\lambda$, and the number of epochs. 
+%Top-k labels with respect to the true marginals
+%\[
+%M_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \eta(\bx, j) \ge \eta(\bx, i)  \right\} \le k\right\}
+%\]
 %
-All hyperparameters were tuned by using the open-source hyperparameter optimizer \Algo{SMAC}~\cite{Hutter_et_al_2011} with a wide range of parameters, which is reported in Table \ref{tab:hyppar}. 
-%We also tuned the number of epochs which is the number of times we run through the entire dataset. 
-The validation process was carried out by using a $80/20$ split of the training data for every dataset we used.
+%Top-k labels with respect to the estimated marginals
+%\[
+%\hat{M}_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \hat{\eta}(\bx, j) \ge \hat{\eta}(\bx, i)  \right\} \le k\right\}
+%\]
+%
+%
+%Expected regret for Prec@k conditioned on $\bx$ 
+%\[
+%\mbox{Reg}_{P@k} (h, \bx) = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j )
+%\]
+%
+%We shall focus on multi-label classifiers in the following form:
+%\[
+%h(\bx,i) =h_{k, \hat{\eta}}(\bx,i) = \assert{\textstyle i \in \hat{M}_k(\bx) }
+%\]
+%
+%In this case the Prec@k regret is $[0,1]$.
+%
+%The error for marginal estimates is denoted by $m_i = \vert \eta (\bx ,i ) - \hat{\eta} (\bx ,i )\vert$. With this we can upper bound 
+%\begin{align}
+%\mbox{Reg}_{P@k} (h, \bx) 
+%  & = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
+%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
+%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
+%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
+%  & \le 2k\max_{i \in [m]} m_i
+%\end{align}
 
-\vspace{\tableBefore}
-\begin{table}[ht!]
-\caption{The hyperparameters of the \Algo{PLT} method and their ranges used in hyperparameter optimization,}
-\label{tab:hyppar}
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-\hline
-Hyperparameter & Validation range \\%& RCV1 & AmazonCat & Wiki10 & Delicious-200K & WikiLSHTC & Amazon \\ 
-\hline
-$b$ & $\{2,\dots,256\}$ \\% &  $16$          & $16$      & $32$   & $2$     & &       \\ 
-$\lambda$ &  $[10 - 0.000001]$ \\%& $10^{-4}$ & $10^{-4}$   & $10^{-5}$& $10^{-5}$ & &       \\ 
-$\gamma$ &  $[10 - 0.000001]$ \\%& $10^{-5}$  & $10^{-5}$   & $10^{-5}$& $10^{-6}$ & &       \\ 
-Num. of epochs &  $\{ 5, \dots , 30\} $ \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-\vspace{\tableAfter}
+%\section{Probabilistic label trees}
+%\label{app:plt}
+%
+%An example of a probabilistic label tree (\Algo{PLT}) for 4 labels $(y_1,y_2,y_3,y_4)$ is given in Fig.~\ref{fig:plt}. To estimate posterior probability $\eta(\bx, j) = \prob(y_j = 1 \given \bx)$, \Algo{PLT} uses a path from a root to the $j$-th leaf.
+%In each node $t$, we associate with a training instance $(\bx,\by)$ a label $z_t$ such that:
+%$$
+%z_t = \assert{\textstyle \sum_{j \in L(t)} y_j \ge 1} \quad \textrm{(or equivalently $z_t = \bigvee_{j \in L(t)} y_j$)}
+%$$
+%Recall that $L(t)$ is a set of all leaves of a subtree with the root in the $t$-th node. In leaf nodes the labels $z_j$, $j \in L$, correspond to original labels $y_j$.
+%%
+%\begin{figure}[h]
+%	\begin{center}
+%		\begin{tikzpicture}[scale = 0.85,every node/.style={scale=0.85},
+%		regnode/.style={circle,draw,minimum width=1.5ex,inner sep=0pt},
+%		leaf/.style={circle,fill=black,draw,minimum width=1.5ex,inner sep=0pt},
+%		pleaf/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
+%		pnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
+%		rootnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt},
+%		activerootnode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
+%		activenode/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
+%		activepleaf/.style={rectangle,rounded corners=1ex,draw,font=\scriptsize,inner sep=3pt,line width=1pt},
+%		level/.style={sibling distance=16em/#1, level distance=12ex}
+%		]
+%		\node (z) [rootnode,fill=lightgray] {\thickmuskip=-1.5mu $\prob(y_1\lor y_2 \lor y_3 \lor y_4 \given\bx)$}
+%		child {node (a) [pnode,fill=lightgray] {\thickmuskip=-1.5mu $\prob(\overbrace{y_1 \lor y_2}^{z_t}\given \overbrace{y_1 \lor y_2 \lor y_3  \lor y_4}^{z_{\mathrm{pa}(t)}}=1, \bx)$} 
+%			child {node [label=below:{ \scriptsize \thickmuskip=-1.5mu $y_1$}] (b) [pleaf,fill=lightgray] {\thickmuskip=-1.5mu $\prob(y_1\given y_1 \lor y_2=1, \bx)$} edge from parent node[above left]{}}
+%			child {node [label=below:{\scriptsize \thickmuskip=0mu $y_2$}] (g) [pleaf] {\thickmuskip=-1.5mu $\prob(y_2\given y_1 \lor y_2 = 1, \bx)$} edge from parent node[above right]{}}
+%			edge from parent node[above left]{}
+%		}
+%		child {node (j) [pnode] {$\prob(y_3 \lor y_4 \given y_1 \lor y_2 \lor y_3 \lor y_4 = 1, \bx)$}
+%			child {node [label=below:{ \scriptsize \thickmuskip=0mu $y_3$}] (k) [pleaf] {\thickmuskip=-1.5mu $\prob(y_3\given y_3 \lor y_4 = 1, \bx)$} edge from parent node[above left]{}}
+%			child {node [label=below:{ \scriptsize \thickmuskip=0mu $y_4$}] (l) [pleaf] {\thickmuskip=-1.5mu $\prob(y_4\given y_3 \lor y_4 = 1,  \bx)$}
+%				{
+%					child [grow=right] {node (s) {} edge from parent[draw=none]
+%						child [grow=up] {node (t) {} edge from parent[draw=none]
+%							child [grow=up] {node (u) {} edge from parent[draw=none]}
+%						}
+%					}
+%				}
+%				edge from parent node[above right]{}
+%			}
+%			edge from parent node[above right]{}
+%		};
+%		\end{tikzpicture}
+%\end{center}
+%\caption{An example of a probabilistic label tree for 4 labels $(y_1,y_2,y_3,y_4)$.}
+%\label{fig:plt}
+%\end{figure}
+%%
+%
+%Consider the leaf node $j$ and the path from the root to this leaf node. Using the chain rule of probability, we can express $\eta(\bx, j)$ in the following way:
+%\begin{equation}
+%\eta(\bx, j) = \prod_{t \in \Path{j}} \eta_T(\bx, t)\,,
+%\label{eqn:probabilistic_tree_appendix}
+%\end{equation}
+%where $\eta_T(\bx, t) = \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)$, for all non-root nodes $t$, and $\eta(\bx, t) = \prob(z_t = 1 \given \bx)$, if $t$ is the root node (denoted by $r(T)$). 
+%
+%To see the correctness of (\ref{eqn:probabilistic_tree_appendix}) notice that $z_{t} = 1$ implies $z_{\pa{t}} = 1$. So, for non-root nodes $t$ and $\pa{t}$ we have:
+%\begin{eqnarray*}
+%\eta_T(\bx,t) \eta_T(\bx, \pa{t}) & = &  \prob(z_t = 1 \given z_{\pa{t}} =1, \bx)\prob(z_{\pa{t}} = 1 \given z_{\pa{\pa{t}}} =1, \bx)\\
+%& = & \frac{\prob(z_t = 1 , z_{\pa{t}} =1, \bx)}{\prob(z_{\pa{t}} =1, \bx)} \frac{\prob(z_{\pa{t}} = 1, z_{\pa{\pa{t}}} =1, \bx)}{\prob(z_{\pa{\pa{t}}} =1, \bx)} \\
+%& = & \frac{\prob(z_t = 1, \bx)}{\prob(z_{\pa{t}} =1, \bx)} \frac{\prob(z_{\pa{t}} = 1, \bx)}{\prob(z_{\pa{\pa{t}}} =1, \bx)} \\
+%& = & \frac{\prob(z_t = 1, \bx)}{\prob(z_{\pa{\pa{t}}} =1, \bx)} \,.
+%\end{eqnarray*}
+%In words, the probability associated with the parent node $\pa{t}$ cancels out and we can express $\eta_T(\bx,t) \eta_T(\bx, \pa{t})$ as the product of probabilities associated only with node $t$ and its grandparent node $\pa{\pa{t}}$. 
+%%
+%Applying the above rule consecutively to $\prod_{t \in \Path{j}} \eta_T(\bx, t)$ and recalling that for the root note $\eta_T(\bx, r(T)) = \prob(z_{r(T)} = 1 \given \bx)$, we finally get $\eta(\bx, j)$. 
+
+
+%\section{Tuning of hyperparameters}
+%\label{sec:hyper}
+%
+%
+%A \Algo{PLT} has only one global hyperparameter which is the degree of the tree denoted by $b$. The other hyperparameters are associated with the node classifiers. To tune the stochastic gradient descent described above we varied values of $\gamma$, $\lambda$, and the number of epochs. 
+%%
+%All hyperparameters were tuned by using the open-source hyperparameter optimizer \Algo{SMAC}~\cite{Hutter_et_al_2011} with a wide range of parameters, which is reported in Table \ref{tab:hyppar}. 
+%%We also tuned the number of epochs which is the number of times we run through the entire dataset. 
+%The validation process was carried out by using a $80/20$ split of the training data for every dataset we used.
+%
+%\vspace{\tableBefore}
+%\begin{table}[ht!]
+%\caption{The hyperparameters of the \Algo{PLT} method and their ranges used in hyperparameter optimization,}
+%\label{tab:hyppar}
+%\begin{center}
+%\begin{tabular}{|c|c|c|c|c|c|c|c|}
+%\hline
+%Hyperparameter & Validation range \\%& RCV1 & AmazonCat & Wiki10 & Delicious-200K & WikiLSHTC & Amazon \\ 
+%\hline
+%$b$ & $\{2,\dots,256\}$ \\% &  $16$          & $16$      & $32$   & $2$     & &       \\ 
+%$\lambda$ &  $[10 - 0.000001]$ \\%& $10^{-4}$ & $10^{-4}$   & $10^{-5}$& $10^{-5}$ & &       \\ 
+%$\gamma$ &  $[10 - 0.000001]$ \\%& $10^{-5}$  & $10^{-5}$   & $10^{-5}$& $10^{-6}$ & &       \\ 
+%Num. of epochs &  $\{ 5, \dots , 30\} $ \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\end{table}
+%\vspace{\tableAfter}
 
 \end{document} 
 
