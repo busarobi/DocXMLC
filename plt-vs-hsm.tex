@@ -1020,10 +1020,12 @@ Amazon-670K & \datarr{train}{test} & \datarr{789m}{21m} & \datarr{1083m}{48m} & 
 
 We also compared the performance of \Algo{PLT} with some state-of-the-art learners on benchmark datasets. As a baseline, we used Convolutional Neural Net work (CNN) models by~\citep{Liu_et_al_2017} which deep network architecture achieves very impressive  performance on these datasets. The main characteristics of datasets are shown in Table \ref{tab:datasets-differences-table}. 
 
-The results reveal some general trends. The PLT outperforms LOM and HSM consistently. The bagging significantly improves the precision at higher position. 
+The results reveal some general trends. First, the \Algo{PLT} outperforms \Algo{HSM} consistently. Second, the \Algo{PLT}'s performance is on par with fastXML, however SLEEC  achieves better results. Nevertheless, the running time of SLEEC is way higher. So PLT seems to find a reasonable trade-off between running time and performance.
 
-We would especially like to underline the fact that the PLT with word embeddings is on-par with the more complex CNN model in terms of precision for a computational cost that is an order of magnitude smaller.
+We would especially like to underline the fact that the PLT with word embeddings is on-par with the more complex CNN model in terms of precision for a computational cost that is an order of magnitude smaller. Moreover, the CNN requires pretrained embedding vectors as initialization, whereas our \Algo{PLT} implementation can be used with random initializations.
 
+
+Lastly, the bagging significantly improves the precision at higher position, such as Prec@3 and Prec@5. 
 
 
 
