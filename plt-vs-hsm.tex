@@ -94,6 +94,13 @@
     \end{tabular}
 }
 
+\newcommand{\datarr}[2]{
+    \begin{tabular}{ll}
+    \rule{0pt}{0pt} #1 \\
+    \rule{0pt}{0pt} #2 \\
+    \end{tabular}
+}
+
 
 \newcommand{\assert}[1]{\llbracket #1 \rrbracket}
 
@@ -853,51 +860,83 @@ We also carried out experiments on commonly used benchmark datasets taken from X
         \begin{center}
                 \begin{small}
                         \vspace{-0.1cm}
-                        \begin{tabular}{l@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | }
+                        \begin{tabular}{l@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} }
                                 \toprule
-	& \multicolumn{2}{|c|}{\Algo{XMLC}} & \multicolumn{2}{|c|}{\Algo{Word embeddings}} \\ \midrule
-	& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{PLT}} \\ \midrule
+	& \multicolumn{2}{|c|}{\Algo{XMLC}} & \multicolumn{2}{|c}{\Algo{Word embeddings}} \\ \midrule
+	& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c}{\Algo{PLT}} \\ \midrule
 	Yahoo! & \data{}{}{} & \data{70.06}{58.04}{46.05} & \data{67.80}{54.88}{43.78} & \data{71.79}{58.82}{46.38} \\ \midrule
 	RCV1 & \data{87.73}{69.98}{50.17} & \data{90.47}{72.54}{51.84} & \data{93.94}{76.75}{53.61} & \data{95.41}{77.49}{53.91} \\ \midrule
 	Wiki30k & \data{70.20}{60.11}{53.17} & \data{84.34}{72.34}{62.72} & \data{83.02}{69.66}{59.50} & \data{85.11}{73.12}{62.67} \\ \midrule
-	Amazon12k & \data{86.20}{71.54}{57.47} & \data{91.46}{76.00}{61.40} & \data{90.18}{72.53}{56.20} & \data{92.98}{75.75}{59.53} \\ \midrule
-	EUR-Lex & \data{}{}{} & \data{74.55}{60.60}{50.05} &\data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} \\ \midrule
-	Wiki-LSHTC & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} \\ \midrule
-                                \bottomrule
+	Amazon12(13?)k & \data{86.69}{72.00}{57.97} & \data{91.46}{76.00}{61.40} & \data{90.18}{72.53}{56.20} & \data{92.98}{75.75}{59.53} \\ \midrule
+	EUR-Lex & \data{}{}{} & \data{74.55}{60.60}{50.05} & \data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} \\ \midrule
+	Delicious-200K & \data{41.58}{33.24}{28.04} & \data{45.27}{38.95}{35.59} & \data{42.17}{37.94}{35.77} & \data{46.98}{40.99}{38.04} \\ \midrule
+	WikiLSHTC-325K & \data{36.90}{22.30}{16.60} & \data{41.63}{26.78}{20.39} & \data{41.28}{24.68}{18.08} & \data{41.78}{24.963}{18.529} \\ \midrule
+    Amazon-670K & \data{33.64}{28.58}{25.01} & \data{36.85}{32.48}{29.15} & \data{25.04}{21.06}{18.28} & \data{26.18}{22.76}{20.29} \\
+								\bottomrule
                         \end{tabular}
                 \end{small}
         \end{center}
 	\vspace{-0.4cm}
 \end{table}
-
-
 
 
 We compared the performance of \Algo{HSM} and \Algo{PLT}. We tuned the hyper-parameters of the models by using grid search. The range of the hyper-parameters is reported in Appendix. The results are shown in Table \ref{tab:hsm_vs_plt}. \Algo{PLT} clearly outperforms \Algo{HSM} in all cases by a very significant margin on both text representations. The running time of these two algorithm is 
 
 
-\begin{table}[ht!]
+\begin{table*}[ht!]
 \vspace{-.2cm}
-        \caption{Precision@K scores with $K=\{ 1,3,5\}$ of \Algo{HSM}, \Algo{LOM} and \Algo{PLT} lgorithms. The highest Precision@K values are in bold for every dataset.}
+        \caption{Precision@K scores with $K=\{ 1,3,5\}$ of \Algo{FastXML}, \Algo{SLEEC}, \Algo{HSM}, \Algo{LOM} and \Algo{PLT} algorithms. The highest Precision@K values are in bold for every dataset.}
         \label{tab:datasets-differences-table}
         \begin{center}
                 \begin{small}
                         \vspace{-0.1cm}
-                        \begin{tabular}{l@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | }
+                        \begin{tabular}{l@{\hskip 0pt} | l@{\hskip 0pt}| r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt}  }
                                 \toprule
-& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c|}{\Algo{CNN}} \\
+& & \multicolumn{1}{|c|}{\Algo{FastXML}} & \multicolumn{1}{|c|}{\Algo{SLEEC}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c}{\Algo{CNN}} \\
                                 \midrule
-RCV1 & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{90.99}{82.53} & \data{96.83}{81.44}{56.57} \\ \midrule
-Yahoo & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{74.08}{69.63}{64.05} & \data{71.71}{58.40}{45.62} \\ \midrule
-Wiki-30K & \data{83.02}{69.66}{59.50} & \data{81.44}{67.67}{57.85} & \data{85.11}{73.12}{62.67} & \data{85.21}{81.29}{75.22} & \data{82.78}{66.34}{56.23}\\ \midrule
-Amazon13K & \data{90.18}{72.53}{56.20} & \data{90.37}{73.62}{57.18} & \data{92.98}{75.75}{59.53} & \data{93.42}{88.75}{80.39} & \data{95.13}{79.52}{63.46} \\ \midrule
-EUR-Lex & \data{68.69}{56.52}{47.20} & \data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} & \data{75.08}{70.06}{63.38} & \data{72.16}{57.32}{46.49} \\
+RCV1 & \data{P@1}{P@3}{P@5} & \data{94.62}{78.40}{54.82} & \data{95.35}{79.51}{55.06} & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{90.99}{82.53} & \data{96.83}{81.44}{56.57} \\ \midrule
+Yahoo & \data{P@1}{P@3}{P@5} & \data{}{}{} & \data{}{}{} & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{74.08}{69.63}{64.05} & \data{71.71}{58.40}{45.62} \\ \midrule
+EUR-Lex & \data{P@1}{P@3}{P@5} & \data{68.12}{57.93}{48.97} & \data{78.21}{64.33}{52.47} & \data{68.69}{56.52}{47.20} & \data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} & \data{75.08}{70.06}{63.38} & \data{72.16}{57.32}{46.49} \\ \midrule
+Wiki-30K & \data{P@1}{P@3}{P@5} & \data{83.26}{68.74}{58.84} & \data{85.96}{73.13}{62.73} & \data{83.02}{69.66}{59.50} & \data{81.44}{67.67}{57.85} & \data{85.11}{73.12}{62.67} & \data{85.21}{81.29}{75.22} & \data{82.78}{66.34}{56.23}\\ \midrule
+Amazon-13(12?)K & \data{P@1}{P@3}{P@5} & \data{94.58}{78.69}{62.26} & \data{93.61}{79.13}{63.54} & \data{90.18}{72.53}{56.20} & \data{90.37}{73.62}{57.18} & \data{92.98}{75.75}{59.53} & \data{93.42}{88.75}{80.39} & \data{95.13}{79.52}{63.46} \\ \midrule
+Amazon-670K & \data{P@1}{P@3}{P@5} & \data{35.59}{31.87}{28.96} & \data{34.54}{30.89}{28.25} & \data{25.04}{21.06}{18.28} & \data{25.67}{20.96}{18.72} & \data{26.18}{22.76}{20.29} & \data{25.66}{24.15}{22.73} & \data{?}{?}{?} \\ \midrule
+Delicious-200K & \data{P@1}{P@3}{P@5} & \data{43.07}{38.66}{36.19} & \data{47.85}{42.21}{39.43} & \data{42.17}{37.94}{35.77} & \data{42.68}{38.24}{35.87} & \data{46.98}{40.99}{38.04} & \data{47.27}{44.80}{42.28} & \data{-}{-}{-} \\ \midrule
+WikiLSHTC-325K & \data{P@1}{P@3}{P@5} & \data{49.75}{33.10}{24.45} & \data{54.83}{33.42}{23.85} & \data{41.28}{24.68}{18.08} & \data{50.16}{31.95}{23.59} & \data{41.78}{24.963}{18.529} & \data{40.92}{34.19}{27.35} & \data{-}{-}{-} \\
+%Datasets & \data{P@1}{P@3}{P@5} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} \\ \midrule
                                 \bottomrule
                         \end{tabular}
                 \end{small}
         \end{center}
 	\vspace{-0.4cm}
-\end{table}
+\end{table*}
+
+
+\begin{table*}[ht!]
+\vspace{-.2cm}
+        \caption{Training and testing time of \Algo{FastXML}, \Algo{SLEEC}, \Algo{HSM}, \Algo{LOM} and \Algo{PLT} algorithms in minutes.}
+        \label{tab:datasets-differences-table}
+        \begin{center}
+                \begin{small}
+                        %\vspace{-0.1cm}
+                        \begin{tabular}{l@{\hskip 0pt} | l@{\hskip 0pt}| r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt}  }
+                                \toprule
+& & \multicolumn{1}{|c|}{\Algo{FastXML}} & \multicolumn{1}{|c|}{\Algo{SLEEC}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c}{\Algo{CNN}} \\
+                                \midrule
+RCV1 & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+Yahoo & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+EUR-Lex & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+Wiki-30K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+Amazon-13(12?)K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+Amazon-670K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+Delicious-200K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+WikiLSHTC-325K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\
+%Datasets & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
+                                \bottomrule
+                        \end{tabular}
+                \end{small}
+        \end{center}
+	\vspace{-0.4cm}
+\end{table*}
 
 We also compare the performance of \Algo{PLT} with some state-of-the-art learners on benchmark dataset. As a baseline, we used Convolutional Neural Net work (CNN) models by~\citep{YimingYang} which deep network architecture achieves very impressive  performance on these datasets.
 
