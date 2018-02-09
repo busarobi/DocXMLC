@@ -205,18 +205,45 @@
 \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 
 \begin{abstract}
-Probabilistic label trees (\Algo{PLT}s) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. 
-They follow the label tree approach in which each label is assigned to one and only one path from the root to a leaf. 
+Extreme multi-label classification (XMLC) is the problem of
+classifying an instance with more than one label choosen from a very
+large set of labels.  Recent work introduced probabilistic label trees
+(\Algo{PLTs}) to solve XMLC, where each label represents one and only
+path from root of the tree to a leaf node.  In this work, we
+theoretically prove that \Algo{PLTs} can be seen as no-regret
+multi-label generalization of hierachical softmax
+(\Algo{HSM}). Additionally, we prove that \emph{pick-one-label}
+heuristic, used for adaptation of HSM to XMLC, is not consistent. Our
+empirical results show that HSM with pick-one-label heuristic is
+significantly worse than PLTs. We also show that PLTs when used with
+word-embeddings produce state-of-the-art results on XMLC benchmark
+datasets.
+
 %
-In this paper, we theoretically show that \Algo{PLT}s are no-regret multi-label generalization of hierarchical softmax (\Algo{HSM}), a commonly used approach in neural networks to speed up computations in multi-class problems with large output spaces (such as language modeling). We also prove that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is not consistent. Moreover, we empirically show that HSM with this heuristic is consistently worse than PLTs by a significant margin. Finally, we report the results of PLTs used with word-embeddings that are competitive to the state-of-the-art on popular XMLC benchmark datasets. 
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
 
-Many current applications of machine learning are characterized not only by a vast number of training examples and features, but also by a very large number of classes (labels) to which examples can be assigned. The learning problems of this type are often referred to as \emph{extreme classification}. They can be either multi-class or multi-label. Examples of such problems are photo and video annotation~\citep{Deng_et_al_2011} (e.g., used for image search engines), tagging of text documents~\citep{Dekel_Shamir_2010} (e.g., automatic categorization of Wikipedia articles), recommendation of bid words for online ads~\citep{Prabhu_Varma_2014}, or prediction of the next word in a sentence~\citep{Mikolov_et_al_2013}.
+Many machine learning applications operate over a large label space
+and require large number of training examples and features for
+modeling. Such applications are casted as extreme multi-label
+classification problems. They can be either multi-class or
+multi-label.  Examples of such problems are photo and video
+annotation~\citep{Deng_et_al_2011} (e.g., used for image search
+engines), tagging of text documents~\citep{Dekel_Shamir_2010} (e.g.,
+automatic categorization of Wikipedia articles), recommendation of bid
+words for online ads~\citep{Prabhu_Varma_2014}, or prediction of the
+next word in a sentence~\citep{Mikolov_et_al_2013}.
 %
-To be more specific, let us consider a problem of tagging Wikipedia articles. In this case, each article is an instance/example, words appearing in the text of articles can be considered as features, and categories to which articles are assigned as labels. By creating a data set from the current content of Wikipedia, we very easily end up with an enormous problem with millions of examples and features, but also with more than one million of labels, because that many categories are used in Wikipedia today. 
+To be more specific, let us consider a problem of tagging Wikipedia
+articles. In this case, each article is an instance/example, words
+appearing in the text of articles can be considered as features, and
+categories to which articles are assigned as labels. By creating a
+data set from the current content of Wikipedia, we very easily end up
+with an enormous problem with millions of examples and features, but
+also with more than one million of labels, because that many
+categories are used in Wikipedia today.
 
 The challenges posed by problems at that scale have opened a new line of research within machine learning. It is easy to notice that the popular \Algo{1-vs-All} approach which scales linearly with the number of labels is too costly in the extreme setting. Therefore, there is a need for new algorithms being sublinear in time and space. 
 %
