@@ -749,6 +749,15 @@ To improve the document representation, instead of a simple aggregation over wor
 \label{sec:plt-ensemble}
 \vspace{\sectionAfter}
 
+Simultaneously to improving the document representation, one can extend the tagger module with additional PLT instances.
+Depending on the tree structure, the PLT's accuracy of prediction for specific labels may vary.
+Thus the aggregation of predictions from an ensemble of PLTs with random tree structures leads to improvement of the overall predictive performance.
+Additionally, bootstrap aggregation can be applied to increase trees' variance further.
+
+Document representation can be updated using %ensemble of PLTs as well as single PLT by averaging the gradients
+the average of gradients obtained from separate trees, which besides may lead to a reduction of overfitting.
+
+%Taking into account fact, that the distribution of labels in the extream classification problems follows the Pareto distribution, it is expected to achive improvment.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -879,14 +888,14 @@ We compared the performance of \Algo{HSM} and \Algo{PLT}. We tuned the hyper-par
                                 \toprule
 & & \multicolumn{1}{|c|}{\Algo{FastXML}} & \multicolumn{1}{|c|}{\Algo{SLEEC}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c}{\Algo{CNN}} \\
                                 \midrule
-RCV1 & \data{P@1}{P@3}{P@5} & \data{94.62}{78.40}{54.82} & \data{95.35}{79.51}{55.06} & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{90.99}{82.53} & \data{96.83}{81.44}{56.57} \\ \midrule
-Yahoo & \data{P@1}{P@3}{P@5} & \data{}{}{} & \data{}{}{} & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{74.08}{69.63}{64.05} & \data{71.71}{58.40}{45.62} \\ \midrule
-EUR-Lex & \data{P@1}{P@3}{P@5} & \data{68.12}{57.93}{48.97} & \data{78.21}{64.33}{52.47} & \data{68.69}{56.52}{47.20} & \data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} & \data{75.08}{70.06}{63.38} & \data{72.16}{57.32}{46.49} \\ \midrule
-Wiki-30K & \data{P@1}{P@3}{P@5} & \data{83.26}{68.74}{58.84} & \data{85.96}{73.13}{62.73} & \data{83.02}{69.66}{59.50} & \data{81.44}{67.67}{57.85} & \data{85.11}{73.12}{62.67} & \data{85.21}{81.29}{75.22} & \data{82.78}{66.34}{56.23}\\ \midrule
-Amazon-13(12?)K & \data{P@1}{P@3}{P@5} & \data{94.58}{78.69}{62.26} & \data{93.61}{79.13}{63.54} & \data{90.18}{72.53}{56.20} & \data{90.37}{73.62}{57.18} & \data{92.98}{75.75}{59.53} & \data{93.42}{88.75}{80.39} & \data{95.13}{79.52}{63.46} \\ \midrule
-Amazon-670K & \data{P@1}{P@3}{P@5} & \data{35.59}{31.87}{28.96} & \data{34.54}{30.89}{28.25} & \data{25.04}{21.06}{18.28} & \data{25.67}{20.96}{18.72} & \data{26.18}{22.76}{20.29} & \data{25.66}{24.15}{22.73} & \data{?}{?}{?} \\ \midrule
-Delicious-200K & \data{P@1}{P@3}{P@5} & \data{43.07}{38.66}{36.19} & \data{47.85}{42.21}{39.43} & \data{42.17}{37.94}{35.77} & \data{42.68}{38.24}{35.87} & \data{46.98}{40.99}{38.04} & \data{47.27}{44.80}{42.28} & \data{-}{-}{-} \\ \midrule
-WikiLSHTC-325K & \data{P@1}{P@3}{P@5} & \data{49.75}{33.10}{24.45} & \data{54.83}{33.42}{23.85} & \data{41.28}{24.68}{18.08} & \data{50.16}{31.95}{23.59} & \data{41.78}{24.963}{18.529} & \data{40.92}{34.19}{27.35} & \data{-}{-}{-} \\
+RCV1 & \data{P@1}{P@3}{P@5} & \data{94.62}{78.40}{54.82} & \data{95.35}{79.51}{55.06} & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{\textbf{90.99}}{\textbf{82.53}} & \data{\textbf{96.83}}{81.44}{56.57} \\ \midrule
+Yahoo & \data{P@1}{P@3}{P@5} & \data{}{}{} & \data{}{}{} & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{\textbf{74.08}}{\textbf{69.63}}{\textbf{64.05}} & \data{71.71}{58.40}{45.62} \\ \midrule
+EUR-Lex & \data{P@1}{P@3}{P@5} & \data{68.12}{57.93}{48.97} & \data{\textbf{78.21}}{64.33}{52.47} & \data{68.69}{56.52}{47.20} & \data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} & \data{75.08}{\textbf{70.06}}{\textbf{63.38}} & \data{72.16}{57.32}{46.49} \\ \midrule
+Wiki-30K & \data{P@1}{P@3}{P@5} & \data{83.26}{68.74}{58.84} & \data{\textbf{85.96}}{73.13}{62.73} & \data{83.02}{69.66}{59.50} & \data{81.44}{67.67}{57.85} & \data{85.11}{73.12}{62.67} & \data{85.21}{\textbf{81.29}}{\textbf{75.22}} & \data{82.78}{66.34}{56.23}\\ \midrule
+Amazon-13(12?)K & \data{P@1}{P@3}{P@5} & \data{94.58}{78.69}{62.26} & \data{93.61}{79.13}{63.54} & \data{90.18}{72.53}{56.20} & \data{90.37}{73.62}{57.18} & \data{92.98}{75.75}{59.53} & \data{93.42}{\textbf{88.75}}{\textbf{80.39}} & \data{\textbf{95.13}}{79.52}{63.46} \\ \midrule
+Amazon-670K & \data{P@1}{P@3}{P@5} & \data{\textbf{35.59}}{\textbf{31.87}}{\textbf{28.96}} & \data{34.54}{30.89}{28.25} & \data{25.04}{21.06}{18.28} & \data{25.67}{20.96}{18.72} & \data{26.18}{22.76}{20.29} & \data{25.66}{24.15}{22.73} & \data{?}{?}{?} \\ \midrule
+Delicious-200K & \data{P@1}{P@3}{P@5} & \data{43.07}{38.66}{36.19} & \data{\textbf{47.85}}{42.21}{39.43} & \data{42.17}{37.94}{35.77} & \data{42.68}{38.24}{35.87} & \data{46.98}{40.99}{38.04} & \data{47.27}{\textbf{44.80}}{\textbf{42.28}} & \data{-}{-}{-} \\ \midrule
+WikiLSHTC-325K & \data{P@1}{P@3}{P@5} & \data{49.75}{33.10}{24.45} & \data{\textbf{54.83}}{33.42}{23.85} & \data{41.28}{24.68}{18.08} & \data{50.16}{31.95}{23.59} & \data{41.78}{24.963}{18.529} & \data{40.92}{\textbf{34.19}}{\textbf{27.35}} & \data{-}{-}{-} \\
 %Datasets & \data{P@1}{P@3}{P@5} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} \\ \midrule
                                 \bottomrule
                         \end{tabular}
@@ -907,14 +916,14 @@ WikiLSHTC-325K & \data{P@1}{P@3}{P@5} & \data{49.75}{33.10}{24.45} & \data{54.83
                                 \toprule
 & & \multicolumn{1}{|c|}{\Algo{FastXML}} & \multicolumn{1}{|c|}{\Algo{SLEEC}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c}{\Algo{CNN}} \\
                                 \midrule
-RCV1 & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-Yahoo & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-EUR-Lex & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-Wiki-30K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-Amazon-13(12?)K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-Amazon-670K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-Delicious-200K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
-WikiLSHTC-325K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\
+RCV1 & \datarr{train}{test} & \datarr{9.2}{10.2} & \datarr{14.8}{29.4} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{39.0}{1.48} \\ \midrule
+Yahoo & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{?}{?} \\ \midrule
+EUR-Lex & \datarr{train}{test} & \datarr{12.6}{0.9} & \datarr{75.95}{0.26} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{17.0}{0.7} \\ \midrule
+Wiki-30K & \datarr{train}{test} & \datarr{34.1}{0.4} & \datarr{44.1}{0.01?} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{88.0}{0.15} \\ \midrule
+Amazon-13(12?)K & \datarr{train}{test} & \datarr{466}{17} & \datarr{1515}{41.77} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{800}{0.75} \\ \midrule
+Amazon-670K & \datarr{train}{test} & \datarr{789}{21.6} & \datarr{1083}{47.6} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{3134}{41.3} \\ \midrule
+Delicious-200K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{-}{-} \\ \midrule
+WikiLSHTC-325K & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{-}{-} \\
 %Datasets & \datarr{train}{test} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} & \datarr{}{} \\ \midrule
                                 \bottomrule
                         \end{tabular}
