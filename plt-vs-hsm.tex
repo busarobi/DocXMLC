@@ -245,11 +245,13 @@ The paper is organized  as follows.
 \section{Related work}
 \vspace{\sectionAfter}
 
-Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are also based on these classical approaches, significantly extending them by a number of new tricks. If the number of labels is of order of thousands then an independent model for each class can be trained. This is the so-called {1-vs-All} approach. Unfortunately, this approach scales linearly with the number of labels, which for many applications is too costly. The extreme classification algorithms try to improve the training and prediction time, and/or the model size over the standard methods. The algorithms can be categorized to several groups based on the used paradigm such as sparsity, low-rank approximation, tree-based search, or label filtering.
+Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are also based on these classical approaches, significantly extending them by a number of new tricks. If the number of labels is of order of thousands then an independent model for each class can be trained. This is the so-called {1-vs-All} approach. Unfortunately, this approach scales linearly with the number of labels, which for many applications is too costly. The extreme classification algorithms try to improve the training and prediction time, and/or the model size over the standard methods. The algorithms can be categorized to several groups based on the used paradigm such as sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015}, tree-based search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015,Jasinska_et_al_2016}, or label filtering~\citep{Cisse_et_al_2013,Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
 
 In this paper we focus on tree-based algorithms, therefore we discuss them more deeply here. There are two distinct types of tree-based algorithms: decision trees and label-trees. The former type follow the idea of classical decision trees. The direct use of available decision tree algorithms, however, can be very costly \citep{Agrawal_et_al_2013}. Therefore, the FastXML algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. It uses sparse linear classifiers in the internal tree nodes to split the feature space. The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. They also use an ensemble of trees to improve the overall accuracy. It is worth to underline that a leaf of the tree covers only a small region of the feature space, i.e., only a small fraction of training examples is associated with the leaf. This implies that the number of active labels in this leaf is also small (i.e., it is equal to the total number of unique labels assigned to training examples in this leaf). As a result, classification of test examples can be proceeded in a very effective way. FastXML, as well as the majority of decision tree algorithms, work in a batch mode. \citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm that also uses linear classifiers in the internal nodes of the tree.
 
 In the label trees~\citep{Bengio_et_al_2010} each label corresponds to one and only one path from the root to a leaf. Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@k and macro-averaging F-measure.
+
+FastText, Learned trees!!!
 
 \vspace{\sectionBefore}
 \section{Problem statement}
@@ -305,11 +307,11 @@ $$
 -\eta(\bx,j) \log(h_j(\bx)) - (1-\eta(\bx,j) ) \log(1 \!-\! h_j(\bx)) \,.
 $$
 
-As shown in~\citep{Dembczynski_et_al_2010}, the Hamming loss is minimized by 
+As shown in~\citep{Dembczynski_et_al_2010c}, the Hamming loss is minimized by 
 $$
 h_j(\bx) = \assert{\eta(\bx,j) > 0.5} \,.
 $$
-Macro F-measure is also optimized by predictions based on marginal probabilities. As proven in~\citep{}  to maximize the macro F-measure it suffices to find an optimal threshold on posteriors for each label separately. 
+Macro F-measure is also optimized by predictions based on marginal probabilities. Following the results in~\citep{Ye_et_al_2012,Narasimhan_et_al_2014,Jasinska_et_al_2016, Dembczynski_et_al_2017}, we can state that to maximize the macro F-measure on the population level it suffices to find an optimal threshold on posteriors for each label separately. 
 
 In the following, we focus on precision@k which is a standard measure in extreme classification. Formally, it is defined as:
 \begin{equation}
@@ -726,9 +728,9 @@ Interestingly, in the case of sparse features, the space complexity of \Algo{PLT
 
 Instead of the sparse representation one can also use a dense representation being a result of a deep or shallow neural network. This idea is presented on Figure~\ref{pic:model-embedding}.
 
-One possibility is to use pretrained word embeddings, like those from word2vec~\citep{word2vec} or glove~\citep{glove} obtained on large text corpuses. The document representation can be then created from these word embeddings in many ways, for example, as an average \cite{!} or as the maximum or minimum value of each element of the embeddings~\cite{!}.
+One possibility is to use pretrained word embeddings, like those from word2vec~\citep{Mikolov_et_al_2013} or glove~\citep{Pennigton_et_al_2014} obtained on large text corpuses. The document representation can be then created from these word embeddings in many ways, for example, as an average or as the maximum or minimum value of each element of the embeddings~\citep{De_Boom_et_al_2016}.
 
-Alternatively, one can train the word embeddings simultaneously with the tagger module, similarly as in FastText~\citep{}. Depending on the application and the size of the text corpus this might be either inferior or superior to the former approach. Another option is to initiate the network with the pretrained embeddings and then update all the parameters of both the tagging and text representation module. 
+Alternatively, one can train the word embeddings simultaneously with the tagger module, similarly as in FastText~\citep{Joulin_et_al_2016}. Depending on the application and the size of the text corpus this might be either inferior or superior to the former approach. Another option is to initiate the network with the pretrained embeddings and then update all the parameters of both the tagging and text representation module. 
 %but such approach leads to serious lengthening of the training time \cite{!!} and often to worse results\cite{!!}. This is not surprising since the pretrained word embeddings represent knowledge transfered from larger text corpora then the tagging datasets.
 
 \begin{figure}
@@ -750,7 +752,7 @@ Alternatively, one can train the word embeddings simultaneously with the tagger 
 \label{sec:sparse_input}
 \vspace{\sectionAfter}
 
-To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advance deep architecture, such as LSTM ~\citep{!} or the text-based convolution neural network~\cite{Yiming_Yang}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
+To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advance deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
 
 \vspace{\sectionBefore}
 \subsection{Ensemble of PLTs}
@@ -899,7 +901,7 @@ EUR-Lex & \data{68.69}{56.52}{47.20} & \data{66.39}{54.05}{44.73} & \data{73.19}
 	\vspace{-0.4cm}
 \end{table}
 
-We also compare the performance of \Algo{PLT} with some state-of-the-art learners on benchmark dataset. As a baseline, we used Convolutional Neural Net work (CNN) models by~\citep{YimingYang} which deep network architecture achieves very impressive  performance on these datasets.
+We also compare the performance of \Algo{PLT} with some state-of-the-art learners on benchmark dataset. As a baseline, we used Convolutional Neural Net work (CNN) models by~\citep{Liu_et_al_2017} which deep network architecture achieves very impressive  performance on these datasets.
 
 The results reveal some general trends. The PLT outperforms LOM and HSM consistently. The bagging significantly improves the precision at higher position. 
 
