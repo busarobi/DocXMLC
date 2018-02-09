@@ -205,10 +205,10 @@
 \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 
 \begin{abstract}
-Probabilistic label trees (\Algo{PLTs}) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. 
+Probabilistic label trees (\Algo{PLT}s) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. 
 They follow the label tree approach in which each label is assigned to one and only one path from the root to a leaf. 
 %
-In this paper, we theoretically show that \Algo{PLTs} are no-regret multi-label generalization of hierarchical softmax (\Algo{HSM}), a commonly used approach in neural networks to speed up computations in multi-class problems with large output spaces (such as language modeling). We also prove that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is not consistent. Moreover, we empirically show that HSM with this heuristic is consistently worse than PLTs by a significant margin. Finally, we report the results of PLTs used with word-embeddings that are competitive to the state-of-the-art on popular XMLC benchmark datasets. 
+In this paper, we theoretically show that \Algo{PLT}s are no-regret multi-label generalization of hierarchical softmax (\Algo{HSM}), a commonly used approach in neural networks to speed up computations in multi-class problems with large output spaces (such as language modeling). We also prove that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is not consistent. Moreover, we empirically show that HSM with this heuristic is consistently worse than PLTs by a significant margin. Finally, we report the results of PLTs used with word-embeddings that are competitive to the state-of-the-art on popular XMLC benchmark datasets. 
 \end{abstract}
 
 \section{Introduction}
@@ -218,11 +218,11 @@ Many current applications of machine learning are characterized not only by a va
 %
 To be more specific, let us consider a problem of tagging Wikipedia articles. In this case, each article is an instance/example, words appearing in the text of articles can be considered as features, and categories to which articles are assigned as labels. By creating a data set from the current content of Wikipedia, we very easily end up with an enormous problem with millions of examples and features, but also with more than one million of labels, because that many categories are used in Wikipedia today. 
 
-The challenges posed by problems at that scale have opened a new line of research within machine learning. It is easy to notice that the popular 1-vs-All approach which scales linearly with the number of labels is too costly in the extreme setting. Therefore, there is a need for new algorithms being sublinear in time and space. 
+The challenges posed by problems at that scale have opened a new line of research within machine learning. It is easy to notice that the popular \Algo{1-vs-All} approach which scales linearly with the number of labels is too costly in the extreme setting. Therefore, there is a need for new algorithms being sublinear in time and space. 
 %
 In this paper we focus on extreme multi-label classification (XMLC) of text documents. These problems are characterized by textual input that can be given in sparse representation in a form of a bag-of-words or its TF-IDF variant. More recently, text documents are usually transformed to dense representations by a shallow or a deep neural network. For both representations, the challenge is to design an algorithm that can efficiently deal with the large number of labels.
 
-Probabilistic label trees (\Algo{PLTs})~\citep{Jasinska_et_al_2016} have been recently introduced for solving XMLC problems. Already their very basic variant, based on sparse input vectors, is competitive to the state of the art approaches, such as FastXML~\citep{Prabhu_Varma_2014}. In a nutshell, \Algo{PLTs} are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011} in which each label is assigned to one and only one path from the root to a leaf. 
+Probabilistic label trees (\Algo{PLT}s)~\citep{Jasinska_et_al_2016} have been recently introduced for solving XMLC problems. Already their very basic variant, based on sparse input vectors, is competitive to the state of the art approaches, such as FastXML~\citep{Prabhu_Varma_2014}. In a nutshell, \Algo{PLT}s are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011} in which each label is assigned to one and only one path from the root to a leaf. 
 \Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the marginal probability of a label is given by the product of the probability estimates on the corresponding path from the root to a leaf.  Since \Algo{PLT}s are designed for multi-label problems, classification of a test example relies on traversing the tree from the root to the leaf nodes. Each internal node decides whether its subtree should be further explored. This is different from typical left/right decisions made in tree-based classifiers. 
 
 %Classification of a test example relies on a sequence of decisions made by node classifiers, leading a test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether to explore a subtree rooted in its node.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. 
@@ -233,7 +233,7 @@ As we will show in this paper, \Algo{PLT}s are no-regret generalization of hiera
 
 %(and also of conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b})
 
-In case of multi-class distributions, \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification, we will prove in this paper that \Algo{PLT}s are consistent for label-wise logistic loss, Hamming loss and precision@k. We will also show that the pick-one-label heuristic often used for adapting \Algo{HSM} to multi-label problems (for example, in FastText~\citep{Joulin_et_al_2016} and LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal results. Only in case of label independence this heuristic acts optimally for precision@k. This might justify its popularity and good results in terms of this measure. Nevertheless, \Algo{HSM} gets consistently worse results than \Algo{PLTs} in the empirical studies reported in this paper. 
+In case of multi-class distributions, \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification, we will prove in this paper that \Algo{PLT}s are consistent for precision@k. We will also show that the pick-one-label heuristic often used for adapting \Algo{HSM} to multi-label problems (for example, in FastText~\citep{Joulin_et_al_2016} and LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal results. Only in case of label independence this heuristic acts optimally for precision@k. This might justify its popularity and good results in terms of this measure. Nevertheless, \Algo{HSM} gets consistently worse results than \Algo{PLT}s in the empirical studies reported in this paper. 
 %
 We also discuss different architectures for document tagging in which \Algo{PLT}s can be used, such as sparse and dense representations and specific ensembling of several trees. As we show the resulting classifiers are very competitive to state-of-the-art methods on popular XMLC benchmark datasets. 
 
@@ -245,13 +245,16 @@ The paper is organized as follows. In the next section we shortly discuss the re
 \label{sec:related_work}
 \vspace{\sectionAfter}
 
-Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are also based on these classical approaches, significantly extending them by a number of new tricks. If the number of labels is of order of thousands then an independent model for each class can be trained. This is the so-called {1-vs-All} approach. Unfortunately, this approach scales linearly with the number of labels, which for many applications is too costly. The extreme classification algorithms try to improve the training and prediction time, and/or the model size over the standard methods. The algorithms can be categorized to several groups based on the used paradigm such as sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015}, tree-based search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015,Jasinska_et_al_2016}, or label filtering~\citep{Cisse_et_al_2013,Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
+Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are still based on these classical approaches, significantly extending them by a number of new tricks. If the label space is of moderate size (like a few thousands of labels) then an independent model can be trained for each class. This is the so-called {\Algo{1-vs-All} approach. Unfortunately, it scales linearly with the number of labels, which is too costly for many applications. The extreme classification algorithms try to improve over this  approach by following different paradigms such as sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015}, tree-based search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015}, or label filtering~\citep{Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
 
-In this paper we focus on tree-based algorithms, therefore we discuss them more deeply here. There are two distinct types of tree-based algorithms: decision trees and label-trees. The former type follow the idea of classical decision trees. The direct use of available decision tree algorithms, however, can be very costly \citep{Agrawal_et_al_2013}. Therefore, the FastXML algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. It uses sparse linear classifiers in the internal tree nodes to split the feature space. The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. They also use an ensemble of trees to improve the overall accuracy. It is worth to underline that a leaf of the tree covers only a small region of the feature space, i.e., only a small fraction of training examples is associated with the leaf. This implies that the number of active labels in this leaf is also small (i.e., it is equal to the total number of unique labels assigned to training examples in this leaf). As a result, classification of test examples can be proceeded in a very effective way. FastXML, as well as the majority of decision tree algorithms, work in a batch mode. \citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm that also uses linear classifiers in the internal nodes of the tree.
+In this paper we focus on tree-based algorithms, therefore we discuss them here in more detail. There are two distinct types of these algorithms: decision trees and label trees. The former type follow the idea of classical decision trees. However, the direct use of the standard decision tree algorithms can be very costly~\citep{Agrawal_et_al_2013}. Therefore, the FastXML algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. It uses sparse linear classifiers in the internal tree nodes to split the feature space. The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. To improve the overall accuracy FastXML uses an ensemble of trees. FastXML, similarly as the majority of decision tree algorithms, works in a batch mode. \citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm that also uses linear classifiers in the internal nodes of the tree.
 
-In the label trees~\citep{Bengio_et_al_2010} each label corresponds to one and only one path from the root to a leaf. Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@k and macro-averaging F-measure.
+In the label trees each label corresponds to one and only one path from the root to a leaf. There exist several instances of this approach. Besides \Algo{PLT}s and \Algo{HSM}, these are, for example, filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} or label embedding trees~\citep{Bengio_et_al_2010}. It is worth to underline that there exists several counterparts of \Algo{HSM} introduced independently in many different research fields, such as nested dichotomies~\citep{Fox_1997}, conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}, multi-stage classifiers~\citep{Kurzynski_1988}, and probabilistic classifier chains~\citep{Dembczynski_et_al_2010c}. All these methods have been jointly analyzed in~\citep{Dembczynski_et_al_2016}.
+Also the popular~\Algo{FastText}~\citep{Joulin_et_al_2016} and the recent \Algo{LearnedTrees}~\citep{Jernite_et_al_2017} are based on \Algo{HSM}. The latter uses a specific hierarchical clustering to reassign labels to paths during training. 
 
-FastText, Learned trees!!!
+%Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@k and macro-averaging F-measure.
+%
+%FastText, Learned trees!!!
 
 \vspace{\sectionBefore}
 \section{Problem statement}
@@ -259,19 +262,20 @@ FastText, Learned trees!!!
 \vspace{\sectionAfter}
 
 Let $\calX$ denote an instance space, and let $\calL = \{\lambda_1,\lambda_2, \ldots,\lambda_m\}$ be a finite set of $m$ class labels. 
-In the extreme setting $m$ can be of order $10^5$ and higher.
+%In the extreme setting $m$ can be of order $10^5$ and higher.
 We assume that an instance $\bx \in \calX$ is associated with a subset of
-labels $\calL_{\bx} \in 2^\calL$; this subset is often called the set of relevant labels, while the complement
+labels $\calL_{\bx} \in 2^\calL$; this subset is often called a set of relevant labels, while the complement
 $\calL \backslash \calL_{\bx}$ is considered as irrelevant for $\bx$. We assume $m$ to be a large number (e.g., $\ge 10^5$), but the size of the set of relevant labels $\calL_{\bx}$ is much smaller than $m$, i.e., $|\calL_{\bx}| \ll m$. We identify a set $\calL_{\bx}$ of relevant labels with a binary (sparse)
-vector $\by = (y_1,y_2, \ldots, y_m)$, in which $y_i = 1 \Leftrightarrow \lambda_i \in \calL_{\bx}$. By $\calY = \{0, 1\}^m$ we denote the set of all
+vector $\by = (y_1,y_2, \ldots, y_m)$, in which $y_i = 1 \Leftrightarrow \lambda_i \in \calL_{\bx}$. By $\calY = \{0, 1\}^m$ we denote a set of all
 possible labellings.
 We assume that observations $(\bx, \by)$ are generated independently and identically according to the
-probability distribution $\Pr(\bX = \bx,\bY = \by)$ (denoted later by $\Pr(\bx, \by)$) defined on $\calX \times \calY$. We denote the marginal distribution of the $i$-th label by $\Pr(\bx,y_i)$. % by $\Pr_i$.
+probability distribution $\prob(\bX = \bx,\bY = \by)$ (denoted later by $\prob(\bx, \by)$) defined on $\calX \times \calY$. 
+%We denote the marginal distribution of the $i$-th label by $\Pr(\bx,y_i)$. % by $\Pr_i$.
 
-The problem of MLC can be defined as finding a  \emph{classifier} $\bh(\bx) = (h_1(\bx), h_2(\bx),\ldots, h_m(\bx))$, 
+The problem of XMLC can be defined as finding a  \emph{classifier} $\bh(\bx) = (h_1(\bx), h_2(\bx),\ldots, h_m(\bx))$, 
 which in general can be defined as a mapping $\calX \rightarrow \calR^m$, that minimizes the \emph{expected loss} (or \emph{risk}):  
 $$
-\loss_\ell(\bh) = \mathbb{E}_{(\bx,\by) \sim \Pr(\bx,\by)} (\ell(\by, \bh(\bx))\,,
+\loss_\ell(\bh) = \mathbb{E}_{(\bx,\by) \sim \prob(\bx,\by)} (\ell(\by, \bh(\bx))\,,
 $$
 where $\ell(\by, \hat{\by})$ is the  (\emph{task}) \emph{loss}.
 %
@@ -285,48 +289,55 @@ The \emph{regret} of a classifier $\bh$ with respect to $\ell$ is defined as:
 $$
 The regret quantifies the suboptimality of $\bh$ compared to the optimal classifier $\bh^*$. The goal could be then defined as finding $\bh$ with a small regret, ideally equal to zero.
 
-In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \Pr(y_j = 1 \given \bx)$. As we will later show marginal probabilities are a key element to optimally solve extreme classification for many complex performance measures, like Hamming loss, precision@k, and macro-F measure. 
+In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \prob(y_j = 1 \given \bx)$. As we will show below marginal probabilities are a key element to optimally solve extreme classification for many complex performance measures, like Hamming loss, macro-F measure, and precision@k. 
 To obtain the marginal probabilities one can use the label-wise log loss:
 $$
-\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(h_j(\bx)) \,
+\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(y, h_j(\bx)) \,
 $$
 where 
 $$
-\ell_{\log}(h_j(\bx)) = y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) 
+\ell_{\log}(y,h_j(\bx)) = y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) 
 $$
 The expected loss for a single $\bx$ (i.e., the so-called \emph{conditional risk}) in terms of the label-wise log loss is:
 $$
 \mathbb{E} \ell_{\log}(\bh \given \bx) =  \sum_{j=1}^m \mathbb{E}{\ell_{\log}(y, h_j(\bx))} = \sum_{j=1}^m \loss_{\log}(h_j(\bx))\,. %\\ 
 $$
-Therefore, the pointwise optimal prediction for the $j$-th label is:
+Therefore, the pointwise optimal prediction for the $j$-th label is defined by:
 $$
- h_j^*(\bx)  = \argmin_h \loss_{\log}(h_j(\bx)) = \eta(\bx, j) \,,
+h_j^*(\bx)  = \argmin_h \loss_{\log}(h_j(\bx)) = \eta(\bx, j) \,.
 $$
-since $\loss_{\log}(h_j(\bx))$ is given by:
-$$
--\eta(\bx,j) \log(h_j(\bx)) - (1-\eta(\bx,j) ) \log(1 \!-\! h_j(\bx)) \,.
-$$
+%By taking the derivative of $\loss_{\log}(h_j(\bx))$, defined as:
+%$$
+%-\eta(\bx,j) \log(h_j(\bx)) - (1-\eta(\bx,j) ) \log(1 \!-\! h_j(\bx)) \,,
+%$$
+%with respect to $h_j(\bx)$ and equating it to zero we get: 
+%$$
+%h_j^*(\bx)  = \eta(\bx, j) \,.
+%$$
 
 As shown in~\citep{Dembczynski_et_al_2010c}, the Hamming loss is minimized by 
-$$
-h_j(\bx) = \assert{\eta(\bx,j) > 0.5} \,.
-$$
+$
+h_j^*(\bx) = \assert{\eta(\bx,j) > 0.5} \,.
+$
 Macro F-measure is also optimized by predictions based on marginal probabilities. Following the results in~\citep{Ye_et_al_2012,Narasimhan_et_al_2014,Jasinska_et_al_2016, Dembczynski_et_al_2017}, we can state that to maximize the macro F-measure on the population level it suffices to find an optimal threshold on posteriors for each label separately. 
 
-In the following, we focus on precision@k which is a standard measure in extreme classification. Formally, it is defined as:
+In the following, we focus on precision@k which became a standard measure in extreme classification (although it is also often criticized, as it favors the most frequent labels). Formally, it is defined as:
 \begin{equation}
 \mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1},
 \label{eqn:precision-at-k}
 \end{equation}
 where $\hat \calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
 %
-The loss function for precision$@k$ can be defined as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:
-\begin{eqnarray*}
-\loss_{P@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
-& = & 1 - \sum_{\by \in \calY} \Pr(\by \given \bx) \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1} \\
-& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \sum_{\by \in \calY} \Pr(\by \given \bx) \assert{y_j = 1} \\
-& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \eta(\bx,j) \,.
-\end{eqnarray*}
+To be consistent with the former discussion, let us define a loss function for precision@k as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:\footnote{A more detailed derivation is given in Appendix~\ref{app:prec@k}.}
+%\begin{eqnarray*}
+$$
+\loss_{p@k}(\bh \given \bx) = \mathbb{E} \left ( \ell_{p@k}(\by,\bx, \bh) \right ) = 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \eta(\bx,j) \,.
+$$
+%\loss_{p@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
+%& = & 1 - \sum_{\by \in \calY} \prob(\by \given \bx) \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1} \\
+%& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \sum_{\by \in \calY} \prob(\by \given \bx) \assert{y_j = 1} \\
+%& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \eta(\bx,j) \,.
+%\end{eqnarray*}
 %
 The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
 with the highest conditional probabilities $\eta(\bx,j)$.
@@ -449,13 +460,13 @@ which gives us
 $$
 \eta(\bx, j) > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,. \\
 $$
-Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for all $j \in \calY_k$, we can rearrange the terms and write:
+Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for at least one $j \in \calY_k$, we can rearrange the terms and write:
 $$
 \eta(\bx, j)  > \eta(\bx, i) - |\eta(\bx, i) - \heta(\bx, i)| - |\eta(\bx,j) - \heta(\bx,j)| \,. 
 $$
 Finally, we obtain:
 $$
-\eta(\bx, j) > \eta(\bx, i) - m_i - m_j < \eta(\bx,i) - 2 \max_{l} m_l \,. %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
+\eta(\bx, j) > \eta(\bx, i) - m_i - m_j > \eta(\bx,i) - 2 \max_{l} m_l \,. %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
 $$
 %as we know that $\eta(\bx, i) > \eta(\bx, j)$ for all $j \in \calY_k$.
 %where $m_i = |\eta(\bx,i) - \heta(\bx,i)|$. 
@@ -465,7 +476,7 @@ The regret can be then written as follows:
 \begin{align*}
 \reg_{p@k} (\bh \given \bx)
   & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
-  & \le \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \eta(\bx,i) - 2 \max_{l} m_l \\
+  & \le \frac{1}{k}\sum_{i \in \calY_k} \left ( \eta (\bx ,i) - \eta(\bx,i) + 2 \max_{l} m_l \right )\\
   & \le 2 \max_{l} m_l 
 \end{align*}
 %\sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
@@ -961,26 +972,29 @@ We empirically justified that \Algo{PLT} is a better model of choice when one fa
 
 \onecolumn
 
-\section{Regret for Prec@k}
-
+\section{Regret for precision@k}
+\label{app:prec@k}
 
 Precision@k is formally defined as:
-\begin{equation}
-\mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1},
-\label{eqn:precision-at-k}
-\end{equation}
-where $\calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
+$$
+\mathrm{precision}@k(\by, \bx, \bh) = \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1},
+%\label{eqn:precision-at-k}
+$$
+where $\hat \calY_k$ is a set of $k$ labels predicted by $\bh$ for $\bx$.
 %
-The loss function for precision$@k$ is $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk for this loss is given by:
+To be consistent with the former discussion, let us define a loss function for precision@k as $\ell_{p@k} = 1 - \mathrm{precision}@k$. The conditional risk is then:
 \begin{eqnarray*}
-\loss_{P@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
-& = & 1 - \sum_{\by \in \calY} \Pr(\by \given \bx) \frac{1}{k} \sum_{j \in \calY_k} \assert{y_j = 1} \\
-& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \sum_{\by \in \calY} \Pr(\by \given \bx) \assert{y_j = 1} \\
-& = & 1 - \frac{1}{k} \sum_{j \in \calY_k} \eta(\bx,j) \,.
+\loss_{p@k}(\bh \given \bx) & = & \mathbb{E} \ell_{p@k}(\by,\bx, \bh) \\
+& = & 1 - \sum_{\by \in \calY} \prob(\by \given \bx) \frac{1}{k} \sum_{j \in \hat \calY_k} \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \sum_{\by \in \calY} \prob(\by \given \bx) \assert{y_j = 1} \\
+& = & 1 - \frac{1}{k} \sum_{j \in \hat \calY_k} \eta(\bx,j) \,.
 \end{eqnarray*}
 %
 The above result shows that the optimal strategy for precision$@k$ is to predict $k$ labels
 with the highest conditional probabilities $\eta(\bx,j)$.
+
+
+
 
 
 Top-k labels with respect to the true marginals
