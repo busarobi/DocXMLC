@@ -719,7 +719,7 @@ Interestingly, in the case of sparse features, the space complexity can be signi
 
 \vspace{\sectionBefore}
 \subsection{PLTs with word embeddings}
-\label{sec:sparse_input}
+\label{sec:word_embeddings}
 \vspace{\sectionAfter}
 
 Instead of the sparse representation we can also use a dense representation being a result of a deep or shallow neural network.
@@ -782,20 +782,18 @@ The experimental studies presented in this section are aimed at showing advantag
 	1000   & 87.12 & 84.76 & 62.69    & 61.98 & 34.26  & 34.26 \\
 	\bottomrule
 \end{tabular}
+\vspace{-0.4cm}
 \end{table}
 
 
-In the first set of experiments, we validate our theoretical results presented in Section 4, namely, the \Algo{HSM} is not amenable to model the conditional probabilities, in general, when there is label dependency. Consequently, in such a situation, \Algo{HSM} can be outperformed in terms of Precision@K by models, like \Algo{PLT}, which has vanishing regret for conditional estimates, and thus for Precision@K (see Subsection 4.1). For doing this, we compared the performance of PLTs and HSM on synthetic datasets of three types: multi-label data with independent labels, multi-label data with conditionally dependent labels and multi-class data. 
+In the first set of experiments, we validate our theoretical results presented in Section 4, namely, the \Algo{HSM} is not amenable to model the conditional probabilities in general, when they are not conditionally independent. In this learning scenario, \Algo{HSM} can be outperformed in terms of Precision@K by models, like \Algo{PLT}, which has vanishing regret for conditional estimates, and so, for Precision@K (see Subsection 4.1). To validate this claim empirically, we compared the performance of \Algo{PLT} and \Algo{HSM} on synthetic datasets of three types: multi-label data with independent labels, multi-label data with conditionally dependent labels and multi-class data. 
 
-The independent multi-label data is generated from a multi-label BR model with randomly generated input. Each component of the input feature vector $\bx$ is generated i.i.d from uniform distribution on $[-0.5, 0.5]$ as well as the parameters of the BR model. More concretely, the score for instance $\bx$ is computed as $a_i =\bx^{T} \bw_i$ for the $i$-th label where $w_i$ is the corresponding parameter vector of BR. The score is then transformed to a probability as $p_i = \frac{1}{(1 + \exp(-a_i))}$, and the $i$-th label was drawn from Bernoulli distribution with parameter $p_i$. The multi-class data was generated based on this model as independent multi-label data, but the label was drawn from multinomial distribution with parameters $(p_1, \dots , p_m)$.
+% The independent multi-label data is generated from a multi-label BR model with randomly generated input. Each component of the input feature vector $\bx$ is generated i.i.d from uniform distribution on $[-0.5, 0.5]$ as well as the parameters of the BR model. More concretely, the score for instance $\bx$ is computed as $a_i =\bx^{T} \bw_i$ for the $i$-th label where $w_i$ is the corresponding parameter vector of BR. The score is then transformed to a probability as $p_i = \frac{1}{(1 + \exp(-a_i))}$, and the $i$-th label was drawn from Bernoulli distribution with parameter $p_i$. The multi-class data was generated based on this model as independent multi-label data, but the label was drawn from multinomial distribution with parameters $(p_1, \dots , p_m)$.
 
-All models are based on $m$ linear functions $[f_1(\cdot), f_2(\cdot), \ldots, f_m(\cdot)]$ with parameters $[\boldsymbol{w}_1, \boldsymbol{w}_2, \ldots, \boldsymbol{w}_m]$. Feature vectors $\bx$ were uniformly drawn from a $d$-dimensional ball of radius 1. Parameter vectors $\boldsymbol{w}_i$ were drawn uniformly from a $d$-dimensional sphere. All the function parameters are represented as a $m \times d$-dimensional matrix $\boldsymbol{W}$. For each sampled $\bx$ $\boldsymbol{f}(\bx) = \boldsymbol{W}\bx$  is a $m$-dimensional scores vector.
+All models we used to generate synthetic data are based on $m$ linear functions $[f_1(\cdot), f_2(\cdot), \ldots, f_m(\cdot)]$ with parameters $[\boldsymbol{w}_1, \boldsymbol{w}_2, \ldots, \boldsymbol{w}_m]$. Feature vectors $\bx$ were uniformly drawn from a $d$-dimensional ball of radius $1$. Parameter vectors $\boldsymbol{w}_i$ were drawn uniformly from a $d$-dimensional sphere. All the function parameters are represented as a $m \times d$-dimensional matrix $\boldsymbol{W}$. For each sampled $\bx$ $\boldsymbol{f}(\bx) = \boldsymbol{W}\bx$  is a $m$-dimensional scores vector.
 
 To generate the multi-class data we employ a multinomial logistic model. We take the $\boldsymbol{f}(\bx)$ and transform them with a softmax function to probabilities vector $\boldsymbol{p}(\bx)$, and we draw the positive label from this multinomial distribution.
-
-To generate the independent multi-label data we use a binary logistic model for each of $m$ labels. We transform the score for each label $i$, $f_i(\bx)$, using a sigmoid function we get probabilities $p_i(\bx)$. For each label $i$ we draw whether it is positive with probability $p_i(\bx)$.    
-
-In order to generate the dependent multi-label data we introduce transform scores using 
+To generate the independent multi-label data we use a binary logistic model for each of $m$ labels. We transform the score for each label $i$, $f_i(\bx)$, using a sigmoid function we get probabilities $p_i(\bx)$. For each label $i$ we draw whether it is positive with probability $p_i(\bx)$. In order to generate the conditionally dependent multi-label data we introduce transform scores using 
 \begin{equation*}
 \by = \assert{\boldsymbol{M} (\boldsymbol{f} +  \epsilon ) >  0  },
 \end{equation*}
@@ -830,14 +828,15 @@ where $\epsilon$ a random noise and $\boldsymbol{M}$ a mixing matrix, introducin
 
 
 
-The results are shown in Table \ref{tab:synthetic1}. The input data was the same for \Algo{PLT} and \Algo{HSM} in each random repetition, and in addition, the weights of learners were initialized by the same random values for a fair comparison. Consequently, the performance of \Algo{HSM} and \Algo{PLT} on multi-class data match to each other, as one would expect that. On data with independent labels, the performance of \Algo{HSM} and \Algo{PLT} is on-par after $1000$ iteration. The difference in convergence speed can be explained by the fact that \Algo{HSM} updates the model by picking one positive label at once, wheres \Algo{PLT}  carries out the update for each positive label simultaneously. On data with dependent label, \Algo{PLT} outperforms \Algo{HSM}. This coincide with our theoretical finding regarding the non-vanishing regret of \Algo{HSM}. 
+The results are shown in Table \ref{tab:synthetic1}. The train/test data was generated from our generative models in each repetition. The weights of \Algo{PLT} and \Algo{HSM} learners were initialized by the same random values for a fair comparison. Consequently, the performance of \Algo{HSM} and \Algo{PLT} on multi-class data match to each other, as one would expect this. On data with conditionally independent labels, the performance of \Algo{HSM} and \Algo{PLT} is on-par after $1000$ iteration. The difference in convergence speed can be explained by the fact that \Algo{HSM} updates the model by picking one positive label at once, wheres \Algo{PLT}  carries out the updates for all positive label simultaneously. On data with dependent label, \Algo{PLT} outperforms \Algo{HSM}. This coincide with our theoretical finding regarding the non-vanishing regret of \Algo{HSM}. 
+
+
 
 
 
 \subsection{Benchmark data}
 
-We also carried out experiments on commonly used benchmark datasets taken from XMLC repository~\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html} and Yahoo news multi-label corpus~\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}. Each dataset we used consists of text data, so we decided to use two representations of them: the feature vectors taken from XMLC repository and word embeddings as it is implemented in fastText~\citep{Mikolov}. 
-
+We also carried out experiments on commonly used benchmark datasets taken from XMLC repository~\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html} and Yahoo news multi-label corpus~\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}. Every datasets we used consists of text data, so we decided to use two representations of them when it is available: feature vectors taken from XMLC repository, and word embeddings described in Subsection \ref{sec:word_embeddings}. In case of Yahoo! news dataset we used bag of words representation.
 
 
 \begin{table}[ht!]
@@ -847,11 +846,11 @@ We also carried out experiments on commonly used benchmark datasets taken from X
         \begin{center}
                 \begin{small}
                         \vspace{-0.1cm}
-                        \begin{tabular}{l@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} | }
+                        \begin{tabular}{l@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | }
                                 \toprule
 	& \multicolumn{2}{|c|}{\Algo{XMLC}} & \multicolumn{2}{|c|}{\Algo{Word embeddings}} \\ \midrule
 	& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{PLT}} \\ \midrule
-	yahoo & \data{}{}{} & \data{70.06}{58.04}{46.05} & \data{67.80}{54.88}{43.78} & \data{71.79}{58.82}{46.38} \\ \midrule
+	Yahoo! & \data{}{}{} & \data{70.06}{58.04}{46.05} & \data{67.80}{54.88}{43.78} & \data{71.79}{58.82}{46.38} \\ \midrule
 	RCV1 & \data{87.73}{69.98}{50.17} & \data{90.47}{72.54}{51.84} & \data{93.94}{76.75}{53.61} & \data{95.41}{77.49}{53.91} \\ \midrule
 	Wiki30k & \data{70.20}{60.11}{53.17} & \data{84.34}{72.34}{62.72} & \data{83.02}{69.66}{59.50} & \data{85.11}{73.12}{62.67} \\ \midrule
 	Amazon12k & \data{86.20}{71.54}{57.47} & \data{91.46}{76.00}{61.40} & \data{90.18}{72.53}{56.20} & \data{92.98}{75.75}{59.53} \\ \midrule
@@ -861,37 +860,39 @@ We also carried out experiments on commonly used benchmark datasets taken from X
                         \end{tabular}
                 \end{small}
         \end{center}
-          %              \vspace{-0.4cm}
+	\vspace{-0.4cm}
 \end{table}
 
 
-First, we compared the performance of \Algo{HSM} and \Algo{PLT}. We tuned the hyper-parameters of the models by using grid search. The range of the hyper-parameters is reported in Appendix. The results are shown in Table \ref{tab:hsm_vs_plt}. \Algo{PLT} clearly outperforms hierarchical soft-max in all cases by a very significant margin. 
 
 
-\begin{table*}[ht!]
+We compared the performance of \Algo{HSM} and \Algo{PLT}. We tuned the hyper-parameters of the models by using grid search. The range of the hyper-parameters is reported in Appendix. The results are shown in Table \ref{tab:hsm_vs_plt}. \Algo{PLT} clearly outperforms \Algo{HSM} in all cases by a very significant margin on both text representations. The running time of these two algorithm is 
+
+
+\begin{table}[ht!]
 \vspace{-.2cm}
         \caption{Precision@K scores with $K=\{ 1,3,5\}$ of \Algo{HSM}, \Algo{LOM} and \Algo{PLT} lgorithms. The highest Precision@K values are in bold for every dataset.}
         \label{tab:datasets-differences-table}
         \begin{center}
                 \begin{small}
                         \vspace{-0.1cm}
-                        \begin{tabular}{l@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} }
+                        \begin{tabular}{l@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | r@{\hskip 0pt} | }
                                 \toprule
-& \multicolumn{4}{|c|}{\Algo{Bag of words}} & \multicolumn{5}{|c|}{\Algo{Word embeddings}} \\
-\hline
-& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c|}{\Algo{CNN}} \\
+& \multicolumn{1}{|c|}{\Algo{HSM}} & \multicolumn{1}{|c|}{\Algo{LOM}} & \multicolumn{1}{|c|}{\Algo{PLT}} & \multicolumn{1}{|c|}{\Algo{PLT+ens}} & \multicolumn{1}{|c|}{\Algo{CNN}} \\
                                 \midrule
-RCV1 & \data{}{}{} & \data{}{}{} &\data{87.52}{70.11}{50.44} & \data{88.52}{79.99}{72.74} & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{90.99}{82.53} & \data{96.83}{}{} \\ \midrule
-Yahoo & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{}{}{} & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{74.08}{69.63}{64.05} & \data{71.71}{}{} \\ \midrule
-Wiki-30K & \data{80.75}{50.49}{36.75} & \data{80.78}{50.44}{36.71} & \data{83.26}{69.14}{58.02} & \data{83.67}{79.26}{72.67} & \data{83.02}{69.66}{59.50} & \data{81.44}{67.67}{57.85} & \data{85.11}{73.12}{62.67} & \data{85.21}{81.29}{75.22} & \data{0.9683}{}{}\\ \midrule
-Amazon13K & \data{88.42}{72.19}{56.78} & \data{88.50}{73.35}{57.96} & \data{92.29}{75.32}{59.86} & \data{91.99}{86.31}{78.25} & \data{90.18}{72.53}{56.20} & \data{90.37}{73.62}{57.18} & \data{92.98}{75.75}{59.53} & \data{93.42}{88.75}{80.39} & \data{}{}{} & \data{}{}{} \\
+RCV1 & \data{93.94}{76.75}{53.61} & \data{94.46}{77.52}{53.76} & \data{95.41}{77.49}{53.91} & \data{95.77}{90.99}{82.53} & \data{96.83}{81.44}{56.57} \\ \midrule
+Yahoo & \data{67.80}{54.88}{43.78} & \data{67.73}{56.27}{44.55} & \data{71.79}{58.82}{46.38} & \data{74.08}{69.63}{64.05} & \data{71.71}{58.40}{45.62} \\ \midrule
+Wiki-30K & \data{83.02}{69.66}{59.50} & \data{81.44}{67.67}{57.85} & \data{85.11}{73.12}{62.67} & \data{85.21}{81.29}{75.22} & \data{82.78}{66.34}{56.23}\\ \midrule
+Amazon13K & \data{90.18}{72.53}{56.20} & \data{90.37}{73.62}{57.18} & \data{92.98}{75.75}{59.53} & \data{93.42}{88.75}{80.39} & \data{95.13}{79.52}{63.46} \\ \midrule
+EUR-Lex & \data{68.69}{56.52}{47.20} & \data{66.39}{54.05}{44.73} & \data{73.19}{57.79}{46.98} & \data{75.08}{70.06}{63.38} & \data{72.16}{57.32}{46.49} \\
                                 \bottomrule
                         \end{tabular}
                 \end{small}
         \end{center}
-                        \vspace{-0.4cm}
-\end{table*}
+	\vspace{-0.4cm}
+\end{table}
 
+We also compare the performance of \Algo{PLT} with some state-of-the-art learners on benchmark dataset. As a baseline, we used Convolutional Neural Net work (CNN) models by~\citep{YimingYang} which deep network architecture achieves very impressive  performance on these datasets.
 
 The results reveal some general trends. The PLT outperforms LOM and HSM consistently. The bagging significantly improves the precision at higher position. 
 
@@ -900,6 +901,7 @@ We would especially like to underline the fact that the PLT with word embeddings
 
 \section{Conclusions}
 
+We empirically justified that \Algo{PLT} is a better model of choice when one face with multi-label classification task.
 
 \newpage
 
