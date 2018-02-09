@@ -187,62 +187,44 @@
 \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 
 \begin{abstract}
-Probabilistic label trees (PLTs) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. 
-They follow the label tree approach in which each label is assigned to one and only one path from the root to a leaf. %Already a basic variant of PLTs, based on sparse input vectors, has been shown to be competitive to the state of the art approaches for XMLC, such as FastXML. 
+Probabilistic label trees (\Algo{PLTs}) have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. 
+They follow the label tree approach in which each label is assigned to one and only one path from the root to a leaf. 
 %
-In this paper, we theoretically show that PLTs are no-regret multi-label generalization of hierarchical softmax (HSM), a commonly used approach in deep networks to speed up computations in case of a large output space (such as in natural language processing problems). We also prove that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is not consistent. Moreover, we empirically show that HSM with this heuristic is always worse than PLTs by a significant margin. Finally, we report the results of PLTs used with word-embeddings that are competitive to the results of more complex deep networks on a selection of XMLC benchmark datasets. 
-%
-%Hierarchical softmax is another label-tree approach, commonly used in deep networks to speed up computations in case of a large output sample, for example in the natural language processing problems. HSM has been, however, introduced for multi-class problems. In case of multi-label problems, a simple \emph{pick-one-label} heuristic is often used (for example, in the FastText library). Unfortunately, as we show in this paper this heuristic is suboptimal. 
-%%
-%The main theoretical contribution of this paper is the result in which show that PLTs are no-regret generalization of HSM to multi-label problems. We empirically show that PLTs are always better than HSM on multi-label problems by a significant margin. Moreover, PLTs used with word-embeddings achieve outstanding results being comparable to other more complex deep networks. 
-%%
-%In this paper, we theoretically show that PLTs are no-regret multi-label generalization of hierarchical softmax (HSM). HSM is commonly used in deep networks to speed up computations in case of a large output space, for example in the natural language processing problems. We also show that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is in general not consistent. Moreover, as we empirically show PLTs are always better than HSM on multi-label problems by a significant margin. Moreover, PLTs used with word-embeddings achieve outstanding results being comparable to other more complex deep networks. 
-
-% We will also show that an existing adaptation of HSM, used for example in FastText, is not consistent. Finally, we use PLT in three different deep networks architectures for text classification, namely feature-embeddings (FastText-like representation), recurrent neural networks, and LSTMs, and show outstanding empirical results of them.
+In this paper, we theoretically show that \Algo{PLTs} are no-regret multi-label generalization of hierarchical softmax (\Algo{HSM}), a commonly used approach in neural networks to speed up computations in multi-class problems with large output spaces (such as language modeling). We also prove that the \emph{pick-one-label} heuristic often used to adapt HSM to multi-label problems is not consistent. Moreover, we empirically show that HSM with this heuristic is consistently worse than PLTs by a significant margin. Finally, we report the results of PLTs used with word-embeddings that are competitive to the state-of-the-art on popular XMLC benchmark datasets. 
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
 
-%\begin{itemize}
-%\item PLT, 
-%\item proper generalization of HSM, 
-%\item consistency of PLT, 
-%\item inconsistency of FastText approximation, 
-%\item correction of probability estimates, 
-%\item PLT with sparse input, 
-%\item PLT with FastText embeddings, 
-%\item PLT with RNN, 
-%\item PLT with LSTM.
-%\end{itemize}
-
 Many current applications of machine learning are characterized not only by a vast number of training examples and features, but also by a very large number of classes (labels) to which examples can be assigned. The learning problems of this type are often referred to as \emph{extreme classification}. They can be either multi-class or multi-label. Examples of such problems are photo and video annotation~\citep{Deng_et_al_2011} (e.g., used for image search engines), tagging of text documents~\citep{Dekel_Shamir_2010} (e.g., automatic categorization of Wikipedia articles), recommendation of bid words for online ads~\citep{Prabhu_Varma_2014}, or prediction of the next word in a sentence~\citep{Mikolov_et_al_2013}.
+%
+To be more specific, let us consider a problem of tagging Wikipedia articles. In this case, each article is an instance/example, words appearing in the text of articles can be considered as features, and categories to which articles are assigned as labels. By creating a data set from the current content of Wikipedia, we very easily end up with an enormous problem with millions of examples and features, but also with more than one million of labels, because that many categories are used in Wikipedia today. 
 
-To be more specific, consider a problem of tagging Wikipedia articles. In this case, each article is an instance/example, words appearing in the text of articles can be considered as features, and categories to which articles are assigned as labels. By creating a data set from the current content of Wikipedia, we very easily end up with an enormous problem with millions of examples and features, but also with more than one million of labels, because that many categories are used in Wikipedia today. 
+The challenges posed by problems at that scale have opened a new line of research within machine learning. It is easy to notice that the popular 1-vs-All approach which scales linearly with the number of labels is too costly in the extreme setting. Therefore, there is a need for new algorithms being sublinear in time and space. 
+%
+In this paper we focus on extreme multi-label classification (XMLC) of text documents. These problems are characterized by textual input that can be given in sparse representation in a form of a bag-of-words or its TF-IDF variant. More recently, text documents are usually transformed to dense representations by a shallow or a deep neural network. For both representations, the challenge is to design an algorithm that can efficiently deal with the large number of labels.
 
-The challenges posed by the problems at that scale have opened a new line of research within machine learning. It easy to notice that the BR approach (or 1-vs-All, in general) which scales linearly with the number of labels is too costly in the extreme setting. Therefore, there is a need for new algorithms being sublinear in time and space. 
+Probabilistic label trees (\Algo{PLTs})~\citep{Jasinska_et_al_2016} have been recently introduced for solving XMLC problems. Already their very basic variant, based on sparse input vectors, is competitive to the state of the art approaches, such as FastXML~\citep{Prabhu_Varma_2014}. In a nutshell, \Algo{PLTs} are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011} in which each label is assigned to one and only one path from the root to a leaf. 
+\Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the marginal probability of a label is given by the product of the probability estimates on the corresponding path from the root to a leaf.  Since \Algo{PLT}s are designed for multi-label problems, classification of a test example relies on traversing the tree from the root to the leaf nodes. Each internal node decides whether its subtree should be further explored. This is different from typical left/right decisions made in tree-based classifiers. 
 
-In this paper we focus on extreme multi-label classification (XMLC) of text documents. These problems are characterized by sparse textual input, usually represented in the form of a bag-of-words. 
-Recently, ... word-embeddings. 
+%Classification of a test example relies on a sequence of decisions made by node classifiers, leading a test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether to explore a subtree rooted in its node.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. 
+%
+%\Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure.
 
+As we will show in this paper, \Algo{PLT}s are no-regret generalization of hierarchical softmax (HSM)~\citep{Morin_Bengio_2005} to multi-label classification. HSM is a popular approach used in neural networks to speed up computations in multi-class problems with large output spaces. For example, it is commonly used in natural language processing problems such as language modeling~\citep{Mikolov_et_al_2013}.  
 
-Probabilistic label trees (PLTs)~\citep{Jasinska_et_al_2016} have been recently introduced for solving extreme multi-label classification (XMLC) problems, i.e., multi-label problems with a very large number of labels. Already a basic variant of PLTs, based on sparse input vectors, has been shown to be competitive to the state of the art approaches for XMLC, such as FastXML~\citep{Prabhu_Varma_2014}. 
+%(and also of conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b})
 
-In a nutshell, \Algo{PLTs} are based on the label tree approach~\cite{Beygelzimer_et_al_2009a,Bengio_et_al_2010,Deng_et_al_2011} in which each label is assigned to one and only one path from the root to a leaf. Classification of a test example relies on a sequence of decisions made by node classifiers, leading the test example from the root to the leaves of the tree. Since \Algo{PLT}s are designed for multi-label classification, each internal node classifier decides whether or not to continue the path by moving to the child nodes. This is different from typical left/right decisions made in tree-based classifiers.  Moreover, a leaf node classifier needs to make a final decision regarding the prediction of a label associated to this leaf. 
+In case of multi-class distributions, \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for logistic and 0/1 loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification, we will prove in this paper that \Algo{PLT}s are consistent for label-wise logistic loss, Hamming loss and precision@k. We will also show that the pick-one-label heuristic often used for adapting \Algo{HSM} to multi-label problems (for example, in FastText~\citep{Joulin_et_al_2016} and LearnedTrees~\citep{Jernite_et_al_2017}) leads to suboptimal results. Only in case of label independence this heuristic acts optimally for precision@k. This might justify its popularity and good results in terms of this measure. Nevertheless, \Algo{HSM} gets consistently worse results than \Algo{PLTs} in the empirical studies reported in this paper. 
+%
+We also discuss different architectures for document tagging in which \Algo{PLT}s can be used, such as sparse and dense representations and specific ensembling of several trees. As we show the resulting classifiers are very competitive to state-of-the-art methods on popular XMLC benchmark datasets. 
 
-\Algo{PLT}s use a class probability estimator in each node of the tree, such that an estimate of the posterior probability of a label associated with a leaf is given by the product of the probability estimates on the path from the root to that leaf. Prediction then relies on traversing the tree from the root to the leaf nodes. Whenever the intermediate value of the product of probabilities in an internal node is less than a given threshold, the subtree below this node is not explored anymore. This pruning strategy leads to a very efficient classification procedure.
-
-As we will show in this paper \Algo{PLT}s are no-regret generalization of hierarchical softmax (HSM)~\cite{Morin_Bengio_2005} (and also of conditional probability estimation trees~\cite{Beygelzimer_et_al_2009b}) to multi-label classification. HSM is a popular approach used in deep networks to speed up computations in case of a large output space. For example, they are used in natural language processing problems such as language modeling.  
-
-In case of multi-class distribution \Algo{PLT}s lead to exactly the same solution as HSM. This implies that that they are consistent for the 0/1 and logistic loss as shown in~\citep{Dembczynski_et_al_2016}. In case of multi-label classification \Algo{PLT}s  lead to the consistent solution for logistic loss, Hamming loss and precision@k as we will prove it in this paper. To deal with multi-label problems, HSM are often used with the \emph{pick-one-label}. We will show that this heuristic leads to suboptimal results for these three multi-label performance measures. The popularity of this heuristic may, however, be caused by the fact that in case of label independence it leads to optimal solution. In the empirical studies, we show however that HSM with this heuristic is always worse than PLTs by a significant margin. 
-
-Finally, we also discuss how PLTs can be combined with word-embeddings and lead to very competitive results to the ones obtained by more complex deep networks on a selection of XMLC benchmark datasets. 
-
-The paper is organized  as follows.
+The paper is organized as follows. In the next section we shortly discuss the related work. In Section~\ref{sec:problem_statement} we formally define the XMLC problem and present some useful theoretical insights. Section~\ref{sec:plt} formally introduces \Algo{PLT}s and presents the main theoretical results concerning them and their relation to \Algo{HSM}. Section~\ref{sec:plt-tagging} discusses different variants of \Algo{PLT}s used for document tagging. The experimental results are presented in Section~\ref{sec:empirical_results}. The last section concludes the paper. 
 
 
 \vspace{\sectionBefore}
 \section{Related work}
+\label{sec:related_work}
 \vspace{\sectionAfter}
 
 Historically, problems with a large number of labels were usually solved by nearest neighbor or decision tree methods. Some of today's algorithms are also based on these classical approaches, significantly extending them by a number of new tricks. If the number of labels is of order of thousands then an independent model for each class can be trained. This is the so-called {1-vs-All} approach. Unfortunately, this approach scales linearly with the number of labels, which for many applications is too costly. The extreme classification algorithms try to improve the training and prediction time, and/or the model size over the standard methods. The algorithms can be categorized to several groups based on the used paradigm such as sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015}, tree-based search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015,Jasinska_et_al_2016}, or label filtering~\citep{Cisse_et_al_2013,Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
@@ -255,7 +237,7 @@ FastText, Learned trees!!!
 
 \vspace{\sectionBefore}
 \section{Problem statement}
-\label{sec:formal}
+\label{sec:problem_statement}
 \vspace{\sectionAfter}
 
 Let $\calX$ denote an instance space, and let $\calL = \{\lambda_1,\lambda_2, \ldots,\lambda_m\}$ be a finite set of $m$ class labels. 
@@ -336,6 +318,7 @@ From the above results, we see that estimation of marginal probabilities is cruc
 
 \vspace{\sectionBefore}
 \section{Probabilistic label trees}
+\label{sec:plt}
 \vspace{\sectionAfter}
 
 Let us consider a $b$-ary tree $T$ with the number of leaves corresponding to the number of labels. We denote the root of the tree by $r(T)$ and the set of leaves of a subtree rooted in node $t$ by $L(t)$. The parent node of $t$ is denoted by $\pa{t}$, and the set of child nodes by $\Children{t}$. The path from the root $r(T)$ to an node $t$, either an internal or a leaf node, is denoted by $\Path{t}$. 
@@ -589,7 +572,7 @@ In other words, the model in node $l$ is the complement of the model in node $r$
 
 \vspace{\sectionBefore}
 \subsection{Suboptimality of the pick-one-label heuristic}
-\label{sec:online_PLTs}
+\label{sec:pick-one-label}
 \vspace{\sectionAfter}
 
 %FastText also uses HSM. 
@@ -659,10 +642,10 @@ Thus, for this specific situation of independent labels, the pick-one-label heur
 
 \vspace{\sectionBefore}
 \section{PLTs for document tagging}
-\label{sec:tagging_PLTs}
+\label{sec:plt-tagging}
 \vspace{\sectionAfter}
 
-In this section we focus on application of \Algo{PLT}s to document tagging. In general, \Algo{PLT}s can work with various document representations, such as sparse representations in the form of a bag-of-words and its TF-IDF variant, or dense representations being an output of a neural network. In the later case, \Algo{PLT}s play a role of the output layer of the network. 
+In this section we focus on application of \Algo{PLT}s to document tagging. In general, \Algo{PLT}s can work with various document representations, such as sparse representations in a form of a bag-of-words and its TF-IDF variant, or dense representations being an output of a neural network. In the later case, \Algo{PLT}s play a role of the output layer of the network. 
   
 %PLTs can be combined with various underlying document representations. In this section we briefly describe sample applications of PLTs to document tagging. 
 %The described approaches differ mainly in the representation of a document, and therefore in the architecture of the entire model. In principle PLTs work the same in each of them, however in certain cases the application must be suited for the architecture.
@@ -712,7 +695,7 @@ The input of the tagging module is the output of the text representation module.
 
 \vspace{\sectionBefore}
 \subsection{PLTs with sparse input}
-\label{sec:sparse_input}
+\label{sec:plt-sparse}
 \vspace{\sectionAfter}
 
 In the simplest case PLTs can be used on sparse representation of text. In other words, the text representation module $f$ can transform text to bag-of-words representation, in which case $d$ is equal to the size $N$ of the word dictionary. However, on average the number of non-zero features $\overline{\mathrm{nnz}}(\bx) \ll N$, and a document can be represented as a sparse vector. 
@@ -723,7 +706,7 @@ Interestingly, in the case of sparse features, the space complexity of \Algo{PLT
 
 \vspace{\sectionBefore}
 \subsection{PLTs with word embeddings}
-\label{sec:word_embeddings}
+\label{sec:plt-word_embeddings}
 \vspace{\sectionAfter}
 
 Instead of the sparse representation one can also use a dense representation being a result of a deep or shallow neural network. This idea is presented on Figure~\ref{pic:model-embedding}.
@@ -749,14 +732,14 @@ Alternatively, one can train the word embeddings simultaneously with the tagger 
 
 \vspace{\sectionBefore}
 \subsection{PLTs with deep networks}
-\label{sec:sparse_input}
+\label{sec:plt-deep}
 \vspace{\sectionAfter}
 
 To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advance deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
 
 \vspace{\sectionBefore}
 \subsection{Ensemble of PLTs}
-\label{sec:sparse_input}
+\label{sec:plt-ensemble}
 \vspace{\sectionAfter}
 
 
