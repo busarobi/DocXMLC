@@ -863,15 +863,13 @@ To improve the document representation, instead of a simple aggregation over wor
 \label{sec:plt-ensemble}
 \vspace{\sectionAfter}
 
-Simultaneously to improving the document representation, one can extend the tagger module with additional \Algo{PLT} instances.
-Depending on the tree structure, the accuracy of a single \Algo{PLT} for specific labels may vary.
-Thus the aggregation of predictions from an ensemble of \Algo{PLT}s with random tree structures should lead to improvement of the overall predictive performance.
-Additionally, bootstrap aggregation can also be applied to decrease the variance of the trees. 
+Various ensemble techniques, such as bagging, are routinely applied with tree-based learners. A very simple ensemble approach can be also easily implemented in our learning architecture. One can extend the tree-based tagging module with additional \Algo{PLT} instances which trees share the same text representation as input, but have different tree architecture. Depending on the tree structure, the accuracy of a single \Algo{PLT} for specific labels may vary. Thus the aggregation of predictions of this diverse pool of \Algo{PLT}s with random tree structures should lead to improvement of the overall predictive performance. 
+%Additionally, bootstrap aggregation can also be applied to decrease the variance of the trees. 
 %
-In our implementation, we also update the word embeddings by using %ensemble of PLTs as well as single PLT by averaging the gradients
-the average of gradients obtained from separate trees, which besides may lead to a reduction of overfitting.
+In our implementation, we update the word embeddings by using %ensemble of PLTs as well as single PLT by averaging the gradients
+the average of gradients back-propagated from individual trees of the ensemble, which besides may lead to a reduction of overfitting.
 
-Let us also notice that classification of test examples with multiple trees can be still performed very efficiently. We query each tree for its top $k$ predictions. In the next step, we take a union of the predicted labels. In case, we did not get probability estimates for a given label from all the trees, we can efficiently obtain the missing probabilities by traversing the corresponding paths in the trees.
+Let us also notice that classification of test examples with multiple trees can be still performed very efficiently: first, we query each tree for its top $k$ predictions, second we take the union of the predicted labels. In case, we did not get probability estimates for a given label from all the trees, we can efficiently obtain the missing probabilities by traversing the corresponding paths in the trees. As a last step we compute the average score for each label in the union, and select the top-k based on these average scores.
 
 %Taking into account fact, that the distribution of labels in the extream classification problems follows the Pareto distribution, it is expected to achive improvment.
 
