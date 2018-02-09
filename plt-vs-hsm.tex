@@ -961,9 +961,39 @@ The results reveal some general trends. The PLT outperforms LOM and HSM consiste
 We would especially like to underline the fact that the PLT with word embeddings is on-par with the more complex CNN model in terms of precision for a computational cost that is an order of magnitude smaller.
 
 
+
+
+\begin{table*}[t!]
+\vspace{-.2cm}
+        \caption{Main characteristics of the datasets used in the experiment.}
+        \label{tab:datasets-differences-table}
+        \begin{center}
+                \begin{small}
+                        %\vspace{-0.1cm}
+                        \begin{tabular}{l@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} | r@{\hskip 4pt} r@{\hskip 4pt} r@{\hskip 4pt} | r@{\hskip 4pt} }
+                                \toprule
+& \#labels &\#features &\#test &\#train & inst./lab. & lab./inst.  \\
+RCV1 & 103 & 477454 & 23149 & 781265 & 729.67 & 3.18 \\ 
+Yahoo & 414 & 246235 & 38968 & 10000 & 191.05 & 2.02 \\ 
+EUR-lex & 3791 & 161070 & 11585 & 3865 & 17.30 & 5.32 \\ 
+Wiki-30K & 29815 & 106605 & 12959 & 5992 & 8.30 & 18.74 \\ 
+Amazon-12K & 12277 & 173192 & 490310 & 152981 & 214.45 & 5.37 \\ 
+Amazon-670K & 670091 & 173194 & 490449 & 153025 & 4.01 & 5.45 \\ 
+                                \midrule
+                                \bottomrule
+                        \end{tabular}
+                \end{small}
+        \end{center}
+                        \vspace{-0.4cm}
+\end{table*}
+
+
 \section{Conclusions}
 
-We empirically justified that \Algo{PLT} is a better model of choice when one face with multi-label classification task.
+In this paper we presented the PLTs algorithm as a no-regret generalization of the \Algo{HSM}. Our main theoretical contribution is a regret bound for Prec@k. Moreover, we show that, in contrast to the pick-one-label heuristic, PLTs are the correct generalization of the multi-class HSM to multi-label problems. The theoretical results were verified experimentally on both synthetic and benchmark data. The first confirm the claim that the pick-one-label heuristic used in multi-label HSM is outperformed in case of existence of label dependencies. The latter show that PLTs can be used for text labeling with both sparse and dense text representation, and achieve results competitive to much more computation-demanding approaches. 
+%Additionally, we show that making an ensemble of PLT trees, similar to FastXML, leads to a significant boost of results in terms of precision@3 and precision@5.
+
+%We empirically justified that \Algo{PLT} is a better model of choice when one face with multi-label classification task.
 
 \newpage
 
