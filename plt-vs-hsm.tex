@@ -1372,7 +1372,36 @@ Amazon670K & \datall{train}{test} & \datarr{789m}{21m} & \datarr{1083m}{48m} & \
 	\vspace{-0.4cm}
 \end{table*}
 
+\section{Tuning of hyperparameters}
+\label{sec:hyper}
 
+The \Algo{PLT} has only one global hyperparameter which is the degree of the tree denoted by $b$.
+The other hyperparameters are associated with the node classifiers.
+The \Algo{HSM} and \Algo{PLT} in Vowpal Wabbit was tuned with the stochastic gradient descent with a step size $\lambda_t$ calculated separately for each node
+according to $\lambda_t = \lambda * (1 / t)^p$ where $t$ is number of node updates and $\lambda$ and $p$ are hyperparameters.
+In the \Algo{HSM} and \Algo{PLT} in FastText, $\lambda_t$ decreased linear during training from $\lambda$ to 0.
+
+\vspace{\tableBefore}
+\begin{table}[ht!]
+\caption{The hyperparameters of the \Algo{PLT} method and their ranges used in hyperparameter optimization,}
+\label{tab:hyppar}
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+Hyperparameter & Range \\
+\hline
+$b$ & $\{ 2, \dots , 128\}$ \\
+$\lambda$ & $[1.0 - 0.000001]$ \\
+$p$ & $[1.0 - 0.000001]$ \\
+L1 regularization & $[0.0 - 0.000001]$ \\
+number of epochs & $\{ 5, \dots , 50\}$ \\
+number of PLTs in ensemble & $\{ 3, \dots , 5\}$ \\
+bagging ratio & $[0.5 - 1.0]$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\vspace{\tableAfter}
 
 
 \end{document} 
