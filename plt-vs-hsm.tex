@@ -37,7 +37,9 @@
 \usetikzlibrary{calc}
 \usetikzlibrary{decorations}
 \usepackage{multirow}
-
+%\setlength\tabcolsep{2pt}
+%\usepackage[subtle,mathspacing=normal, tracking=normal]{savetrees}
+%\usepackage{microtype}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Command
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,12 +215,12 @@
 
 \begin{abstract}
 Extreme multi-label classification (XMLC) is the problem of
-classifying an instance with more than one label choosen from a very
+classifying an instance with any number of labels chosen from a very
 large set of labels.  Recent work introduced probabilistic label trees
 (\Algo{PLTs}) to solve XMLC, where each label represents one and only
 path from root of the tree to a leaf node.  In this work, we
 theoretically prove that \Algo{PLTs} can be seen as no-regret
-multi-label generalization of hierachical softmax
+multi-label generalization of hierarchical softmax
 (\Algo{HSM}). Additionally, we prove that \emph{pick-one-label}
 heuristic, used for adaptation of HSM to XMLC, is not consistent. Our
 empirical results show that HSM with pick-one-label heuristic is
@@ -389,15 +391,15 @@ The regret quantifies the suboptimality of $\bh$ compared to the optimal classif
 In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \prob(y_j = 1 \given \bx)$. As we will show below marginal probabilities are a key element to optimally solve extreme classification for many performance measures, like Hamming loss, macro-F measure, and precision@$k$. 
 To obtain the marginal probabilities one can use the label-wise log loss:
 $$
-\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(y, h_j(\bx)) \,
+\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(y_j, h_j(\bx)) \,
 $$
 where 
 $$
-\ell_{\log}(y,h_j(\bx)) = y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) 
+\ell_{\log}(y_j,h_j(\bx)) = y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) 
 $$
 The expected loss for a single $\bx$ (i.e., the so-called \emph{conditional risk}) in terms of the label-wise log loss is:
 $$
-\mathbb{E} \ell_{\log}(\bh \given \bx) =  \sum_{j=1}^m \mathbb{E}{\ell_{\log}(y, h_j(\bx))} = \sum_{j=1}^m \loss_{\log}(h_j(\bx))\,. %\\ 
+\mathbb{E} \ell_{\log}(\bh \given \bx) =  \sum_{j=1}^m \mathbb{E}{\ell_{\log}(y_j, h_j(\bx))} = \sum_{j=1}^m \loss_{\log}(h_j(\bx))\,. %\\ 
 $$
 Therefore, the pointwise optimal prediction for the $j$-th label is defined by:
 $$
@@ -641,7 +643,7 @@ $$
 \label{sec:hsm}
 \vspace{\sectionAfter}
 
-Hierarchical softmax (\Algo{HSM}) is designed for multi-class classification. In this section, we show that \Algo{PLT}s are no-regret generalization of \Algo{HSM} to multi-label classification as they get exactly the same model as \Algo{HSM} in case of a multi-class distribution. 
+Hierarchical softmax (\Algo{HSM}) is designed for multi-class classification. In this section, we show that \Algo{PLT}s are proper generalization of \Algo{HSM} to multi-label classification as they get exactly the same model as \Algo{HSM} in case of a multi-class distribution. 
 %As discussed in Section~\ref{sec:regret}, PLTs are consistent in estimation of marginal probabilities and for maximization of precision@$k$ in the multi-label setting. Below, we show that they get exactly the same model as \Algo{HSM} in case of a multi-class distribution. 
 For sake of simplicity, we will consider a binary tree in the following.  
 
@@ -793,7 +795,7 @@ The input of the tagging module is the output of the text representation module.
 %DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
 
 
-\begin{figure}
+\begin{figure}[h!]
 	\begin{center}
 		\input{tikz/modules}
 	\end{center}
@@ -837,33 +839,36 @@ Interestingly, in the case of sparse features, the space complexity of \Algo{PLT
 \label{sec:plt-word_embeddings}
 \vspace{\sectionAfter}
 
-Instead of the sparse representation one can also use a dense representation being a result of a deep or shallow neural network. This idea is presented on Figure~\ref{pic:model-embedding}.
+Instead of the sparse representation one can also use a dense representation being a result of a deep or shallow neural network. % This idea is presented on Figure~\ref{pic:model-embedding}.
 
 One possibility is to use pretrained word embeddings, like those from word2vec~\citep{Mikolov_et_al_2013} or glove~\citep{Pennigton_et_al_2014} obtained on large text corpuses. The document representation can be then created from these word embeddings in many ways, for example, as an average or as the maximum or minimum value of each element of the embeddings~\citep{De_Boom_et_al_2016}.
 
 Alternatively, one can train the word embeddings simultaneously with the tagger module, similarly as in FastText~\citep{Joulin_et_al_2016}. Depending on the application and the size of the text corpus this might be either inferior or superior to the former approach. Another option is to initiate the network with the pretrained embeddings and then update all the parameters of both the tagging and text representation module. 
 %but such approach leads to serious lengthening of the training time \cite{!!} and often to worse results\cite{!!}. This is not surprising since the pretrained word embeddings represent knowledge transfered from larger text corpora then the tagging datasets.
 
-\begin{figure}
-	\begin{center}
-		\input{tikz/model1}
-	\end{center}
-	\caption{PLT with word embedding.}
-	\label{pic:model-embedding}
-\end{figure}
 
+% \begin{figure}    
+% 	\begin{center}
+% 	  \resizebox{.3\textwidth}{!}{
+% 		\input{tikz/model1}
+% 	  }
+% 	\end{center}
+% 	\caption{PLT with word embedding.}
+% 	\label{pic:model-embedding}
+% \end{figure}
+% \vsapce{-1cm}
 
 %\vspace{\sectionBefore}
 %\subsection{PLTs with recurrent neural network}
 %\label{sec:sparse_input}
 %\vspace{\sectionAfter}
 
-\vspace{\sectionBefore}
-\subsection{PLTs with deep networks}
-\label{sec:plt-deep}
-\vspace{\sectionAfter}
+% \vspace{\sectionBefore}
+% \subsection{PLTs with deep networks}
+% \label{sec:plt-deep}
+% \vspace{\sectionAfter}
 
-To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advanced deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
+% To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advanced deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
 
 \vspace{\sectionBefore}
 \subsection{Ensemble of PLTs}
@@ -932,7 +937,7 @@ We validate our theoretical results presented in Section~\ref{sec:plt}, which sh
 	\bottomrule
 \end{tabular}
 \end{center}
-\vspace{-0.4cm}
+\vspace{-0.3cm}
 \end{table}
 
 All models we use to generate synthetic data are based on $m = 128$ linear functions 
@@ -956,7 +961,7 @@ On data with dependent labels, \Algo{PLT} outperforms \Algo{HSM}.
 \subsection{Benchmark data}
 
 \begin{table}[t!]
-\vspace{-.2cm}
+\vspace{-.1cm}
         \caption{Main characteristics of the datasets used in the experiment.}
         \label{tab:datasets-differences-table}
         \begin{center}
@@ -980,10 +985,10 @@ Amazon-670K & 670091 & 173194 & 490449 & 153025 \\%& 4.01 & 5.45 \\
                         \end{tabular}
                 \end{small}
         \end{center}
-                        \vspace{-0.4cm}
+                        \vspace{-0.3cm}
 \end{table}
 %
-We also carried out experiments on commonly used benchmark datasets taken from XMLC repository\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html} and Yahoo news multi-label corpus.\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}
+We also carried out experiments on commonly used benchmark datasets taken from XMLC repository\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html}, their raw text equivalents by courtesy of \cite{Liu_et_al_2017}, and Yahoo news multi-label corpus.\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}
 The main characteristics of datasets are shown in Table \ref{tab:datasets-differences-table}. 
 %
 Every datasets we used consists of text data, so we decided to use two representations of them when it is available: feature vectors taken from XMLC repository, and word embeddings described in Section \ref{sec:plt-word_embeddings}. In case of Yahoo! news dataset we used the bag of words representation.
@@ -1049,7 +1054,6 @@ Every datasets we used consists of text data, so we decided to use two represent
 %
 In the first experiment, we compared the performance of \Algo{HSM} and \Algo{PLT} on eight benchmark datasets using sparse representation (implemented based on Vowpal-Wabbit) and word embeddings (implemented based on FastText).
 %
-
 We tuned the hyper-parameters of the models by using grid search. We also considered different tree structures such as random and Huffman trees. The range of the hyper-parameters is reported in Appendix. The results are shown in Table \ref{tab:hsm_vs_plt}. \Algo{PLT}s clearly outperform \Algo{HSM} in all cases by a very significant margin on both representations of the training data. We have to mention here, in addition,  that there is not significant difference in running time of \Algo{HSM} and \Algo{PLT}, in general.
 
 \begin{table*}[t]
@@ -1064,7 +1068,7 @@ We tuned the hyper-parameters of the models by using grid search. We also consid
 & & \multicolumn{1}{|c|}{\Algo{FastXML}} & \multicolumn{1}{|c|}{\Algo{SLEEC}} & \multicolumn{1}{|c|}{\Algo{VW+PLT}} & \multicolumn{1}{|c|}{\Algo{FT+PLT}} & \multicolumn{1}{|c|}{\Algo{FT+PLT+E}} & \multicolumn{1}{|c}{\Algo{XML-CNN}} \\
                                 \midrule
 RCV1 & \data{P@1}{P@3}{P@5} & \data{94.62}{78.40}{54.82} & \data{95.35}{79.51}{55.06} & \data{90.47}{72.54}{51.84} & \data{95.41}{77.49}{53.91} & \data{95.77}{\textbf{90.99}}{\textbf{82.53}} & \data{\textbf{96.83}}{81.44}{56.57} \\ \midrule
-Yahoo! & \data{P@1}{P@3}{P@5} & \data{70.12}{56.97}{43.25} & \data{71.80}{57.88}{47.78} & \databf{72.09}{61.17}{48.49} & \data{70.06}{58.04}{46.05} & \data{\textbf{74.08}}{\textbf{69.63}}{\textbf{64.05}} & \data{71.71}{58.40}{45.62} \\ \midrule
+Yahoo! & \data{P@1}{P@3}{P@5} & \data{71.84}{61.33}{48.12} & \data{71.80}{57.88}{47.78} & \data{72.09}{61.17}{48.49} & \data{70.06}{58.04}{46.05} & \data{\textbf{74.08}}{\textbf{69.63}}{\textbf{64.05}} & \data{71.71}{58.40}{45.62} \\ \midrule
 EUR-Lex & \data{P@1}{P@3}{P@5} & \data{68.12}{57.93}{48.97} & \data{\textbf{78.21}}{64.33}{52.47} & \data{74.55}{60.60}{50.05} & \data{73.19}{57.79}{46.98} & \data{75.08}{\textbf{70.06}}{\textbf{63.38}} & \data{72.16}{57.32}{46.49} \\ \midrule
 Wiki30K & \data{P@1}{P@3}{P@5} & \data{83.26}{68.74}{58.84} & \data{\textbf{85.96}}{73.13}{62.73} & \data{84.34}{72.34}{62.72} & \data{85.11}{73.12}{62.67} & \data{85.21}{\textbf{81.29}}{\textbf{75.22}} & \data{84.06}{73.96}{64.11} \\ \midrule
 Amazon12K & \data{P@1}{P@3}{P@5} & \data{94.58}{78.69}{62.26} & \data{93.61}{79.13}{63.54} & \data{91.46}{76.00}{61.40} & \data{92.98}{75.75}{59.53} & \data{93.42}{\textbf{88.75}}{\textbf{80.39}} & \data{\textbf{95.13}}{79.52}{63.46} \\ \midrule
@@ -1080,10 +1084,9 @@ Amazon670K & \data{P@1}{P@3}{P@5} & \data{35.59}{31.87}{28.96} & \data{34.54}{30
 
 %
 In the second experiment, we compared the performance of \Algo{PLT}s with some state-of-the-art learners, such as \Algo{FastXML}, \Algo{SLEEC}, and the convolutional neural network (\Algo{XML-CNN}) introduced in~\citep{Liu_et_al_2017} which achieves very impressive performance. % on these datasets. 
-
 The results reveal some general trends. First, \Algo{PLT}s outperform \Algo{HSM} consistently. Second, the \Algo{PLT}'s performance is on par with \Algo{FastXML}, however SLEEC achieves better results. Nevertheless, the running time of SLEEC is way longer~(training and test times are reported in Appendix~\ref{app:running_times}). So \Algo{PLTs} seems to find a reasonable trade-off between running time and performance.
 
-We would especially like to underline the fact that \Algo{PLT}s with word embeddings is on-par with the more complex \Algo{XML-CNN} model in terms of precision for a computational cost that is an order of magnitude smaller. Moreover, \Algo{XML-CNN} requires pretrained embedding vectors as initialization, whereas \Algo{PLT}s can be used with random initializations.
+We would especially like to underline the fact that \Algo{PLT}s with word embeddings is on-par with more complex \Algo{XML-CNN} in terms of precision for a computational cost that is an order of magnitude smaller. Moreover, \Algo{XML-CNN} requires pretrained embedding vectors, whereas \Algo{PLT}s can be used with random initializations.
 %
 Lastly, the ensemble of \Algo{PLT}s (\Algo{Fast+PLT+E}) significantly improves the precision at higher position, such as precision@3 and precision@5. 
 
