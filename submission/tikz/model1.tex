@@ -1,0 +1,188 @@
+
+%\usepackage{tikz}
+%\usetikzlibrary{positioning,calc}
+%  \tikzset{}
+%  }
+
+\makeatletter
+\def\pgf@dec@dashon{5pt}
+\def\pgf@dec@dashoff{5pt}
+\pgfkeys{/pgf/decoration/.cd,
+	dash on/.store in=\pgf@dec@dashon,
+	dash off/.store in=\pgf@dec@dashoff
+}
+\pgfdeclaredecoration{aligned dash}{start}{
+	\state{start}[width=0pt, next state=pre-corner,persistent precomputation={
+		\pgfextract@process\pgffirstpoint{\pgfpointdecoratedinputsegmentfirst}%
+		\pgfextract@process\pgfsecondpoint{\pgfpointdecoratedinputsegmentlast}%
+		\pgfmathsetlengthmacro\pgf@dec@dashon{\pgf@dec@dashon}%
+		\pgfmathsetlengthmacro\pgf@dec@dashoff{\pgf@dec@dashoff}%
+		\pgfmathsetlengthmacro\pgf@dec@halfdash{\pgf@dec@dashon/2}%
+	}]{}
+	\state{pre-corner}[width=\pgfdecoratedinputsegmentlength, next state=post-corner, persistent precomputation={
+		%
+		\pgfmathparse{int(ceil((\pgfdecoratedinputsegmentlength-\pgf@dec@dashon-\pgf@dec@dashoff)/(\pgf@dec@dashon+\pgf@dec@dashoff)))}%
+		\let\pgf@n=\pgfmathresult
+		\pgfmathsetlengthmacro\pgf@b%
+		{\pgfdecoratedinputsegmentlength/(\pgf@n+1)-\pgf@dec@dashon}%
+		\ifdim\pgf@b<\pgf@dec@dashoff\relax%
+		\pgfmathparse{int(\pgf@n-1)}\let\pgf@n=\pgfmathresult%
+		\pgfmathsetlengthmacro\pgf@b%
+		{\pgfdecoratedinputsegmentlength/(\pgf@n+1)-\pgf@dec@dashon}%
+		\fi%
+		\pgfmathsetlengthmacro\pgf@b{\pgf@b+\pgf@dec@dashon}%
+	}]{%
+	\pgfmathloop
+	\ifnum\pgfmathcounter>\pgf@n%
+	\else%
+	\pgfpathmoveto{\pgfpoint{\pgf@b*\pgfmathcounter-\pgf@dec@halfdash}{0pt}}%
+	\pgfpathlineto{\pgfpoint{\pgf@b*\pgfmathcounter+\pgf@dec@halfdash}{0pt}}%
+	\repeatpgfmathloop%
+	\pgfpathmoveto%
+	{\pgfpoint{\pgfdecoratedinputsegmentlength-\pgf@dec@halfdash}{0pt}}%
+	\pgfpathlineto%
+	{\pgfpointdecoratedinputsegmentlast}
+}
+\state{post-corner}[width=0pt, next state=pre-corner]{
+	\pgfpathlineto{\pgfpoint{\pgf@dec@halfdash}{0pt}}%
+}
+\state{final}{
+	\pgftransformreset%
+	\pgfpathlineto{\pgfpointlineatdistance{\pgf@dec@halfdash}{\pgffirstpoint}{\pgfsecondpoint}}%
+}
+}
+\tikzset{aligned dash/.style={
+		decoration={aligned dash, #1}, decorate
+	}}
+	
+	\begin{tikzpicture}[layer/.style = {rectangle, draw, minimum height=0.5cm, minimum width=7cm},
+	xinput/.style = {rectangle, draw, minimum height=0.5cm, minimum width=1cm},
+	dotsinput/.style = {rectangle, minimum height=0.5cm, minimum width=1cm},
+	]
+	%,yshift=0.5cm
+	
+	
+	\node (layerembedding)[layer]{word embeddings};
+	\node (layeragregation)[layer,above of=layerembedding]{$\bx$};
+	\node (layertagger)[layer,above of=layeragregation]{PLT};
+	\node (layeroutput)[layer,above of=layertagger]{output};
+	
+	\node (x1)[xinput,below of=layerembedding, xshift=-3cm]{$w_1$};
+	\node (x2)[xinput,below of=layerembedding, xshift=-1.5cm]{$w_2$};
+	\node (xdots)[dotsinput,below of=layerembedding, xshift=0cm]{\ldots};
+	\node (x3)[xinput,below of=layerembedding, xshift=1.5cm]{$w_{n-1}$};
+	\node (x4)[xinput,below of=layerembedding, xshift=3cm]{$w_{n}$};
+	
+	\draw [red, thick, aligned dash] (-3.75,3.5) rectangle (3.75,1.52);
+	\draw [blue, thick, aligned dash] (-3.75,1.48) rectangle (3.75,-1.5);
+	
+	\draw[->] ($(layerembedding.north west)!0.5!(layerembedding.north east)$) -- node[below] {} ($(layeragregation.south west)!0.5!(layeragregation.south east)$);
+	\draw[->] ($(layeragregation.north west)!0.5!(layeragregation.north east)$) -- node[below] {} ($(layertagger.south west)!0.5!(layertagger.south east)$);
+	\draw[->] ($(layertagger.north west)!0.5!(layertagger.north east)$) -- node[below] {} ($(layeroutput.south west)!0.5!(layeroutput.south east)$);
+	
+	
+	\draw[->] ($(x1.north west)!0.50!(x1.north east)$) -- node[below] {} ($(layerembedding.south west)!0.07142857142!(layerembedding.south east)$);
+	
+	
+	\draw[->] ($(x2.north west)!0.50!(x2.north east)$) -- node[below] {} ($(layerembedding.south west)!0.28571428571!(layerembedding.south east)$);
+	
+	
+	\draw[->] ($(x3.north west)!0.50!(x3.north east)$) -- node[below] {} ($(layerembedding.south west)!0.71428571428!(layerembedding.south east)$);
+	
+	
+	\draw[->] ($(x4.north west)!0.50!(x4.north east)$) -- node[below] {} ($(layerembedding.south west)!0.92857142857!(layerembedding.south east)$);
+	% more arrows here
+	\end{tikzpicture}
+	
+	
+%%\usepackage{tikz}
+%%\usetikzlibrary{positioning,calc}
+%%  \tikzset{}
+%%  }
+%
+%\makeatletter
+%\def\pgf@dec@dashon{5pt}
+%\def\pgf@dec@dashoff{5pt}
+%\pgfkeys{/pgf/decoration/.cd,
+%	dash on/.store in=\pgf@dec@dashon,
+%	dash off/.store in=\pgf@dec@dashoff
+%}
+%\pgfdeclaredecoration{aligned dash}{start}{
+%	\state{start}[width=0pt, next state=pre-corner,persistent precomputation={
+%		\pgfextract@process\pgffirstpoint{\pgfpointdecoratedinputsegmentfirst}%
+%		\pgfextract@process\pgfsecondpoint{\pgfpointdecoratedinputsegmentlast}%
+%		\pgfmathsetlengthmacro\pgf@dec@dashon{\pgf@dec@dashon}%
+%		\pgfmathsetlengthmacro\pgf@dec@dashoff{\pgf@dec@dashoff}%
+%		\pgfmathsetlengthmacro\pgf@dec@halfdash{\pgf@dec@dashon/2}%
+%	}]{}
+%	\state{pre-corner}[width=\pgfdecoratedinputsegmentlength, next state=post-corner, persistent precomputation={
+%		%
+%		\pgfmathparse{int(ceil((\pgfdecoratedinputsegmentlength-\pgf@dec@dashon-\pgf@dec@dashoff)/(\pgf@dec@dashon+\pgf@dec@dashoff)))}%
+%		\let\pgf@n=\pgfmathresult
+%		\pgfmathsetlengthmacro\pgf@b%
+%		{\pgfdecoratedinputsegmentlength/(\pgf@n+1)-\pgf@dec@dashon}%
+%		\ifdim\pgf@b<\pgf@dec@dashoff\relax%
+%		\pgfmathparse{int(\pgf@n-1)}\let\pgf@n=\pgfmathresult%
+%		\pgfmathsetlengthmacro\pgf@b%
+%		{\pgfdecoratedinputsegmentlength/(\pgf@n+1)-\pgf@dec@dashon}%
+%		\fi%
+%		\pgfmathsetlengthmacro\pgf@b{\pgf@b+\pgf@dec@dashon}%
+%	}]{%
+%	\pgfmathloop
+%	\ifnum\pgfmathcounter>\pgf@n%
+%	\else%
+%	\pgfpathmoveto{\pgfpoint{\pgf@b*\pgfmathcounter-\pgf@dec@halfdash}{0pt}}%
+%	\pgfpathlineto{\pgfpoint{\pgf@b*\pgfmathcounter+\pgf@dec@halfdash}{0pt}}%
+%	\repeatpgfmathloop%
+%	\pgfpathmoveto%
+%	{\pgfpoint{\pgfdecoratedinputsegmentlength-\pgf@dec@halfdash}{0pt}}%
+%	\pgfpathlineto%
+%	{\pgfpointdecoratedinputsegmentlast}
+%}
+%\state{post-corner}[width=0pt, next state=pre-corner]{
+%	\pgfpathlineto{\pgfpoint{\pgf@dec@halfdash}{0pt}}%
+%}
+%\state{final}{
+%	\pgftransformreset%
+%	\pgfpathlineto{\pgfpointlineatdistance{\pgf@dec@halfdash}{\pgffirstpoint}{\pgfsecondpoint}}%
+%}
+%}
+%\tikzset{aligned dash/.style={
+%		decoration={aligned dash, #1}, decorate
+%	}}
+%	
+%\begin{tikzpicture}[layer/.style = {rectangle, draw, minimum height=0.5cm, minimum width=7cm},
+%xinput/.style = {rectangle, draw, minimum height=0.5cm, minimum width=1cm},
+%]
+%        %,yshift=0.5cm
+%        
+%        
+%    \node (layerembedding)[layer]{word embeddings};
+%    \node (layertagger)[layer,above of=layerembedding]{PLT};
+%    \node (layeroutput)[layer,above of=layertagger]{output};
+%    
+%    \node (x1)[xinput,below of=layerembedding, xshift=-3cm]{$x_1$};
+%    \node (x2)[xinput,below of=layerembedding, xshift=-1.5cm]{$x_2$};
+%    \node (x3)[xinput,below of=layerembedding, xshift=1.5cm]{$x_{d-1}$};
+%    \node (x4)[xinput,below of=layerembedding, xshift=3cm]{$x_{d}$};
+%    
+%    \draw [blue, thick, aligned dash] (-3.75,2.5) rectangle (3.75,0.52);
+%    \draw [red, thick, aligned dash] (-3.75,0.48) rectangle (3.75,-1.5);
+%    
+%    \draw[->] ($(layerembedding.north west)!0.5!(layerembedding.north east)$) -- node[below] {} ($(layertagger.south west)!0.5!(layertagger.south east)$);
+%    \draw[->] ($(layertagger.north west)!0.5!(layertagger.north east)$) -- node[below] {} ($(layeroutput.south west)!0.5!(layeroutput.south east)$);
+%    
+%    
+%    \draw[->] ($(x1.north west)!0.50!(x1.north east)$) -- node[below] {} ($(layerembedding.south west)!0.07142857142!(layerembedding.south east)$);
+%    
+%    
+%    \draw[->] ($(x2.north west)!0.50!(x2.north east)$) -- node[below] {} ($(layerembedding.south west)!0.28571428571!(layerembedding.south east)$);
+%    
+%    
+%    \draw[->] ($(x3.north west)!0.50!(x3.north east)$) -- node[below] {} ($(layerembedding.south west)!0.71428571428!(layerembedding.south east)$);
+%    
+%    
+%    \draw[->] ($(x4.north west)!0.50!(x4.north east)$) -- node[below] {} ($(layerembedding.south west)!0.92857142857!(layerembedding.south east)$);
+%    % more arrows here
+%\end{tikzpicture}
+%%\end{document}
