@@ -336,20 +336,44 @@ algorithms are still based on these classical approaches,
 significantly extending them by a number of new tricks. If the label
 space is of moderate size (like a few thousands of labels) then an
 independent model can be trained for each class. This is the so-called
-{\Algo{1-vs-All} approach. Unfortunately, it scales linearly with the
-  number of labels, which is too costly for many applications. The
-  extreme classification algorithms try to improve over this approach
-  by following different paradigms such as
-  sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank
-  approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015},
-  tree-based
-  search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015}, or label
-  filtering~\citep{Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
+\Algo{1-vs-All} approach. Unfortunately, it scales linearly with the
+number of labels, which is too costly for many applications. The
+extreme classification algorithms try to improve over this approach
+by following different paradigms such as
+sparsity~\citep{Yen_et_al_2017,Babbar_Scholkopf_2017}, low-rank
+approximation~\cite{Mineiro_Karampatziakis_2015,Yu_et_al_2014,Bhatia_et_al_2015},
+tree-based
+search~\citep{Prabhu_Varma_2014,Choromanska_Langford_2015}, or label
+filtering~\citep{Vijayanarasimhan_et_al_2014,Shrivastava_Li_2015,Niculescu-Mizil_Abbasnejad_2017}.
 
-In this paper we focus on tree-based algorithms, therefore we discuss them here in more detail. There are two distinct types of these algorithms: decision trees and label trees. The former type follow the idea of classical decision trees. However, the direct use of the standard decision tree algorithms can be very costly~\citep{Agrawal_et_al_2013}. Therefore, the FastXML algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. It uses sparse linear classifiers in the internal tree nodes to split the feature space. The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. To improve the overall accuracy FastXML uses an ensemble of trees. FastXML, similarly as the majority of decision tree algorithms, works in a batch mode. \citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm that also uses linear classifiers in the internal nodes of the tree.
+In this paper we focus on tree-based algorithms, therefore we discuss them here in more detail. 
+There are two distinct types of these algorithms: decision trees and label trees. 
+The former type follow the idea of classical decision trees. 
+However, the direct use of the classic algorithms can be very costly~\citep{Agrawal_et_al_2013}. 
+Therefore, the \Algo{FastXML} algorithm~\citep{Prabhu_Varma_2014} approaches the problem in a slightly different way. 
+It uses sparse linear classifiers in internal tree nodes to split the feature space. 
+The authors were able to formulate the optimization problem in a way that resulted in a very efficient algorithm. 
+To improve the overall accuracy \Algo{FastXML} uses an ensemble of trees. 
+This algorithm, as many other decision tree methods, works in a batch mode. 
+\citet{Choromanska_Langford_2015} have succeeded to introduce a fully online decision tree algorithm 
+that also uses linear classifiers in internal nodes of the tree.
 
-In the label trees each label corresponds to one and only one path from the root to a leaf. There exist several instances of this approach. Besides \Algo{PLT}s and \Algo{HSM}, these are, for example, filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} or label embedding trees~\citep{Bengio_et_al_2010}. It is worth to underline that there exists several counterparts of \Algo{HSM} introduced independently in many different research fields, such as nested dichotomies~\citep{Fox_1997}, conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}, multi-stage classifiers~\citep{Kurzynski_1988}, and probabilistic classifier chains~\citep{Dembczynski_et_al_2010c}. All these methods have been jointly analyzed in~\citep{Dembczynski_et_al_2016}.
-Also the popular~\Algo{FastText}~\citep{Joulin_et_al_2016} and the recent \Algo{LearnedTrees}~\citep{Jernite_et_al_2017} are based on \Algo{HSM}. The latter uses a specific hierarchical clustering to reassign labels to paths during training. 
+In the label trees each label corresponds to one and only one path from the root to a leaf. 
+Besides \Algo{PLT}s and \Algo{HSM}, there exist several other instances of this approach, 
+for example, filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} 
+or label embedding trees~\citep{Bengio_et_al_2010}. 
+It is also worth to underline that similar algorithms to \Algo{HSM} 
+have been introduced independently in many different research fields, 
+such as nested dichotomies~\citep{Fox_1997} in statistics, 
+conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b} in multi-class classification, 
+multi-stage classifiers~\citep{Kurzynski_1988} in pattern recognition, 
+and probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} in multi-label classification under the subset 0/1 loss. 
+All these methods have been jointly analyzed in~\citep{Dembczynski_et_al_2016}.
+Also many popular machine learning software packages, such as~\Algo{FastText}~\citep{Joulin_et_al_2016}, are using \Algo{HSM}.
+A still open problem is the tree structure learning. 
+These issue has been recently considered in~\citep{Jernite_et_al_2017}. %However, in  are based  
+The authors have introduced a new algorithm, \Algo{LearnedTree}, which combines \Algo{HSM} 
+with a specific hierarchical clustering that reassigns labels to paths in the tree. 
 
 %Two examples of algorithms following this approach are filter trees~\citep{Beygelzimer_et_al_2009a,Li_Lin_2014} and probabilistic classifiers trees~\citep{Dembczynski_et_al_2016}. It is worth noting that the latter algorithm has been introduced independently in many different research fields. In deep networks, it is known as hierarchical softmax~\citep{Morin_Bengio_2005}, in statistics as nested dichotomies~\citep{Fox_1997}, and in multi-class regression under the name of conditional probability estimation trees~\citep{Beygelzimer_et_al_2009b}. In pattern recognition a similar concept of multi-stage classifiers has also been considered~\citep{Kurzynski_1988}. Also probabilistic classifier chains~\citep{Dembczynski_et_al_2010c} introduced for minimization of 0/1 loss in multi-label classification follow this approach. Recently, this approach has been adapted to estimation of marginal probabilities in extreme multi-label problems~\citep{Jasinska_et_al_2016}, resulting in a very efficient algorithm for such performance measures as Hamming loss, precision@$k$ and macro-averaging F-measure.
 %
