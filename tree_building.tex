@@ -1,0 +1,74 @@
+\documentclass{article}
+
+\usepackage{fullpage,amssymb,amsthm,amsmath}
+%\usepackage{natbib}
+\usepackage{multirow}
+\usepackage{array,graphicx}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+
+\newcommand{\Gm}{L_{\max}}
+\newcommand{\R}{\mathbb{R}}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\E}{\mathbb{E}}
+
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\path}{\text{Pa}}
+
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\vec{y}}
+\newcommand{\bY}{\vec{Y}}
+
+\newcommand{\Algo}[1]{\textsc{#1}}
+
+\begin{document}
+
+\section{Model}
+
+The data $\cD = \{ (\bx_{i},\by_{i})\}_{i=1,\dots,n}$ consists of feature vector $\bx_i \in \R^d$ and label vector $\by_i\in \{ 0,1\}^m$ tuples. The labels can be written in a matrix form $\bY = [y_{i,j}]$ whose $j$\/th column is denoted by $\bar{\by}_{j}$.
+
+We will work with the set of rooted trees with $m$ leaves which is denoted by $\cT$. For sake of simplicity, we assume that the arity of the trees is $k=2$. The leaves of a tree $T$ is denoted by $\ell_1, \dots , \ell_m$. The path from the root to the leaf $\ell_i$ is denoted by $\path (i )$. 
+
+There is given a set of labeling functions $\Lambda_{\bY}$ such that for all $\lambda\in \Lambda_{\bY}$, in the form of $\lambda: [n]\times V(T) \mapsto \{0,1\}$, it holds for all $i\in [n], j\in [m]$ that if $v=\ell_i$, then $\lambda(i, \ell_j) = y_{i,j}$. In words, we are allowed to assign any binary vector to the inner nodes, but on the leaves we have to match with the given label vectors $\bar{\by}_1, \dots , \bar{\by}_m$.
+
+In addition, we are given a function class $\cH : \R^d \mapsto [0,1]$ which set contains probabilistic classifiers, i.e. logistic regressors. We assign a classifier from $\cH$ to each node of the tree $T$. We shall index this subset of classifiers by the element of $V(T)$ as $H = \{ h_{v} \in \cH : v\in V(T) \} \subseteq \cH$.
+
+The Generalized Probabilistic Label Trees (GPLT) model is defined as follows: the conditional probability estimate with respect to the model with tree $T$, labeling function $\lambda$ and classifier set $H$,  is
+\[
+\eta( \bx_i, j ) = \prod_{v \in \path(\ell_j)} \left( \lambda(i, v) h_v (\bx) + (1-\lambda(i, v) ) (1-h_v (\bx)) \right)
+\]
+Note that this expression depends on the tree structure via the path from the root to the leaf $\ell_j$.
+
+The likelihood can be written in the form of
+\[
+\cL ( T, h, \lambda) = \prod_{i=1}^{n} \prod_{j=1}^m \eta ( \bx_i , j )^{y_{i,j}} (1-\eta ( \bx_i , j ))^{y_{i,j}}
+\]
+when we assume independence between the labels.
+
+Relation to Ancestral Maximum Likelihood
+
+\section{Positive leaf-to-root labeling}
+
+Assume a set of simple classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. 
+
+The tree which maximizes the likelihood with $H$ and PLR labeling, coincides with the tree which maximizes (uniqeness)
+\[
+L(T)=
+\]
+
+\section{Sub-optimality of \Algo{LOM} criterion}
+
+\end{document}
