@@ -1,7 +1,7 @@
 \documentclass{article}
 
 \usepackage{fullpage,amssymb,amsthm,amsmath}
-%\usepackage{natbib}
+\usepackage{natbib}
 \usepackage{multirow}
 \usepackage{array,graphicx}
 
@@ -26,6 +26,7 @@
 \newcommand{\cL}{\mathcal{L}}
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\path}{\text{Pa}}
+\newcommand{\leaves}{d}
 
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\bx}{\mathbf{x}}
@@ -42,27 +43,46 @@ The data $\cD = \{ (\bx_{i},\by_{i})\}_{i=1,\dots,n}$ consists of feature vector
 
 We will work with the set of rooted trees with $m$ leaves which is denoted by $\cT$. For sake of simplicity, we assume that the arity of the trees is $k=2$. The leaves of a tree $T$ is denoted by $\ell_1, \dots , \ell_m$. The path from the root to the leaf $\ell_i$ is denoted by $\path (i )$. 
 
-There is given a set of labeling functions $\Lambda_{\bY}$ such that for all $\lambda\in \Lambda_{\bY}$, in the form of $\lambda: [n]\times V(T) \mapsto \{0,1\}$, it holds for all $i\in [n], j\in [m]$ that if $v=\ell_i$, then $\lambda(i, \ell_j) = y_{i,j}$. In words, we are allowed to assign any binary vector to the inner nodes, but on the leaves we have to match with the given label vectors $\bar{\by}_1, \dots , \bar{\by}_m$.
+There is given a set of labeling functions $\Lambda$ which contains binary functions in the form of $\lambda: V(T) \mapsto \{0,1\}$. For a labeling function $\lambda$ that is compatible with $(\bx,\by)$, it holds that $\lambda(\ell_j) = y_{j}$ for all $j\in [m]$. The set of labeling functions that is compatible with $\bx$ is denoted by $\Lambda_{\bx}$. We shall concisely write 
+%$\lambda_{\bx_i}=\lambda_i$ and 
+$\Lambda_{\bx_i} = \Lambda_{i}$. In words, $\Lambda_{\bx}$ contains every binary assignment to the inner nodes which matches with the label vector $\by$ of $\bx$ on the leaves.
 
-In addition, we are given a function class $\cH : \R^d \mapsto [0,1]$ which set contains probabilistic classifiers, i.e. logistic regressors. We assign a classifier from $\cH$ to each node of the tree $T$. We shall index this subset of classifiers by the element of $V(T)$ as $H = \{ h_{v} \in \cH : v\in V(T) \} \subseteq \cH$.
+In addition, we are given a function class $\cH : \R^d \mapsto [0,1]$ which set contains probabilistic classifiers, i.e. logistic regressors. We assign a classifier from $\cH$ to each node of the tree $T$. We shall index this (possibly multi-) subset of classifiers by the element of $V(T)$ as $H = \{ h_{v} \in \cH : v\in V(T) \}$. The set of all multi-set from $\cH$ with $k$ element is denoted by  $\cH_k$.
 
-The Generalized Probabilistic Label Trees (GPLT) model is defined as follows: the conditional probability estimate with respect to the model with tree $T$, labeling function $\lambda$ and classifier set $H$,  is
+The Generalized Probabilistic Label Trees (GPLT) model is defined as follows: the conditional probability estimate for an instance $\bx$ with respect to the model with tree $T$, labeling function $\lambda \in \Lambda$ and classifier set $H$,  is
 \[
-\eta( \bx_i, j ) = \prod_{v \in \path(\ell_j)} \left( \lambda(i, v) h_v (\bx) + (1-\lambda(i, v) ) (1-h_v (\bx)) \right)
+\eta( \bx, j ) = \prod_{v \in \path(\ell_j)} \left( \lambda(v) h_v (\bx) + (1-\lambda(v) ) (1-h_v (\bx)) \right)
 \]
-Note that this expression depends on the tree structure via the path from the root to the leaf $\ell_j$.
+Note that this expression depends on the tree structure via the path from the root to the leaf $\ell_j$. If this does not lead any confusion, we do not indicate that $\eta$ depends on $T,\lambda,H$, that is, $\eta_{T,H,\lambda}( \bx_i, j ) = \eta( \bx_i, j ) $.
 
-The likelihood can be written in the form of
+The likelihood of $\cD$ can be written in the form of
 \[
-\cL ( T, h, \lambda) = \prod_{i=1}^{n} \prod_{j=1}^m \eta ( \bx_i , j )^{y_{i,j}} (1-\eta ( \bx_i , j ))^{y_{i,j}}
+\cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) = \prod_{i=1}^{n} \prod_{j=1}^m \eta_{T,H,\lambda_i} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T,H,\lambda_i} ( \bx_i , j ))^{y_{i,j}}
 \]
-when we assume independence between the labels.
+when we assume independence between the labels. There are several multi-label likelihood function which aims at capturing the dependence of labels~\citep{ZhangS12}. 
 
-Relation to Ancestral Maximum Likelihood
+TODO: Maximum likelihood problem, inference problem
+
+\subsection{Relation to Ancestral Maximum Likelihood}
+
+Assume a set of simple classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. Thus using s set of simple classifier, a constant value will assigned to $0$ that is denoted by $p_v$.
+
+Likelihood with simple classifiers can be written as
+\begin{align}
+\cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) 
+  & = \prod_{i=1}^{n} \prod_{j=1}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
+  & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)} p_{v}^{s_v} (1-p_v)^{n-s_v} \notag \\
+  & = \prod_{v \in V(T)} p_{v}^{\leaves (v) s_v} (1-p_v)^{\leaves (v)(n-s_v)} \notag
+\end{align}
+where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, and $\leaves( \ell_i ) = 1$.
+
+The likelihood function bears a resemblance to the objective of Ancestral Maximum Likelihood (\Algo{AML})~\citep{Alon2010}, except the $d(v)$ in the exponent.
+
+TODO: Exact reduction to \Algo{AML}, then to show that inference is hard, i.e. find a label and labeling with fixed T and H that maximizes the likelihood
 
 \section{Positive leaf-to-root labeling}
 
-Assume a set of simple classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. 
+We restrict the set of labeling function in this section. We only consider such labeling function $\lambda$ that is compatible with $(\bx, \by )$ and assigns $1$ to each $v\in \path(\ell_i)$ whenever $y_i$, and $0$ otherwise.
 
 The tree which maximizes the likelihood with $H$ and PLR labeling, coincides with the tree which maximizes (uniqeness)
 \[
@@ -70,5 +90,9 @@ L(T)=
 \]
 
 \section{Sub-optimality of \Algo{LOM} criterion}
+
+\bibliography{xmlc_references,treeb}
+\bibliographystyle{icml2018}
+
 
 \end{document}
