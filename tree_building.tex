@@ -57,7 +57,7 @@ Note that this expression depends on the tree structure via the path from the ro
 
 The likelihood of $\cD$ can be written in the form of
 \[
-\cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) = \prod_{i=1}^{n} \prod_{j=1}^m \eta_{T,H,\lambda_i} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T,H,\lambda_i} ( \bx_i , j ))^{y_{i,j}}
+\cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) = \prod_{i=1}^{n} \prod_{j=1}^m \eta_{T,H,\lambda_i} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T,H,\lambda_i} ( \bx_i , j ))^{(1-y_{i,j})}
 \]
 when we assume independence between the labels. There are several multi-label likelihood function which aims at capturing the dependence of labels~\citep{ZhangS12}. 
 
@@ -70,11 +70,12 @@ Assume a set of simple classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where
 Likelihood with simple classifiers can be written as
 \begin{align}
 \cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) 
-  & = \prod_{i=1}^{n} \prod_{j=1}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
-  & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)} p_{v}^{s_v} (1-p_v)^{n-s_v} \notag \\
-  & = \prod_{v \in V(T)} p_{v}^{\leaves (v) s_v} (1-p_v)^{\leaves (v)(n-s_v)} \notag
+  & = \prod_{i=1}^{n} \prod_{j=1}^m \left[ \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right)\right]^{y_{i,j}} \times \notag \\ & ~~~~~~~~~~~~~~~~~~~~ \left[ 1-\prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \right]^{1-y_{i,j}}  \notag
+%   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)}\prod_{i\in I_i^+}  \left[ \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right] \prod_{i\in I_i^-} \left[ 1-\left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \right] \notag \\
+%   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)} p_{v}^{s_v} (1-p_v)^{n^+-s_v} \notag \\
+%   & = \prod_{v \in V(T)} p_{v}^{\leaves (v) s_v} (1-p_v)^{\leaves (v)(n-s_v)} \notag
 \end{align}
-where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, and $\leaves( \ell_i ) = 1$.
+where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, $\leaves( \ell_i ) = 1$ and $I_i^{+} = \{ j \in [n]: y_{i,j}=1 \}$ is index of positive labels of $(\bx_i, \by_i)$, and $I_i^{-}$ is the index set of negative labels. $n^+_i = \# I_i^{+}$
 
 The likelihood function bears a resemblance to the objective of Ancestral Maximum Likelihood (\Algo{AML})~\citep{Alon2010}, except the $d(v)$ in the exponent.
 
@@ -82,14 +83,18 @@ TODO: Exact reduction to \Algo{AML}, then to show that inference is hard, i.e. f
 
 \section{Positive leaf-to-root labeling}
 
-We restrict the set of labeling function in this section. We only consider such labeling function $\lambda$ that is compatible with $(\bx, \by )$ and assigns $1$ to each $v\in \path(\ell_i)$ whenever $y_i$, and $0$ otherwise.
+We restrict the set of labeling function in this section. We only consider such labeling function $\lambda$ that is compatible with $(\bx, \by )$ and assigns $1$ to each $v\in \path(\ell_i)$ whenever $y_i$, and $0$ otherwise. In this case, the labeling function is determined by the tree $T$ and labels uniquely. 
 
-The tree which maximizes the likelihood with $H$ and PLR labeling, coincides with the tree which maximizes (uniqeness)
-\[
-L(T)=
-\]
+The likelihood with $H$ and PLR labeling can be written as
+\begin{align}
+\cL ( T, H) 
+  & = \prod_{i=1}^{n} \prod_{j=1}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
+  & = \prod_{i=1}^{n} \prod_{j\in I_i^{+}}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
+\end{align}
 
 \section{Sub-optimality of \Algo{LOM} criterion}
+
+The \Algo{LOM} criterion is an evaluation criterion for PLTs with positive leaf-to-root labeling~\citep{Choromanska_Langford_2015}.
 
 \bibliography{xmlc_references,treeb}
 \bibliographystyle{icml2018}
