@@ -25,13 +25,18 @@
 \newcommand{\cH}{\mathcal{H}}
 \newcommand{\cL}{\mathcal{L}}
 \newcommand{\cT}{\mathcal{T}}
-\newcommand{\path}{\text{Pa}}
+\newcommand{\path}{\text{Path}}
+\newcommand{\Path}[1]{\mathrm{Path}(#1)}
+\newcommand{\pa}[1]{\mathrm{pa}(#1)}
 \newcommand{\leaves}{d}
 
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\bx}{\mathbf{x}}
 \newcommand{\by}{\vec{y}}
 \newcommand{\bY}{\vec{Y}}
+\newcommand{\prob}{\mathbf{P}} 
+
+\newcommand{\given}{\, | \,}
 
 \newcommand{\Algo}[1]{\textsc{#1}}
 
@@ -60,6 +65,17 @@ The likelihood of $\cD$ can be written in the form of
 \cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) = \prod_{i=1}^{n} \prod_{j=1}^m \eta_{T,H,\lambda_i} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T,H,\lambda_i} ( \bx_i , j ))^{(1-y_{i,j})}
 \]
 when we assume independence between the labels. There are several multi-label likelihood function which aims at capturing the dependence of labels~\citep{ZhangS12}. 
+
+Each internal node $t$ of a tree has three associated random variables: $z_{l(t)}$, $z_{r(t)}$, and $z_{lr(t)}$. The first one, $z_{l(t)}$, says that $\bx$ has positive label(s) in the left subtree only, the second one, $z_{r(t)}$, says that $\bx$ has positive label(s) in the right subtree, and the last one, $z_{rl(t)}$, says that there are positive labels in both subtrees. Let us assume without loss of generality that $\Path{\ell_j}$ consists of nodes being the left children of the parent nodes. Then, the marginal probability $\eta_{T,H,\lambda_i} ( \bx_i , j )$ can be defined by:
+\begin{equation}
+\eta(\bx, j) = \prod_{t \in \Path{\ell_j}}  \left ( \prob(z_{l(t)} = 1 \given z_{\pa{t}} =1, \bx) + \prob(z_{lr(t)} = 1 \given z_{\pa{t}} =1, \bx) \right ) \,.
+\label{eqn:probabilistic_tree}
+\end{equation}
+
+Let us now define the maximum likelihood of the tree. The main problem is to express the probability of $(1-\eta_{T,H,\lambda_i} ( \bx_i , j ))$, i.e., that the $j$-th label is not positive. By using the tree, we can write this in the following way:
+$$
+(1-\eta_{T,H,\lambda_i} ( \bx_i , j )) = \sum_{t \in \Path{\pa{\ell_j}}}   \prob(z_{r(t)} = 1 | \bx)  \prod_{t' \in \Path{\pa{t}}} \left ( \prob(z_{l(t')} = 1 | \bx) + \prob(z_{lr(t')} = 1 \given \bx) \right )  \,.
+$$
 
 TODO: Maximum likelihood problem, inference problem
 
