@@ -91,7 +91,7 @@ Likelihood with simple classifiers can be written as
 %   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)} p_{v}^{s_v} (1-p_v)^{n^+-s_v} \notag \\
 %   & = \prod_{v \in V(T)} p_{v}^{\leaves (v) s_v} (1-p_v)^{\leaves (v)(n-s_v)} \notag
 \end{align}
-where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, $\leaves( \ell_i ) = 1$ and $I_i^{+} = \{ j \in [n]: y_{i,j}=1 \}$ is index of positive labels of $(\bx_i, \by_i)$, and $I_i^{-}$ is the index set of negative labels. $n^+_i = \# I_i^{+}$
+where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, $\leaves( \ell_i ) = 1$ and $I_j^{+} = \{ i \in [n]: y_{i,j}=1 \}$ is index of positive labels of $(\bx_i, \by_i)$, and $I_i^{-}$ is the index set of negative labels. $n^+_i = \# I_i^{+}$
 
 The likelihood function bears a resemblance to the objective of Ancestral Maximum Likelihood (\Algo{AML})~\citep{Alon2010}, except the $d(v)$ in the exponent.
 
