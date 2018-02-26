@@ -75,9 +75,9 @@ when we assume independence between the labels. There are several multi-label li
 
 Assume a set of constant classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. Using $\cH_{C}$, a constant value will assigned to each inner node $v$ of tree $T$ that is denoted by $p_v$. Accordingly, $\eta( \bx, j ) = \prod_{v \in \path(\ell_j)} p_v$. 
 
-First, given a tree $T$, we shall find the optimal constant classifiers that maximizes (\ref{eq:mllikelihood_labelkindependence}). We shall decompose this problem and consider the restricted problem for a subtree $T_v$ of $T$ rooted in an inner node $v$ of $T$. One can define the conditional estimate of $\bx$ based on a subtree $T_v$ if $v\in \path (\ell_j)$ as 
+First, given a tree $T$, we shall find the optimal constant classifiers that maximizes (\ref{eq:mllikelihood_labelkindependence}). We shall decompose this problem and consider the restricted problem for a subtree $T_v$ of $T$ rooted in an inner node $v\in V(T)$. One can define the conditional estimate of $\bx$ based on a subtree $T_v$ if $v\in \path (\ell_j)$ as 
 \[
-\eta_{T_v, H} (\bx , j) = \prod_{v^{\prime} \in \path(\ell_j) \setminus \path(v)}  p_{v^{\prime}}
+\eta_{T_v, H} ( j) = \eta_{T_v, H} (\bx , j) = \prod_{v^{\prime} \in \path(\ell_j) \setminus \path(v)}  p_{v^{\prime}}
 \]
 Let us define the likelihood function restricted to $T_v$ as
 \begin{align}
@@ -85,9 +85,19 @@ Let us define the likelihood function restricted to $T_v$ as
 \label{eq:mllikelihood_restricted}
 \end{align}
 
-The conditional estimate that maximizes $\cL ( T_v, H )$ is denoted by $\eta_{T_v, H}^* (\bx , j)$. Assume that we know that optimal conditional estimates for two sibling nodes $v'$ and $v''$, and try to find out what is the optimal constant classifier for the parent $v$ of $v'$ and $v''$.
+The conditional estimate that maximizes $\cL ( T_v, H )$ for a given subtree $T_v$ is denoted by $\eta_{T_v}^* (\bx , j)$. Assume that we know that optimal conditional estimates for two sibling nodes $v'$ and $v''$, and try to find out what is the optimal constant classifier for the parent $v$ of $v'$ and $v''$. We start by analyzing a more simple case when the sibling node of a leaf can be only leaf and the sibling of an inner node can be only inner node.
 
-Furthermore, we define the Hamming distance $d_H( \bar{y}_i, \bar{y}_j) = \# \{ \ell \in [n] : y_{i,\ell} \neq y_{j,\ell} \}$ that is denoted by $d_{i,j}$.
+\begin{itemize}
+    \item Inner node $v\in V(T)$ with two leaves $\ell_j$ and $\ell_k$ as children: in this case the likelihood boils down to
+    \[
+    \cL ( T_v, H ) = \prod_{i=1}^{n} p_v^{y_{i,j}} (1-p_v)^{(1-y_{i,j})}p_v^{y_{i,k}} (1-p_v)^{(1-y_{i,k})} = p_v^{s_j+s_k} (1-p_v)^{2n-(s_j+s_k)}
+    \]
+    where $s_j = \# \{ i \in [n] : y_{i,j}=1\}$. This coincides with the likelihood of a binomial with $2n$ trial and $s_i+s_j$ success, this the optimal $p_v=\tfrac{s_i+s_j}{2n}$.
+    \item Inner node $v\in V(T)$ with two inner node $v'$ and $v''$ as children: in this case let us assume that we know the value of $\eta_{T_{v'}}^* (\bx , j)$ and $\eta_{T_{v''}}^* (\bx , j)$ for all $j\in [m]$.
+\end{itemize}
+
+
+%Furthermore, we define the Hamming distance $d_H( \bar{y}_i, \bar{y}_j) = \# \{ \ell \in [n] : y_{i,\ell} \neq y_{j,\ell} \}$ that is denoted by $d_{i,j}$.
 
 
 
