@@ -42,29 +42,62 @@
 
 \begin{document}
 
-\section{Model}
+\section{Probabilistic Label Tree (PLT) model}
 
 The data $\cD = \{ (\bx_{i},\by_{i})\}_{i=1,\dots,n}$ consists of feature vector $\bx_i \in \R^d$ and label vector $\by_i\in \{ 0,1\}^m$ tuples. The labels can be written in a matrix form $\bY = [y_{i,j}]$ whose $j$\/th column is denoted by $\bar{\by}_{j}$.
 
 We will work with the set of rooted trees with $m$ leaves which is denoted by $\cT$. For sake of simplicity, we assume that the arity of the trees is $k=2$. The leaves of a tree $T$ is denoted by $\ell_1, \dots , \ell_m$. The path from the root to the leaf $\ell_i$ is denoted by $\path (i )$. 
 
-There is given a set of labeling functions $\Lambda$ which contains binary functions in the form of $\lambda: V(T) \mapsto \{0,1\}$. For a labeling function $\lambda$ that is compatible with $(\bx,\by)$, it holds that $\lambda(\ell_j) = y_{j}$ for all $j\in [m]$. The set of labeling functions that is compatible with $\bx$ is denoted by $\Lambda_{\bx}$. We shall concisely write 
+%There is given a set of labeling functions $\Lambda$ which contains binary functions in the form of $\lambda: V(T) \mapsto \{0,1\}$. For a labeling function $\lambda$ that is compatible with $(\bx,\by)$, it holds that $\lambda(\ell_j) = y_{j}$ for all $j\in [m]$. The set of labeling functions that is compatible with $\bx$ is denoted by $\Lambda_{\bx}$. We shall concisely write 
 %$\lambda_{\bx_i}=\lambda_i$ and 
-$\Lambda_{\bx_i} = \Lambda_{i}$. In words, $\Lambda_{\bx}$ contains every binary assignment to the inner nodes which matches with the label vector $\by$ of $\bx$ on the leaves.
+%$\Lambda_{\bx_i} = \Lambda_{i}$. In words, $\Lambda_{\bx}$ contains every binary assignment to the inner nodes which matches with the label vector $\by$ of $\bx$ on the leaves.
 
-In addition, we are given a function class $\cH : \R^d \mapsto [0,1]$ which set contains probabilistic classifiers, i.e. logistic regressors. We assign a classifier from $\cH$ to each node of the tree $T$. We shall index this (possibly multi-) subset of classifiers by the element of $V(T)$ as $H = \{ h_{v} \in \cH : v\in V(T) \}$. The set of all multi-set from $\cH$ with $k$ element is denoted by  $\cH_k$.
+We are also given a function class $\cH : \R^d \mapsto [0,1]$ which set contains probabilistic classifiers of our choice, for example, set of logistic regressors. We assign a classifier from $\cH$ to each node of the tree $T$. We shall index this (possibly multi-) subset of classifiers by the element of $V(T)$ as $H = \{ h_{v} \in \cH : v\in V(T) \}$. The set of all multi-set from $\cH$ with $k$ element is denoted by  $\cH_k$.
 
-The Generalized Probabilistic Label Trees (GPLT) model is defined as follows: the conditional probability estimate for an instance $\bx$ with respect to the model with tree $T$, labeling function $\lambda \in \Lambda$ and classifier set $H$,  is
+The Probabilistic Label Tree (PLT) model is defined by a tree $T \in \cT$ in which each inner node is assigned to a classifier from $\cH$ that is denoted by $H$. In addition, each label of the tree is assigned to a label $[m]$. The conditional probability estimate $\eta( \bx, j ) (\approx \prob ( y_j \vert \bx))$ for an instance $\bx$ with respect to the \Algo{PLT} model with tree $T$ and classifier set $H$, is given as
 \[
-\eta( \bx, j ) = \prod_{v \in \path(\ell_j)} \left( \lambda(v) h_v (\bx) + (1-\lambda(v) ) (1-h_v (\bx)) \right)
+\eta( \bx, j ) = \prod_{v \in \path(\ell_j)} h_v (\bx) 
 \]
-Note that this expression depends on the tree structure via the path from the root to the leaf $\ell_j$. If this does not lead any confusion, we do not indicate that $\eta$ depends on $T,\lambda,H$, that is, $\eta_{T,H,\lambda}( \bx_i, j ) = \eta( \bx_i, j ) $.
+Note that this expression depends on the tree structure via the path from the root to the leaf $\ell_j$. If this does not lead any confusion, we do not indicate that $\eta$ depends on $T,H$, that is, $\eta_{T,H}( \bx_i, j ) = \eta( \bx_i, j ) $.
 
 The likelihood of $\cD$ can be written in the form of
-\[
-\cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) = \prod_{i=1}^{n} \prod_{j=1}^m \eta_{T,H,\lambda_i} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T,H,\lambda_i} ( \bx_i , j ))^{(1-y_{i,j})}
-\]
+\begin{align}
+\cL ( T, H ) = \prod_{i=1}^{n} \prod_{j=1}^m \eta_{T,H,} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T,H} ( \bx_i , j ))^{(1-y_{i,j})}
+\label{eq:mllikelihood_labelkindependence}
+\end{align}
 when we assume independence between the labels. There are several multi-label likelihood function which aims at capturing the dependence of labels~\citep{ZhangS12}. 
+
+
+\section{Tree structure}
+
+\subsection{Constant learner}
+
+
+Assume a set of constant classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. Using $\cH_{C}$, a constant value will assigned to each inner node $v$ of tree $T$ that is denoted by $p_v$. Accordingly, $\eta( \bx, j ) = \prod_{v \in \path(\ell_j)} p_v$. 
+
+First, given a tree $T$, we shall find the optimal constant classifiers that maximizes (\ref{eq:mllikelihood_labelkindependence}). We shall decompose this problem and consider the restricted problem for a subtree $T_v$ of $T$ rooted in an inner node $v$ of $T$. One can define the conditional estimate of $\bx$ based on a subtree $T_v$ if $v\in \path (\ell_j)$ as 
+\[
+\eta_{T_v, H} (\bx , j) = \prod_{v^{\prime} \in \path(\ell_j) \setminus \path(v)}  p_{v^{\prime}}
+\]
+Let us define the likelihood function restricted to $T_v$ as
+\begin{align}
+\cL ( T_v, H ) = \prod_{i=1}^{n} \prod_{j : \ell_j \in V(T_v) } \eta_{T_v,H,} ( \bx_i , j )^{y_{i,j}} (1-\eta_{T_v,H} ( \bx_i , j ))^{(1-y_{i,j})}
+\label{eq:mllikelihood_restricted}
+\end{align}
+
+The conditional estimate that maximizes $\cL ( T_v, H )$ is denoted by $\eta_{T_v, H}^* (\bx , j)$. Assume that we know that optimal conditional estimates for two sibling nodes $v'$ and $v''$, and try to find out what is the optimal constant classifier for the parent $v$ of $v'$ and $v''$.
+
+Furthermore, we define the Hamming distance $d_H( \bar{y}_i, \bar{y}_j) = \# \{ \ell \in [n] : y_{i,\ell} \neq y_{j,\ell} \}$ that is denoted by $d_{i,j}$.
+
+
+
+
+
+\section{Training}
+
+The naive way of optimizing \ref{eq:mllikelihood_labelkindependence} is computationally expensive, because one would need to compute the gradient for all path, and update the inner nodes based on the cumulative gradients. 
+
+\subsection{Left, Right, Left-Right view}
 
 Each internal node $t$ of a tree has three associated random variables: $z_{l(t)}$, $z_{r(t)}$, and $z_{lr(t)}$. The first one, $z_{l(t)}$, says that $\bx$ has positive label(s) in the left subtree only, the second one, $z_{r(t)}$, says that $\bx$ has positive label(s) in the right subtree, and the last one, $z_{rl(t)}$, says that there are positive labels in both subtrees. Let us assume without loss of generality that $\Path{\ell_j}$ consists of nodes being the left children of the parent nodes. Then, the marginal probability $\eta_{T,H,\lambda_i} ( \bx_i , j )$ can be defined by:
 \begin{equation}
@@ -72,41 +105,57 @@ Each internal node $t$ of a tree has three associated random variables: $z_{l(t)
 \label{eqn:probabilistic_tree}
 \end{equation}
 
-Let us now define the maximum likelihood of the tree. The main problem is to express the probability of $(1-\eta_{T,H,\lambda_i} ( \bx_i , j ))$, i.e., that the $j$-th label is not positive. By using the tree, we can write this in the following way:
-$$
+Let us now define the maximum likelihood of the tree. The main problem is to express the probability of  $(1-\eta_{T,H,\lambda_i} ( \bx_i , j ))$, i.e., that the $j$-th label is not positive. By using the tree, we can write this in the following way:
+\[
 (1-\eta_{T,H,\lambda_i} ( \bx_i , j )) = \sum_{t \in \Path{\pa{\ell_j}}}   \prob(z_{r(t)} = 1 | \bx)  \prod_{t' \in \Path{\pa{t}}} \left ( \prob(z_{l(t')} = 1 | \bx) + \prob(z_{lr(t')} = 1 \given \bx) \right )  \,.
-$$
+\]
 
 TODO: Maximum likelihood problem, inference problem
 
-\subsection{Relation to Ancestral Maximum Likelihood}
 
-Assume a set of simple classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. Thus using s set of simple classifier, a constant value will assigned to $0$ that is denoted by $p_v$.
+\subsection{\Algo{PLT}}
 
-Likelihood with simple classifiers can be written as
-\begin{align}
-\cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) 
-  & = \prod_{i=1}^{n} \prod_{j=1}^m \left[ \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right)\right]^{y_{i,j}} \times \notag \\ & ~~~~~~~~~~~~~~~~~~~~ \left[ 1-\prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \right]^{1-y_{i,j}}  \notag
-%   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)}\prod_{i\in I_i^+}  \left[ \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right] \prod_{i\in I_i^-} \left[ 1-\left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \right] \notag \\
-%   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)} p_{v}^{s_v} (1-p_v)^{n^+-s_v} \notag \\
-%   & = \prod_{v \in V(T)} p_{v}^{\leaves (v) s_v} (1-p_v)^{\leaves (v)(n-s_v)} \notag
-\end{align}
-where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, $\leaves( \ell_i ) = 1$ and $I_j^{+} = \{ i \in [n]: y_{i,j}=1 \}$ is index of positive labels of $(\bx_i, \by_i)$, and $I_i^{-}$ is the index set of negative labels. $n^+_i = \# I_i^{+}$
+$z_{l^{\prime}(t)} = z_{l(t)} \vee z_{lr(t)}$ 
 
-The likelihood function bears a resemblance to the objective of Ancestral Maximum Likelihood (\Algo{AML})~\citep{Alon2010}, except the $d(v)$ in the exponent.
+\begin{equation}
+\eta(\bx, j) = \prod_{t \in \Path{\ell_j}} \prob(z_{l^{'}(t)} = 1 \given z_{\pa{t}} =1, \bx)\notag 
+\end{equation}
 
-TODO: Exact reduction to \Algo{AML}, then to show that inference is hard, i.e. find a label and labeling with fixed T and H that maximizes the likelihood
 
-\section{Positive leaf-to-root labeling}
+\[
+(1-\eta_{T,H,\lambda_i} ( \bx_i , j )) = \sum_{t \in \Path{\pa{\ell_j}}}   \prob(z_{r(t)} = 1 | \bx)  \prod_{t' \in \Path{\pa{t}}} \prob(z_{l^{'}(t)} = 1 \given z_{\pa{t}} =1, \bx)  \notag
+\]
 
-We restrict the set of labeling function in this section. We only consider such labeling function $\lambda$ that is compatible with $(\bx, \by )$ and assigns $1$ to each $v\in \path(\ell_i)$ whenever $y_i$, and $0$ otherwise. In this case, the labeling function is determined by the tree $T$ and labels uniquely. 
 
-The likelihood with $H$ and PLR labeling can be written as
-\begin{align}
-\cL ( T, H) 
-  & = \prod_{i=1}^{n} \prod_{j=1}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
-  & = \prod_{i=1}^{n} \prod_{j\in I_i^{+}}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
-\end{align}
+
+% \subsection{Relation to Ancestral Maximum Likelihood}
+
+% Assume a set of simple classifier $\cH_{C} = \{h_p\in \cH : p\in [0,1] \}$ where $h_p(\bx) = p$ for all $\bx \in \R^d$. Thus using s set of simple classifier, a constant value will assigned to $0$ that is denoted by $p_v$.
+
+% Likelihood with simple classifiers can be written as
+% \begin{align}
+% \cL ( T, H, \{ \lambda_i, \dots, \lambda_n\} ) 
+%   & = \prod_{i=1}^{n} \prod_{j=1}^m \left[ \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right)\right]^{y_{i,j}} \times \notag \\ & ~~~~~~~~~~~~~~~~~~~~ \left[ 1-\prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \right]^{1-y_{i,j}}  \notag
+% %   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)}\prod_{i\in I_i^+}  \left[ \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right] \prod_{i\in I_i^-} \left[ 1-\left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \right] \notag \\
+% %   & = \prod_{j=1}^m \prod_{v \in \path(\ell_j)} p_{v}^{s_v} (1-p_v)^{n^+-s_v} \notag \\
+% %   & = \prod_{v \in V(T)} p_{v}^{\leaves (v) s_v} (1-p_v)^{\leaves (v)(n-s_v)} \notag
+% \end{align}
+% where $s_v = \sum_{i=1}^n \lambda_i (v)$ and $\leaves (v)$ is the number of leaves below $v$ in the tree $T$, $\leaves( \ell_i ) = 1$ and $I_j^{+} = \{ i \in [n]: y_{i,j}=1 \}$ is index of positive labels of $(\bx_i, \by_i)$, and $I_i^{-}$ is the index set of negative labels. $n^+_i = \# I_i^{+}$
+
+% The likelihood function bears a resemblance to the objective of Ancestral Maximum Likelihood (\Algo{AML})~\citep{Alon2010}, except the $d(v)$ in the exponent.
+
+% TODO: Exact reduction to \Algo{AML}, then to show that inference is hard, i.e. find a label and labeling with fixed T and H that maximizes the likelihood
+
+% \section{Positive leaf-to-root labeling}
+
+% We restrict the set of labeling function in this section. We only consider such labeling function $\lambda$ that is compatible with $(\bx, \by )$ and assigns $1$ to each $v\in \path(\ell_i)$ whenever $y_i$, and $0$ otherwise. In this case, the labeling function is determined by the tree $T$ and labels uniquely. 
+
+% The likelihood with $H$ and PLR labeling can be written as
+% \begin{align}
+% \cL ( T, H) 
+%   & = \prod_{i=1}^{n} \prod_{j=1}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
+%   & = \prod_{i=1}^{n} \prod_{j\in I_i^{+}}^m \prod_{v \in \path(\ell_j)} \left( \lambda_i (v) p_v + (1-\lambda_i (v) ) (1-p_v) \right) \notag \\
+% \end{align}
 
 \section{Sub-optimality of \Algo{LOM} criterion}
 
