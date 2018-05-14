@@ -94,9 +94,12 @@ The conditional estimate that maximizes $\cL ( T_v, H )$ for a given subtree $T_
     \]
     where $s_j = \# \{ i \in [n] : y_{i,j}=1\}$. This coincides with the likelihood of a binomial with $2n$ trial and $s_i+s_j$ success, thus the optima can obtained as $p^{*}_v=\tfrac{s_i+s_j}{2n}$.
     \item Inner nodes $v\in V(T)$ with two inner node $v'$ and $v''$ as children: in this case let us assume that we know the value of $\eta_{T_{v'}}^* (\bx , j)$ and $\eta_{T_{v''}}^* (\bx , j)$ for all $j\in [m]$. Then let us find $p\in[0,1]$ that maximizes the likelihood:
-    \[
-    \cL (p) = \cL ( T_v, H ) = \prod_{i=1}^{n} \prod_{j : \ell_j \in V(T_{v'}) } (p\eta_{T_{v'}}^* (\bx , j))^{y_{i,j}} (1-p\eta_{T_{v'}}^* (\bx , j))^{(1-y_{i,j})} \prod_{j : \ell_j \in V(T_{v''}) } (p\eta_{T_{v''}}^* (\bx , j))^{y_{i,j}} (1-p\eta_{T_{v''}}^* (\bx , j))^{(1-y_{i,j})} 
-    \]
+    \begin{align}
+    \cL (p_v) = \cL ( T_v, H ) & = \prod_{i=1}^{n} \prod_{j : \ell_j \in V(T_{v'}) } (p_v\eta_{T_{v'}}^* (\bx , j))^{y_{i,j}} (1-p_v\eta_{T_{v'}}^* (\bx , j))^{(1-y_{i,j})} \prod_{j : \ell_j \in V(T_{v''}) } (p_v\eta_{T_{v''}}^* (\bx , j))^{y_{i,j}} (1-p_v \eta_{T_{v''}}^* (\bx , j))^{(1-y_{i,j})}
+    \notag\\
+    & = \prod_{i=1}^{n} \prod_{j : \ell_j \in V(T_{v}) \wedge \ell_j=1 } (p_v \eta_{T_{v'}}^* (\bx , j)) \prod_{j : \ell_j \in V(T_{v}) \wedge \ell_j=0 } (1-p_v\eta_{T_{v'}}^* (\bx , j))  \notag
+    \end{align}
+    Thus $p^*_v=1$ and $\eta_{T_{v}}^* (\bx , j)= \eta_{T_{v'}}^* (\bx , j)$
 \end{itemize}
 
 
@@ -104,7 +107,7 @@ The conditional estimate that maximizes $\cL ( T_v, H )$ for a given subtree $T_
 
 \subsection{Powerful learner set}
 
-Here we use more powerful set of classifiers. Namely, we assume that for any $p_1, \dots ,p_n \in [0,1]$, there is a classifier $h\in \cH$ such that $h(\bx_i)=p_i$ for all $i\in [n]$. We do not focus on how to find this classifier, but we seek to find the $p_i$ values in the inner node for a given dataset and \Algo{PLT} that maximizes (\ref{eq:mllikelihood_labelkindependence}). Let us denote $h_v(\bx_i) = p_{vi}$. Our goal is to find all $p_{vi}$ values which maximizes the likelihood in the form of
+Here we use more powerful set of classifiers. Namely, we assume that for any $p_1, \dots ,p_n \in [0,1]$, there is a classifier $h\in \cH$ such that $h(\bx_i)=p_i$ for all $i\in [n]$. We do not focus on how to find this classifier, but we seek to find the $p_i$ values in the inner node for a given dataset and \Algo{PLT} that maximizes (\ref{eq:mllikelihood_labelkindependence}). Let us denote $h_v(\bx_i) = p_{vi}$. For any leaf $\ell_j$, we have perferct classifier, i.e. $h_{\ell_j} (\bx_i ) = y_{i,j}$. Our goal is to find all $p_{vi}$ values which maximizes the likelihood in the form of
 \begin{align}
 \cL ( T, P ) = \prod_{i=1}^{n} \prod_{j=1}^m \left( \prod_{v \in \path(\ell_j)} p_{vi} \right)^{y_{i,j}} \left(1-\prod_{v \in \path(\ell_j)} p_{vi} \right)^{(1-y_{i,j})}
 \end{align}
