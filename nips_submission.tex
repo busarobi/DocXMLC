@@ -31,6 +31,7 @@
 \usepackage{multirow}
 \usepackage{array,graphicx}
 \usepackage{comment}
+\usepackage{wrapfig}
 
 % Attempt to make hyperref and algorithmic work together better:
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
@@ -171,32 +172,41 @@
 % Therefore, a short form for the running title is supplied here:
 %\icmltitlerunning{Probabilistic label trees: No-regret generalization of hierarchical softmax}
 
-\title{Probabilistic label trees: No-regret generalization of hierarchical softmax to extreme multi-label classification}
-
+%\title{Probabilistic label trees: No-regret generalization of hierarchical softmax to extreme multi-label classification}
+\title{A no-regret generalization of hierarchical softmax to extreme multi-label classification}
 
 
 \begin{document}
 \maketitle
 
+% \begin{abstract}
+% Extreme multi-label classification (XMLC) is the problem of
+% tagging an instance with a small subset of relevant labels chosen from an
+% extremely large pool of possible labels.  
+% Recent work introduced probabilistic label trees
+% (\Algo{PLT}s) to solve XMLC, where each label represents one and only 
+% path from root of the tree to a leaf node.  In this paper, we
+% theoretically prove that \Algo{PLT}s can be seen as \emph{no-regret}
+% multi-label generalization of hierarchical softmax
+% (\Algo{HSM}). Additionally, we prove that \emph{pick-one-label}
+% heuristic, often used for adaptation of HSM to XMLC, is not consistent. 
+% Moreover, our
+% empirical results indicate that \Algo{HSM} with pick-one-label heuristic is
+% significantly worse than \Algo{PLT}s. We also show that \Algo{PLT}s used with
+% different input representations produce state-of-the-art results on XMLC benchmark
+% datasets.
+% %
+% \end{abstract}
+
 
 
 \begin{abstract}
-Extreme multi-label classification (XMLC) is the problem of
-tagging an instance with a small subset of relevant labels chosen from an
-extremely large pool of possible labels.  
-Recent work introduced probabilistic label trees
-(\Algo{PLT}s) to solve XMLC, where each label represents one and only 
-path from root of the tree to a leaf node.  In this paper, we
-theoretically prove that \Algo{PLT}s can be seen as \emph{no-regret}
-multi-label generalization of hierarchical softmax
-(\Algo{HSM}). Additionally, we prove that \emph{pick-one-label}
-heuristic, often used for adaptation of HSM to XMLC, is not consistent. 
-Moreover, our
-empirical results indicate that \Algo{HSM} with pick-one-label heuristic is
-significantly worse than \Algo{PLT}s. We also show that \Algo{PLT}s used with
-different input representations produce state-of-the-art results on XMLC benchmark
-datasets.
-
+Extreme multi-label classification (XMLC) is the problem of tagging an instance with a small subset of relevant labels chosen from an extremely large pool of possible labels. In this paper, we investigate Probabilistic Label Trees (PLT) that were recently designed for XMLC problems. 
+We show that \Algo{PLT} is a \emph{no-regret} multi-label generalization of hierarchical softmax (\Algo{HSM}) when precision@k is used as model evaluation metric. 
+Critically, we prove that \emph{pick-one-label} heuristic -- a reduction technique from multi-label to multi-class that is routinely used along with HSM-- is not consistent in general. 
+In experimental study we test PLT with different input representations, such as bag-of-words, word embeddings, and TF-IDF.
+We observe large improvements in precision with respect to \Algo{HSM} with pick-one-label heuristic. 
+Moreover, when the tree structure is chosen based on a top-down clustering, the PLT outperforms many state-of-the-art XMLC methods, including a deep convolutional architecture, on several benchmark datasets.
 %
 \end{abstract}
 
@@ -231,7 +241,6 @@ representation using a shallow or deep neural network architecture.
 In either setting, it is necessary to design the algorithm that could
 handle a large pool of labels.
 %
-
 
 Probabilistic label trees (\Algo{PLT}s)~\citep{Jasinska_et_al_2016}
 have been recently introduced for solving XMLC problems. Already their
@@ -276,6 +285,16 @@ We also discuss different architectures for document tagging in which
 a tree-ensemble approach. The resulting classifiers
 are very competitive to state-of-the-art methods on popular XMLC
 benchmark datasets.
+
+
+\textbf{Our contribution}:
+\begin{itemize}
+\item Theoretically motivated generalization of \Algo{HSM} to multi-label classification. 
+Moreover, we show theoretically that the existing approaches lead to biased results. The empirical results confirm our theoretical findings.
+\item The vowpal wabbit instance of our algorithm uses sparse input format and feature hashing to get competitive results ... 
+\item One instance of our algorithm is built over \Algo{FastText}. It obtains the state-of-the-art results on extreme multi-label benchmark datasets. It outperforms the deep learning approach of \citep{Liu_et_al_2017}, \Algo{Learned Trees} of \citep{Jernite_et_al_2017} and is competitive to 1-vs-all approaches such as DISMEC~\cite{Babbar_Scholkopf_2017} and PPDSparse~\cite{Yen_et_al_2017} with better time and memory efficiency.
+\item The batch learning of PLTs gets even better results?! What to write here?   
+\end{itemize}
 
 This paper is organized as follows. First we discuss the related work
 and situate our approach in the context. In
@@ -346,6 +365,8 @@ with a specific hierarchical clustering that reassigns labels to paths in the tr
 %
 %FastText, Learned trees!!!
 
+
+
 \vspace{\sectionBefore}
 \section{Problem statement}
 \label{sec:problem_statement}
@@ -382,12 +403,13 @@ The regret quantifies the suboptimality of $\bh$ compared to the optimal classif
 In the following, we aim at estimating the marginal probabilities $\eta(\bx,j) = \prob(y_j = 1 \given \bx)$. As we will show below marginal probabilities are a key element to optimally solve extreme classification for many performance measures, like Hamming loss, macro-F measure, and precision@$k$. 
 To obtain the marginal probabilities one can use the label-wise log loss:
 $$
-\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(y_j, h_j(\bx)) \,
+\ell_{\log}(\by, \bh(\bx))  = \sum_{j=1}^m \ell_{\log}(y_j, h_j(\bx)) = \sum_{j=1}^m  \left ( y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) \right) \,.
 $$
-where 
-$$
-\ell_{\log}(y_j,h_j(\bx)) = y_j \log(h_j(\bx)) + (1-y_j) \log(1-h_j(\bx)) 
-$$
+%where 
+%$
+%\ell_{\log}(y_j,h_j(\bx)) 
+%$
+
 The expected loss for a single $\bx$ (i.e., the so-called \emph{conditional risk}) in terms of the label-wise log loss is:
 $$
 \mathbb{E} \ell_{\log}(\bh \given \bx) =  \sum_{j=1}^m \mathbb{E}{\ell_{\log}(y_j, h_j(\bx))} = \sum_{j=1}^m \loss_{\log}(h_j(\bx))\,. %\\ 
@@ -475,10 +497,10 @@ Training of \Algo{PLT}s can be performed independently for each node, either in 
 
 %The learning time complexity of \Algo{PLT}s can be expressed in terms of the number of nodes in which an original training example $(\bx,\by)$ is used. Since the training example is used in a node $t$ only if $t$ is the root or $z_{\pa{t}} = 1$, this number is upper bounded by $s\cdot b \cdot k+1$, where $b$ and $k$ denote the degree and height of the tree, respectively, and $s$ is the number of positive labels in $\by$. For sparse labels, this value is much lower than $m$. Note that learning can be performed simultaneously for all nodes, and each node classifier can be trained using online methods, such as stochastic gradient descent~\cite{Bottou_2010}.
 
-
-%\vspace{-2pt}
-%
-\begin{algorithm}[t]
+\begin{wrapfigure}{R}{0.55\textwidth}
+\vspace{-0.6cm}
+\begin{minipage}{0.5\textwidth}
+\begin{algorithm}[H]
 \caption{Learning of \Algo{PLT}} %\Algo{PLT.Train}$(T, A, \calD_n)$}}
 \label{alg:plt-training}
 \begin{algorithmic}[1]
@@ -492,12 +514,18 @@ Training of \Algo{PLT}s can be performed independently for each node, either in 
 \State \textbf{return} $M$ = $A$.model($T$). 
 \end{algorithmic}
 \end{algorithm} 
+\end{minipage}
+\vspace{-0.6cm}
+\end{wrapfigure}
 
 To get prediction suited for precision@$k$, Algorithm~\ref{alg:pt-prediction} traverses the tree to find top $k$ labels. To this end it starts with adding the root node along with the probability returned by its classifier to a priority queue $Q$. Then, in the \textbf{while} loop, the algorithm pops from $Q$ a node $t$ with the highest intermediate probability (i.e., the probability $\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j)$). If this node is a leaf, then the corresponding label will be added to the final prediction. Otherwise, its child nodes will be added to $Q$ with the corresponding probabilities $\heta(\bx, c)$, $c \in \Children{t}$. The prediction stops after finding top k labels. 
 
 %Prediction with probabilistic label trees relies on estimating (\ref{eqn:probabilistic_tree}) by traversing the tree from the root to the leaf nodes. However, if the intermediate value of this product in node $t$, denoted by $p_t$, is less than a given threshold $\tau$, then the subtree starting in node $t$ is no longer explored. For the sake of completeness, we shortly describe this procedure (see Algorithm~\ref{alg:pt-prediction}). We start with setting $\hat{\by} = \vec{0}_m$. In order to traverse a tree, we initialize a queue $Q$ to which we add the root node $r_T$ with its posterior estimate $\heta_T(\bx,r(T))$. In the while loop, we iteratively pop a node from $Q$ and compute $p_t$. If $p_t \ge \tau$, we either set $\hat{y}_j = 1$ if $t$ is a leaf, or otherwise add its child nodes to $Q$ with the value $p_t$ multiplied by their posterior estimates $\heta_T(\bx, c)$, $c \in \Children{t}$. If $Q$ is empty, we stop the search and return $\hat{\by}$.
 
-\begin{algorithm}[t]
+\begin{wrapfigure}{R}{0.55\textwidth}
+\vspace{-0.6cm}
+\begin{minipage}{0.5\textwidth}
+\begin{algorithm}[H]
 \caption{Prediction of \Algo{PLT}} %\Algo{PLT.Predict}$(\bx, T, \mathcal{Q}, \tau)
 \label{alg:pt-prediction}
 \begin{algorithmic}[1]
@@ -515,6 +543,9 @@ To get prediction suited for precision@$k$, Algorithm~\ref{alg:pt-prediction} tr
 \State \textbf{return} $\calY_k$. 
 \end{algorithmic}
 \end{algorithm} 
+\end{minipage}
+\vspace{-0.6cm}
+\end{wrapfigure}
 
 Traversing a label tree can be much cheaper than querying $m$ independent classifiers, one for each label. To find the label with the highest marginal probability, \Algo{PLT} ideally needs to call only $b\times h+1$ classifiers (all $h$ classifiers on a path of from the root to a leaf plus all classifiers in the siblings nodes). Of course, in the worst-case scenario, the entire tree might be explored, but even then, no more than $2 \times m-1$ calls are required (with $m$ leaves, the size of the tree is upper bounded by $2 \times m-1$). In the case of sparse label sets, \Algo{PLT}s can significantly speed up the classification procedure. The expected cost of prediction depends, however, on the tree structure, the accuracy of node classifiers, and the number of positive labels.
 
@@ -577,57 +608,6 @@ The detailed derivation can be found in Appendix~\ref{app:prec@k}.
 
 %we derive a surrogate regret bound showing that the overall error of \Algo{PLT}s is reduced by improving the node classifiers. 
 
-\vspace{\sectionBefore}
-\subsection{Correction of probability estimates}
-\label{sec:correction}
-\vspace{\sectionAfter}
-
-The resulting marginal probabilities of \Algo{PLT}, or in general all node probabilities, may not correspond to a valid underlying multi-label distribution. Let us consider a node $t$ and the estimated probability of at least 1 positive label in its subtree: 
-$$
-\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j) \,.
-$$
-This probability in case of a leaf node $j$ is just the marginal probability $\heta(\bx, j)$ of the label $j$ being positive.
-In general, the estimated probabilities for a non-leaf node $t$ and its children nodes should satisfy the following constraints: 
-\begin{eqnarray*}
-&& \heta(\bx, t)  \ge \heta(\bx, c)\,, \forall c \in \Children{t}\,, \\
-&& \heta(\bx, t)  \le \sum_{c \in \Children{t}}  \heta(\bx, c) \,. 
-\end{eqnarray*}
-The first constraint is trivially satisfied by the algorithm since 
-$$
-\heta(\bx, c) = \heta(\bx, t) \heta_T(\bx, c)\,,\mathrm{~and~}  \heta_T(\bx, c) \in [0,1]\,.
-$$ 
-The problem is the second constraint. A possible solution is to do the following simple trick. Let 
-$$
-s = \sum_{c \in \Children{t}} \heta(\bx, c) \,.
-$$
-Then, if $s < \heta(\bx, t)$ the probabilities $\heta(\bx, c)$, for all $c \in \Children{t}$, should be corrected according to:
-$$
-\heta(\bx, c) := \heta(\bx, c) \frac{\heta(\bx, t)}{s}\,.
-$$
-%Another option is:
-%$$
-%\heta(\bx, c) := \heta(\bx, c) + \frac{s - \heta(\bx, t)}{|\Children{t}|}\,.
-%$$
-
-%In general the constraints in a $b$-ary tree for a node $t$ and its children nodes should be of the following type:
-%\begin{eqnarray*}
-%&& \prod_{j \in \Path{t}} \heta_T(\bx, j) \ge \prod_{j \in \Path{c}} \heta_T(\bx, j)\,,~c \in \Children{t}\,, \\
-%&& \prod_{j \in \Path{t}} \heta_T(\bx, j) \le \sum_{c \in \Children{t}}  \prod_{j \in \Path{c}} \heta_T(\bx, c) \,, 
-%\end{eqnarray*}
-%where $t$ is a non-leaf node. %$p_pa$ is the probability in the parent node and $p_j$ is the probability in its$ $j-th child node.
-%The first constraint is satisfied by the algorithm since 
-%$$
-%\prod_{j \in \Path{c}} \heta_T(\bx, j) = \heta_T(\bx, c) \prod_{j \in \Path{\pa{c}}} \heta_T(\bx, j)\,.
-%$$ 
-%%
-%The problem is the second constraint. A possible solution is to do the following simple trick. Let 
-%$$
-%s = \sum_{j=1}^k p_j\,.
-%$$
-%Then, if $s < p_{pa}$ the probabilities $p_j$, for all $j = 1, \ldots, k$, should be corrected according to:
-%$$
-%p_j = \frac{p_j \times p_{pa}}{s}\,.
-%$$
 
 \vspace{\sectionBefore}
 \subsection{Generalization of HSM}
@@ -762,17 +742,50 @@ Thus, for this specific situation of independent labels, the pick-one-label heur
 
 
 \vspace{\sectionBefore}
-\section{PLTs for document tagging}
+\section{Implementation details of PLTs}
 \label{sec:plt-tagging}
 \vspace{\sectionAfter}
 
-In this section we focus on application of \Algo{PLT}s to document tagging. In general, \Algo{PLT}s can work with various document representations, such as sparse representations in a form of a bag-of-words and its TF-IDF variant, or dense representations being an output of a neural network. In the later case, \Algo{PLT}s play a role of the output layer of the network. 
+In the inner nodes of PLT, we made use of Logistic Regression which can be trained either in batch or in online mode. As a consequence, PLT model inherently can be trained in both ways. Our implementation is based on FastText that updates the model parameters by using stochastic gradient descent with back-propagation. We adapt this approach, however we used L2 regularization for all parameters of the model. When the inner node classification task is degenerated containing only either positive or negative instances, we used constant classifier instead of learning the parameters.
+
+In general, \Algo{PLT}s can work with various document representations, such as sparse representations in a form of a bag-of-words and its TF-IDF variant which is used in XMLC repository~\footnote{Manik's repo}, or dense representations being an output of a neural network. In the later case, \Algo{PLT}s play a role of the output layer of the network. 
+%We tested two widely used document representation approaches for PLT: TF-IDF vectors which is used in XMLC repository~\footnote{Manik's repo}, and word embeddings~\cite{Mikolov_et_al_2013}. Note that, using TF-IDF, the document representation vector is sparse, whereas word embeddings results in dense vectors with typically less than 1000 dimension.
+In our experiments, we used the dense representation with single hidden layer as it is implemented in FastText. In the hidden layer, one can either use pretrained vectors, such as Gloves dictionary, or learn these vectors too. We opted for learning these vectors, but when we computed the dense document vector, instead of using the average word vectors as document representation vector, like FastText, we used weighted average of them where the weights of word vectors were proportional to their TF-IDF scores.
+
+The tree structure of PLT is a crucial modeling decision. The vanishing regret for log-loss holds regardless of the tree structure, however this theory requires that the inner node classification tasks are solved with zero regret too. In practice, we can only estimate the conditional probabilities in the inner node, therefore the tree structure does indeed matter. The Huffman tree over label frequencies, routinely used with HSM, takes into account only the computational complexity by putting the most frequent labels close to the root, and not the statistical accuracy. We came up with a simple top-down hierarchical clustering based approach for selecting the tree structure. We presented each label by the average of the document vectors that has the particular label. Then we clustered this vector representation of the labels by using balanced k-means which divided the labels into two clusters with the same size. And then we repeated this procedure recursively until the clusters were bigger than 100. In this way, we put the labels with similar documents close to each other, and in addition, balanced tree is obtained whose depth is logarithmic in terms of the number of labels.
+
+Hyperparameter tuning was carried in a wide range that is reported in Appendix \ref{sec:hyper}. We had found that our model is remarkably robust for the hyperparameters selection using any document representation, since it achieved close to optimal performance for a large set of hyperparameters that is in the vicinity of the optimal one. Moreover, the optimal hyperparameters are close to each other across all dataset. The code is available at \url{URL is removed}.
+
+
+
+\begin{itemize}
+\item Online and batch learning
+\item Sparse representation of the model (VW implementation)
+\item Dense representation of the model (FastText based representation)
+\begin{itemize}
+    \item Regularization of feature and model vectors
+    \item TF-IDF averaging
+\end{itemize}
+\item Constant node classifiers (when all examples are positive)
+\item Tree structure learning
+\begin{itemize}
+    \item different tree structures: binary trees, b-ary trees, trees with the last level of higher arity 
+    \item Huffman trees
+    \item top-down hierarchical clustering based on class prototypes
+\end{itemize}
+\item Hyperparameter tuning 
+\end{itemize}
+
+
+
+
+% In this section we focus on application of \Algo{PLT}s to document tagging. In general, \Algo{PLT}s can work with various document representations, such as sparse representations in a form of a bag-of-words and its TF-IDF variant, or dense representations being an output of a neural network. In the later case, \Algo{PLT}s play a role of the output layer of the network. 
   
 %PLTs can be combined with various underlying document representations. In this section we briefly describe sample applications of PLTs to document tagging. 
 %The described approaches differ mainly in the representation of a document, and therefore in the architecture of the entire model. In principle PLTs work the same in each of them, however in certain cases the application must be suited for the architecture.
 
-In general, a document tagging system consists of two modules: text representation and tagging, as presented on the schema on Figure~\ref{pic:module-repres-module-tag}. The text representation module $f : \calW^{n} \rightarrow \R^{d}$ is a (not necessarily) parametric function whose input is a document being represented as a sequence of words, $w \in \calW$, of length $n$ and its output is the vector representation of a document. The dimension of the representation space is $d$. 
-The input of the tagging module is the output of the text representation module. The output is the set of tags assigned to the document. Thus, the tagging system can be defined as $g: \R^{d} \rightarrow  \{ 0 , 1 \}^m$. 
+% In general, a document tagging system consists of two modules: text representation and tagging, as presented on the schema on Figure~\ref{pic:module-repres-module-tag}. The text representation module $f : \calW^{n} \rightarrow \R^{d}$ is a (not necessarily) parametric function whose input is a document being represented as a sequence of words, $w \in \calW$, of length $n$ and its output is the vector representation of a document. The dimension of the representation space is $d$. 
+% The input of the tagging module is the output of the text representation module. The output is the set of tags assigned to the document. Thus, the tagging system can be defined as $g: \R^{d} \rightarrow  \{ 0 , 1 \}^m$. 
 
 
 %Input is given in form of document and a set of tags pairs. Documents consist of words that are taken from a dictionary which is a finite indexed set $\calW = \{ w_1, \dots , w_N \}$. A document is a sequence of words  $\bd_i = (w_{i,1}, \dots, w_{i,n_i})\in \calW^{n_i}$. Its tag set is represented  by a binary vector $\by_i = (y_{i,1}, \ldots, y_{i,m}) \in \{ 0 , 1 \}^m$ where $m$ is the number of possible tags. A set of documents is denoted by $\calD = \{ (\bw_i, \by_{i}) \}_{i=1}^n$. For sake of simplicity, we assume that $n_i = n$ for every $1\le i \le n$.
@@ -786,13 +799,13 @@ The input of the tagging module is the output of the text representation module.
 %DocTag2Vec is a more sophisticated model, since it makes use of document representation, however it does not make use of the text representation. The text representation module is an extended CBOW model where a document vector is added to each context that is specific to the document. Formally, the tagging module can be written as $f(\bd; \bx_1, \dots, \bx_N)=\left[\bx_{i_1}, \dots , \bx_{i_n}, \bc_i \right]$ where $\bc_i \in \R ^d$ is the representation of the document. 
 
 
-\begin{figure}[h!]
-	\begin{center}
-		\input{tikz/modules}
-	\end{center}
-	\caption{A schema of a document tagging system.}
-	\label{pic:module-repres-module-tag}
-\end{figure}
+% \begin{figure}[h!]
+% 	\begin{center}
+% 		\input{tikz/modules}
+% 	\end{center}
+% 	\caption{A schema of a document tagging system.}
+% 	\label{pic:module-repres-module-tag}
+% \end{figure}
 
 
 %\vspace{\sectionBefore}
@@ -861,18 +874,18 @@ Alternatively, one can train the word embeddings simultaneously with the tagger 
 
 % To improve the document representation, instead of a simple aggregation over words, one can feed the embeddings of consecutive words into a more advanced deep architecture, such as LSTM ~\citep{Hochreiter_Schmidhuber_1997} or the text-based convolution neural network~\cite{Liu_et_al_2017}. \Algo{PLT}s can be used with such architecture as the output layer. However, the speed advantage of this tree architecture might not be so visible in case of GPU-based training, as matrix multiplication can be efficiently performed on GPUs. 
 
-\vspace{\sectionBefore}
-\subsection{Ensemble of PLTs}
-\label{sec:plt-ensemble}
-\vspace{\sectionAfter}
+% \vspace{\sectionBefore}
+% \subsection{Ensemble of PLTs}
+% \label{sec:plt-ensemble}
+% \vspace{\sectionAfter}
 
-Various ensemble techniques, such as bagging, are routinely applied with tree-based learners. A very simple ensemble approach can be also easily implemented in our learning architecture. One can extend the tree-based tagging module with additional \Algo{PLT} instances which trees share the same text representation as input, but have different tree architecture. Depending on the tree structure, the accuracy of a single \Algo{PLT} for specific labels may vary. Thus the aggregation of predictions of this diverse pool of \Algo{PLT}s with random tree structures should lead to improvement of the overall predictive performance. 
-%Additionally, bootstrap aggregation can also be applied to decrease the variance of the trees. 
-%
-In our implementation, we update the word embeddings by using %ensemble of PLTs as well as single PLT by averaging the gradients
-the average of gradients back-propagated from individual trees of the ensemble, which besides may lead to a reduction of overfitting.
+% Various ensemble techniques, such as bagging, are routinely applied with tree-based learners. A very simple ensemble approach can be also easily implemented in our learning architecture. One can extend the tree-based tagging module with additional \Algo{PLT} instances which trees share the same text representation as input, but have different tree architecture. Depending on the tree structure, the accuracy of a single \Algo{PLT} for specific labels may vary. Thus the aggregation of predictions of this diverse pool of \Algo{PLT}s with random tree structures should lead to improvement of the overall predictive performance. 
+% %Additionally, bootstrap aggregation can also be applied to decrease the variance of the trees. 
+% %
+% In our implementation, we update the word embeddings by using %ensemble of PLTs as well as single PLT by averaging the gradients
+% the average of gradients back-propagated from individual trees of the ensemble, which besides may lead to a reduction of overfitting.
 
-Let us also notice that classification of test examples with multiple trees can be still performed very efficiently: first, we query each tree for its top $k$ predictions, second we take the union of the predicted labels. In case, we did not get probability estimates for a given label from all the trees, we can efficiently obtain the missing probabilities by traversing the corresponding paths in the trees. As a last step we compute the average score for each label in the union, and select the top-k based on these average scores.
+% Let us also notice that classification of test examples with multiple trees can be still performed very efficiently: first, we query each tree for its top $k$ predictions, second we take the union of the predicted labels. In case, we did not get probability estimates for a given label from all the trees, we can efficiently obtain the missing probabilities by traversing the corresponding paths in the trees. As a last step we compute the average score for each label in the union, and select the top-k based on these average scores.
 
 %Taking into account fact, that the distribution of labels in the extream classification problems follows the Pareto distribution, it is expected to achive improvment.
 
@@ -885,69 +898,9 @@ Let us also notice that classification of test examples with multiple trees can 
 \label{sec:empirical_results}
 \vspace{\sectionAfter}
 
-The experimental studies presented in this section are aimed at showing advantages of the \Algo{PLT} approach. In the first set of experiments, we test \Algo{HSM} and \Algo{PLT}s on synthetic data in order to confirm our theoretical findings. In the second set of experiments, we compare the performance of \Algo{PLT}s with various state-of-the-art algorithm on XMLC benchmark datasets.
+The experimental studies presented in this section are aimed at showing advantages of the \Algo{PLT} approach. In the first set of experiments, we test \Algo{HSM} and \Algo{PLT}s on synthetic data in order to confirm our theoretical findings. In the second set of experiments, we compare the performance of \Algo{PLT}s with various state-of-the-art algorithms on XMLC benchmark datasets.
 
 %We evaluate the modesl in terms of Prec@$\{1,3,5\}$.
-
-\subsection{Comparison of PLTs and HSM on synthetic data}
-\label{sec:empirical-synthetic}
-
-% \begin{table}[]
-% 	\centering
-% 	\caption{Precision@1 of PLT and HSM on synthetic data. The number of passes gives the number of epochs of training. The values of precision@1 are averages of 10 random runs.}
-% 	\label{tab:synthetic1}
-% \begin{tabular}{l|rr|rr|rr}
-% 	\toprule
-% 	 & \multicolumn{2}{c|}{dependent}                     & \multicolumn{2}{c|}{independent}                   & \multicolumn{2}{c}{multiclass}                    \\
-% 	 passes & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c|}{HSM} & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c|}{HSM} & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c}{HSM} \\
-% 	\midrule
-% 	1      & 73.17 & 72.04 & 61.87    & 53.64 & 34.31  & 34.31  \\
-% 	10     & 85.51 & 84.16 & 63.36    & 58.00 & 38.67  & 38.67  \\
-% 	100    & 89.09 & 85.48 & 62.23    & 60.45 & 36.71  & 36.71  \\
-% 	1000   & 87.12 & 84.76 & 62.69    & 61.98 & 34.26  & 34.26 \\
-% 	\bottomrule
-% \end{tabular}
-% \vspace{-0.4cm}
-% \end{table}
-
-
-We validate our theoretical results presented in Section~\ref{sec:plt}, which show that  \Algo{HSM} is not amenable to model the marginal probabilities in general, when they are not conditionally independent. In this scenario, \Algo{HSM} with pick-one-label heuristic should be outperformed in terms of precision@k by \Algo{PLT}, which has vanishing regret for conditional estimates and precision@$k$ (see Section~\ref{sec:regret}). To validate this claim empirically, we compared the performance of \Algo{PLT}s and \Algo{HSM} on synthetic datasets of three types: multi-label data with independent labels, multi-label data with conditionally dependent labels and multi-class data. 
-
-\begin{table}[t]
-	\begin{center}
-	\caption{Precision@1 of PLT and HSM on synthetic data. The values are averages over 10 random runs.}
-	\label{tab:synthetic1}
-\begin{tabular}{ll|rr}
-	\toprule
-	\multicolumn{2}{l|}{}                       & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c}{HSM} \\
-	\midrule
-	\multicolumn{2}{l|}{multi-class}            & 9.88                    & 9.88                    \\
-	\midrule
-        multi-label & independent & 90.73                   & 90.56                   \\
-	multi-label & dependent   & 99.18                   & 96.95                   \\
-	\bottomrule
-\end{tabular}
-\end{center}
-\vspace{-0.3cm}
-\end{table}
-
-All models we use to generate synthetic data are based on $m = 128$ linear functions 
-with parameters $[\boldsymbol{w}_1, \boldsymbol{w}_2, \ldots, \boldsymbol{w}_m]$. Feature vectors $\bx$ were uniformly drawn from a $d$-dimensional ball of radius $1$. Parameter vectors $\boldsymbol{w}_i$ were drawn uniformly from a $d$-dimensional sphere, with $d = 8$. All the function parameters are represented as a $m \times d$-dimensional matrix $\boldsymbol{W}$. 
-As a source of randomness in the data we employ a random $d$-dimensional vector $\epsilon$ sampled from $N(0, 0.25)$ independently for each sample and add it to each score $\boldsymbol{W}\bx$. The noisy scores are multiplied by a mixing matrix $M$, resulting in a score $\boldsymbol{f} = \boldsymbol{M} (\boldsymbol{W}\bx +  \epsilon ) $.
-The multi-label data is generated according to
-\begin{equation*}
-\by = \assert{\boldsymbol{f} > 0}.
-\end{equation*}
-where $\assert{\cdot}$ is applied element-wise.
-Dependent data is generated with a mixing matrix $M$ sampled uniformly from $[0, 1]^{m \times m}$. To get independent data is suffices to set $M = I$, an identity matrix.
-Multi-class data is generated with $M = I$ by choosing the $y = \argmax_{i}{\boldsymbol{f}_{i}}$.
-
-The results are shown in Table \ref{tab:synthetic1}. The train and test set of 10000 examples each were generated 10 times. \Algo{PLT}s and \Algo{HSM} were both initialized by the same random values for a fair comparison. We run both algorithms for 1000 epochs to let them converge. 
-%Since \Algo{PLT}s converge faster than \Algo{HSM} on multi-label data, we run each algorithm for 1000 iterations to let \Algo{HSM} converge. 
-The results confirm our theoretical results. \Algo{HSM} and \Algo{PLT}s on multi-class data match to each other (they in fact get exactly the same model). On data with conditionally independent labels, the performance of \Algo{HSM} and \Algo{PLT}s is on-par. % after $1000$ iterations. The difference in convergence speed can be explained by the fact that \Algo{HSM} updates the model by picking one positive label at once, wheres \Algo{PLT}  carries out the updates for all positive label simultaneously. 
-On data with dependent labels, \Algo{PLT} outperforms \Algo{HSM}. 
-%This coincide with our theoretical finding regarding the non-vanishing regret of \Algo{HSM}. 
-
 
 \subsection{Benchmark data}
 
@@ -982,7 +935,7 @@ Amazon-670K & 670091 & 173194 & 490449 & 153025 \\%& 4.01 & 5.45 \\
 We also carried out experiments on commonly used benchmark datasets taken from XMLC repository\footnote{http://manikvarma.org/downloads/XC/XMLRepository.html}, their raw text equivalents by courtesy of \cite{Liu_et_al_2017}, and Yahoo news multi-label corpus.\footnote{https://yahooresearch.tumblr.com/post/164789421126/introducing-the-yahoo-news-ranked-multi-label}
 The main characteristics of datasets are shown in Table \ref{tab:datasets-differences-table}. 
 %
-Every datasets we used consists of text data, so we decided to use two representations of them when it is available: feature vectors taken from XMLC repository, and word embeddings described in Section \ref{sec:plt-word_embeddings}. In case of Yahoo! news dataset we used the bag of words representation.
+Every dataset we used consists of text data, so we decided to use two representations of them when it is available: feature vectors taken from XMLC repository, and word embeddings described in Section \ref{sec:plt-word_embeddings}. In case of Yahoo! news dataset we used the bag of words representation.
 
 %\begin{table}[b]
 %\vspace{-.2cm}
@@ -1155,9 +1108,15 @@ $$
 \left | \eta_T(\bx, t) - \psi^{-1}(f_t)  \right | \le \sqrt{ \frac{2}{\lambda}} \sqrt{\reg_\ell(f_t \given \bx)}
 $$
 where $\lambda$ is a strong properness constant specific for a given loss function (for more detail, see~\cite{Agarwal_2014}). By putting the above inequality into~(\ref{eqn:estimation_bound}), we get
-$$
-\left | \eta(\bx, j) - \heta(\bx, j) \right | \le \! \sum_{t \in \Path{j}} \! \left | \eta_T(\bx, t) - \heta_T(\bx, t) \right | = \!  \sum_{t \in \Path{j}}  \! \left | \eta_T(\bx, t) - \psi^{-1}(f_t)  \right | \le  \! \sum_{t \in \Path{j}}  \! \sqrt{ \frac{2}{\lambda}} \sqrt{\reg_\ell(f_t \given \bx)}
-$$ 
+\begin{align*}
+\left | \eta(\bx, j) - \heta(\bx, j) \right | 
+& 
+\le \! \sum_{t \in \Path{j}} \! \left | \eta_T(\bx, t) - \heta_T(\bx, t) \right | \\ 
+& 
+= \!  \sum_{t \in \Path{j}}  \! \left | \eta_T(\bx, t) - \psi^{-1}(f_t)  \right | \\ 
+&
+\le  \! \sum_{t \in \Path{j}}  \! \sqrt{ \frac{2}{\lambda}} \sqrt{\reg_\ell(f_t \given \bx)}
+\end{align*} 
 
 The above result also means for optimal node classifiers, we obtain an optimal multi-label classifier in terms of estimation of marginal probabilities $\eta(\bx,j)$. Below we extend this result to give guarantees for precision@$k$. 
 
@@ -1166,77 +1125,44 @@ Conditional regret for precision@$k$ is given by:
 $$
 \reg_{p@k} (\bh \given \bx) = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i ) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )
 $$
-
-We can upper bound $\reg_{p@k} (\bh \given \bx)$ by noticing that $\hat \calY_k$ does not contain label $i \in \calY_k$ when for all $j \in \hat \calY_k$ we have:
-$$
-\heta(\bx, i) < \heta(\bx,j) \,. % \quad \mathrm{and} \quad \,.
-$$
-To use the upper bound of $m_j = |\eta(\bx,j) - \heta(\bx,j)|$ we can write 
-$$
-\eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i)  < \eta(\bx,j) - \eta(\bx,j) + \heta(\bx,j) \,,
-$$
-which gives us 
-$$
-\eta(\bx, j) > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,. \\
-$$
-Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for at least one $j \in \hat \calY_k$, we can rearrange the terms and write:
-$$
-\eta(\bx, j)  > \eta(\bx, i) - |\eta(\bx, i) - \heta(\bx, i)| - |\eta(\bx,j) - \heta(\bx,j)| \,. 
-$$
-Finally, we obtain:
-$$
-\eta(\bx, j) > \eta(\bx, i) - m_i - m_j > \eta(\bx,i) - 2 \max_{l} m_l \,. %|\eta(\bx, i) - \heta(\bx, i)| + |\eta(\bx,j) - \heta(\bx,j)| \,.
-$$
-%as we know that $\eta(\bx, i) > \eta(\bx, j)$ for all $j \in \calY_k$.
-%where $m_i = |\eta(\bx,i) - \heta(\bx,i)|$. 
-%This is because that the true top label j can be replaced by label k in the worse case when \eta_j - m_j < \eta_k + m_k.
-%$m_j = |\eta(\bx,j) - \heta(\bx,j)|$ in the following way 
-The regret can be then written as follows:
+Further we add and subtract the following two terms $\frac{1}{k}\sum_{i \in \calY_k} \heta (\bx ,i)$ and $\frac{1}{k}\sum_{j \in \hat \calY_k} \heta (\bx ,j)$ to the above equation:
 \begin{align*}
-\reg_{p@k} (\bh \given \bx)
-  & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
-  & \le \frac{1}{k}\sum_{i \in \calY_k} \left ( \eta (\bx ,i) - \eta(\bx,i) + 2 \max_{l} m_l \right )\\
-  & \le 2 \max_{l} m_l 
+\reg_{p@k} (\bh \given \bx) & = \underbrace{\frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{i \in \calY_k} \heta (\bx ,i)}_{\le \frac{1}{k}\sum_{i \in \calY_k} \left |\eta (\bx ,i) - \heta (\bx ,i) \right | } \\
+&  + \underbrace{\frac{1}{k}\sum_{j \in \hat \calY_k} \heta (\bx ,j) -  \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )}_{\le \frac{1}{k}\sum_{j \in \hat \calY_k} \left |\heta (\bx ,j) - \eta (\bx ,j) \right |  }\\
+ &  + \underbrace{\frac{1}{k}\sum_{i \in \calY_k} \heta (\bx ,i)  - \frac{1}{k}\sum_{j \in \hat \calY_k} \heta (\bx ,j)}_{\le 0} 
 \end{align*}
-%\sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
-%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
-%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
-%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
-%  & \le 2k\max_{i \in [m]} m_i
-%\end{align}
+Because of the relations given under the braces, we finally get:
+$$
+\reg_{p@k} (\bh \given \bx) \le 2 \max_{l} \left | \eta(\bx, l) - \heta(\bx, l) \right | \,.
+$$
 
-%Top-k labels with respect to the true marginals
-%\[
-%M_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \eta(\bx, j) \ge \eta(\bx, i)  \right\} \le k\right\}
-%\]
-%
-%Top-k labels with respect to the estimated marginals
-%\[
-%\hat{M}_k(\bx) = \left\{ i\in [m] : \# \left\{ j \in [m] : \hat{\eta}(\bx, j) \ge \hat{\eta}(\bx, i)  \right\} \le k\right\}
-%\]
-%
-%
-%Expected regret for Prec@k conditioned on $\bx$ 
-%\[
-%\mbox{Reg}_{P@k} (h, \bx) = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j )
-%\]
-%
-%We shall focus on multi-label classifiers in the following form:
-%\[
-%h(\bx,i) =h_{k, \hat{\eta}}(\bx,i) = \assert{\textstyle i \in \hat{M}_k(\bx) }
-%\]
-%
-%In this case the Prec@k regret is $[0,1]$.
-%
-%The error for marginal estimates is denoted by $m_i = \vert \eta (\bx ,i ) - \hat{\eta} (\bx ,i )\vert$. With this we can upper bound 
-%\begin{align}
-%\mbox{Reg}_{P@k} (h, \bx) 
-%  & = \sum_{i \in M_k(\bx)} \eta (\bx ,i ) - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\
-%  & \le \sum_{i \in M_k(\bx)} \hat{\eta} (\bx ,i ) + m_i - \sum_{j \in [m]} h(\bx, j) \eta(\bx , j ) \notag \\ 
-%  & \le \sum_{i \in \hat{M}_k(\bx)} (\hat{\eta} (\bx ,i ) + m_i )- \sum_{j \in \hat{M}_k(\bx)}  \eta(\bx , j ) \notag \\
-%  & = \sum_{i \in \hat{M}_k(\bx)} 2m_i \notag \\
-%  & \le 2k\max_{i \in [m]} m_i
-%\end{align}
+% We can upper bound $\reg_{p@k} (\bh \given \bx)$ by noticing that $\hat \calY_k$ does not contain label $i \in \calY_k$ when for all $j \in \hat \calY_k$ we have:
+% $$
+% \heta(\bx, i) < \heta(\bx,j) \,. % \quad \mathrm{and} \quad \,.
+% $$
+% To use the upper bound of $m_j = |\eta(\bx,j) - \heta(\bx,j)|$ we can write 
+% $$
+% \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i)  < \eta(\bx,j) - \eta(\bx,j) + \heta(\bx,j) \,,
+% $$
+% which gives us 
+% $$
+% \eta(\bx, j) > \eta(\bx, i) - \eta(\bx, i) + \heta(\bx, i) + \eta(\bx,j) - \heta(\bx,j) \,. \\
+% $$
+% Since we know that $\eta(\bx, i) > \eta(\bx, j)$, for at least one $j \in \hat \calY_k$, we can rearrange the terms and write:
+% $$
+% \eta(\bx, j)  > \eta(\bx, i) - |\eta(\bx, i) - \heta(\bx, i)| - |\eta(\bx,j) - \heta(\bx,j)| \,. 
+% $$
+% Finally, we obtain:
+% $$
+% \eta(\bx, j) > \eta(\bx, i) - m_i - m_j > \eta(\bx,i) - 2 \max_{l} m_l \,. 
+% $$
+% The regret can be then written as follows:
+% \begin{align*}
+% \reg_{p@k} (\bh \given \bx)
+%   & = \frac{1}{k}\sum_{i \in \calY_k} \eta (\bx ,i) - \frac{1}{k}\sum_{j \in \hat \calY_k} \eta(\bx , j )  \\
+%   & \le \frac{1}{k}\sum_{i \in \calY_k} \left ( \eta (\bx ,i) - \eta(\bx,i) + 2 \max_{l} m_l \right )\\
+%   & \le 2 \max_{l} m_l 
+% \end{align*}
 
 %\section{Probabilistic label trees}
 %\label{app:plt}
@@ -1336,7 +1262,123 @@ The regret can be then written as follows:
 %\end{table}
 %\vspace{\tableAfter}
 
-\section{Training and test times of tested algorithms}
+
+\vspace{\sectionBefore}
+\subsection{Correction of probability estimates}
+\label{sec:correction}
+\vspace{\sectionAfter}
+
+The resulting marginal probabilities of \Algo{PLT}, or in general all node probabilities, may not correspond to a valid underlying multi-label distribution. Let us consider a node $t$ and the estimated probability of at least 1 positive label in its subtree: 
+$$
+\heta(\bx, t) = \prod_{j \in \Path{t}} \heta_T(\bx, j) \,.
+$$
+This probability in case of a leaf node $j$ is just the marginal probability $\heta(\bx, j)$ of the label $j$ being positive.
+In general, the estimated probabilities for a non-leaf node $t$ and its children nodes should satisfy the following constraints: 
+\begin{eqnarray*}
+&& \heta(\bx, t)  \ge \heta(\bx, c)\,, \forall c \in \Children{t}\,, \\
+&& \heta(\bx, t)  \le \sum_{c \in \Children{t}}  \heta(\bx, c) \,. 
+\end{eqnarray*}
+The first constraint is trivially satisfied by the algorithm since 
+$$
+\heta(\bx, c) = \heta(\bx, t) \heta_T(\bx, c)\,,\mathrm{~and~}  \heta_T(\bx, c) \in [0,1]\,.
+$$ 
+The problem is the second constraint. A possible solution is to do the following simple trick. Let 
+$$
+s = \sum_{c \in \Children{t}} \heta(\bx, c) \,.
+$$
+Then, if $s < \heta(\bx, t)$ the probabilities $\heta(\bx, c)$, for all $c \in \Children{t}$, should be corrected according to:
+$$
+\heta(\bx, c) := \heta(\bx, c) \frac{\heta(\bx, t)}{s}\,.
+$$
+%Another option is:
+%$$
+%\heta(\bx, c) := \heta(\bx, c) + \frac{s - \heta(\bx, t)}{|\Children{t}|}\,.
+%$$
+
+%In general the constraints in a $b$-ary tree for a node $t$ and its children nodes should be of the following type:
+%\begin{eqnarray*}
+%&& \prod_{j \in \Path{t}} \heta_T(\bx, j) \ge \prod_{j \in \Path{c}} \heta_T(\bx, j)\,,~c \in \Children{t}\,, \\
+%&& \prod_{j \in \Path{t}} \heta_T(\bx, j) \le \sum_{c \in \Children{t}}  \prod_{j \in \Path{c}} \heta_T(\bx, c) \,, 
+%\end{eqnarray*}
+%where $t$ is a non-leaf node. %$p_pa$ is the probability in the parent node and $p_j$ is the probability in its$ $j-th child node.
+%The first constraint is satisfied by the algorithm since 
+%$$
+%\prod_{j \in \Path{c}} \heta_T(\bx, j) = \heta_T(\bx, c) \prod_{j \in \Path{\pa{c}}} \heta_T(\bx, j)\,.
+%$$ 
+%%
+%The problem is the second constraint. A possible solution is to do the following simple trick. Let 
+%$$
+%s = \sum_{j=1}^k p_j\,.
+%$$
+%Then, if $s < p_{pa}$ the probabilities $p_j$, for all $j = 1, \ldots, k$, should be corrected according to:
+%$$
+%p_j = \frac{p_j \times p_{pa}}{s}\,.
+%$$
+
+\section{Additional experimental results}
+
+\subsection{Comparison of PLTs and HSM on synthetic data}
+\label{sec:empirical-synthetic}
+
+% \begin{table}[]
+% 	\centering
+% 	\caption{Precision@1 of PLT and HSM on synthetic data. The number of passes gives the number of epochs of training. The values of precision@1 are averages of 10 random runs.}
+% 	\label{tab:synthetic1}
+% \begin{tabular}{l|rr|rr|rr}
+% 	\toprule
+% 	 & \multicolumn{2}{c|}{dependent}                     & \multicolumn{2}{c|}{independent}                   & \multicolumn{2}{c}{multiclass}                    \\
+% 	 passes & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c|}{HSM} & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c|}{HSM} & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c}{HSM} \\
+% 	\midrule
+% 	1      & 73.17 & 72.04 & 61.87    & 53.64 & 34.31  & 34.31  \\
+% 	10     & 85.51 & 84.16 & 63.36    & 58.00 & 38.67  & 38.67  \\
+% 	100    & 89.09 & 85.48 & 62.23    & 60.45 & 36.71  & 36.71  \\
+% 	1000   & 87.12 & 84.76 & 62.69    & 61.98 & 34.26  & 34.26 \\
+% 	\bottomrule
+% \end{tabular}
+% \vspace{-0.4cm}
+% \end{table}
+
+
+We validate our theoretical results presented in Section~\ref{sec:plt}, which show that  \Algo{HSM} is not amenable to model the marginal probabilities in general, when they are not conditionally independent. In this scenario, \Algo{HSM} with pick-one-label heuristic should be outperformed in terms of precision@k by \Algo{PLT}, which has vanishing regret for conditional estimates and precision@$k$ (see Section~\ref{sec:regret}). To validate this claim empirically, we compared the performance of \Algo{PLT}s and \Algo{HSM} on synthetic datasets of three types: multi-label data with independent labels, multi-label data with conditionally dependent labels and multi-class data. 
+
+\begin{table}[t]
+	\begin{center}
+	\caption{Precision@1 of PLT and HSM on synthetic data. The values are averages over 10 random runs.}
+	\label{tab:synthetic1}
+\begin{tabular}{ll|rr}
+	\toprule
+	\multicolumn{2}{l|}{}                       & \multicolumn{1}{c}{PLT} & \multicolumn{1}{c}{HSM} \\
+	\midrule
+	\multicolumn{2}{l|}{multi-class}            & 9.88                    & 9.88                    \\
+	\midrule
+        multi-label & independent & 90.73                   & 90.56                   \\
+	multi-label & dependent   & 99.18                   & 96.95                   \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\vspace{-0.3cm}
+\end{table}
+
+All models we use to generate synthetic data are based on $m = 128$ linear functions 
+with parameters $[\boldsymbol{w}_1, \boldsymbol{w}_2, \ldots, \boldsymbol{w}_m]$. Feature vectors $\bx$ were uniformly drawn from a $d$-dimensional ball of radius $1$. Parameter vectors $\boldsymbol{w}_i$ were drawn uniformly from a $d$-dimensional sphere, with $d = 8$. All the function parameters are represented as a $m \times d$-dimensional matrix $\boldsymbol{W}$. 
+As a source of randomness in the data we employ a random $d$-dimensional vector $\epsilon$ sampled from $N(0, 0.25)$ independently for each sample and add it to each score $\boldsymbol{W}\bx$. The noisy scores are multiplied by a mixing matrix $M$, resulting in a score $\boldsymbol{f} = \boldsymbol{M} (\boldsymbol{W}\bx +  \epsilon ) $.
+The multi-label data is generated according to
+\begin{equation*}
+\by = \assert{\boldsymbol{f} > 0}.
+\end{equation*}
+where $\assert{\cdot}$ is applied element-wise.
+Dependent data is generated with a mixing matrix $M$ sampled uniformly from $[0, 1]^{m \times m}$. To get independent data is suffices to set $M = I$, an identity matrix.
+Multi-class data is generated with $M = I$ by choosing the $y = \argmax_{i}{\boldsymbol{f}_{i}}$.
+
+The results are shown in Table \ref{tab:synthetic1}. The train and test set of 10000 examples each were generated 10 times. \Algo{PLT}s and \Algo{HSM} were both initialized by the same random values for a fair comparison. We run both algorithms for 1000 epochs to let them converge. 
+%Since \Algo{PLT}s converge faster than \Algo{HSM} on multi-label data, we run each algorithm for 1000 iterations to let \Algo{HSM} converge. 
+The results confirm our theoretical results. \Algo{HSM} and \Algo{PLT}s on multi-class data match to each other (they in fact get exactly the same model). On data with conditionally independent labels, the performance of \Algo{HSM} and \Algo{PLT}s is on-par. % after $1000$ iterations. The difference in convergence speed can be explained by the fact that \Algo{HSM} updates the model by picking one positive label at once, wheres \Algo{PLT}  carries out the updates for all positive label simultaneously. 
+On data with dependent labels, \Algo{PLT} outperforms \Algo{HSM}. 
+%This coincide with our theoretical finding regarding the non-vanishing regret of \Algo{HSM}. 
+
+
+
+\subsection{Training and test times of tested algorithms}
 \label{app:running_times}
 
 Table~\ref{tab:datasets-differences-time-table} reports the training and test times of \Algo{FastXML}, \Algo{SLEEC}, \Algo{PLT} and \Algo{XML-CNN} algorithms. The times are given for a single thread. 
@@ -1366,7 +1408,7 @@ Amazon670K & \datall{train}{test} & \datarr{789m}{21m} & \datarr{1083m}{48m} & \
 	\vspace{-0.4cm}
 \end{table*}
 
-\section{Tuning of hyperparameters}
+\subsection{Tuning of hyperparameters}
 \label{sec:hyper}
 
 The \Algo{PLT} has only one global hyperparameter which is the degree of the tree denoted by $b$.
